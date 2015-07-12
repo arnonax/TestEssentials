@@ -15,8 +15,10 @@ using TestAutomationEssentials.TrxParser.Generated;
 namespace TestAutomationEssentials.UnitTests
 {
 	[TestClass]
-	public class TestBaseTests //: TestBase
+	public class TestBaseTests
 	{
+		public TestContext TestContext { get; set; }
+		
 		[TestMethod]
 		public void TestsNotRunIfClassInitializeIsMissing()
 		{
@@ -26,7 +28,7 @@ GetLinePragma() +
 using TestAutomationEssentials.MSTest;
 
 [TestClass]
-public class TestClass1 //: TestBase
+public class TestClass1 : TestBase
 {
 	public TestClass1()
 	{
@@ -50,6 +52,7 @@ public class TestClass1 //: TestBase
 }
 ");
 			var results = testClass.Execute();
+			TestContext.AddResultFile(results.FullPath);
 			Assert.AreEqual(0, results.PassedTests);
 			Assert.AreEqual(1, results.FailedTests);
 		}
@@ -109,6 +112,7 @@ public class TestClass1 //: TestBase
 				}
 
 				Console.WriteLine("TrxFile: \"file://{0}\"", trxFile);
+				
 				return new TestResults(trxFile);
 			}
 
@@ -138,6 +142,7 @@ public class TestClass1 //: TestBase
 				_testRunType = (TestRunType) serializer.Deserialize(fileStream);
 			}
 			_counters = _testRunType.Items.OfType<TestRunTypeResultSummary>().Content().Items.OfType<CountersType>().Content();
+			FullPath = trxFile;
 		}
 
 		public int PassedTests
@@ -149,5 +154,7 @@ public class TestClass1 //: TestBase
 		{
 			get { return _counters.failed; }
 		}
+
+		public string FullPath { get; private set; }
 	}
 }
