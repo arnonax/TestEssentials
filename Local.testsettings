@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TestSettings name="Local" id="c6db68e9-e78f-4f6b-8953-a8933e91028d" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Description>These are default test settings for a local test run.</Description>
+  <Deployment enabled="false" />
+  <Execution>
+    <TestTypeSpecific>
+      <UnitTestRunConfig testTypeId="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b">
+        <AssemblyResolution>
+          <TestDirectory useLoadContext="true" />
+        </AssemblyResolution>
+      </UnitTestRunConfig>
+    </TestTypeSpecific>
+    <AgentRule name="LocalMachineDefaultRole">
+      <DataCollectors>
+        <DataCollector uri="datacollector://microsoft/CodeCoverage/1.0" assemblyQualifiedName="Microsoft.VisualStudio.TestTools.CodeCoverage.CoveragePlugIn, Microsoft.VisualStudio.QualityTools.Plugins.CodeCoverage, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" friendlyName="Code Coverage (Visual Studio 2010)">
+          <Configuration>
+            <CodeCoverage xmlns="">
+              <Regular>
+                <CodeCoverageItem binaryFile="C:\Work\TestAutomationEssentials\UnitTests\TestAutomationEssentials.UnitTests\bin\Debug\TestAutomationEssentials.Common.dll" pdbFile="C:\Work\TestAutomationEssentials\UnitTests\TestAutomationEssentials.UnitTests\bin\Debug\TestAutomationEssentials.Common.pdb" instrumentInPlace="true" />
+                <CodeCoverageItem binaryFile="C:\Work\TestAutomationEssentials\UnitTests\TestAutomationEssentials.UnitTests\bin\Debug\TestAutomationEssentials.MSTest.dll" pdbFile="C:\Work\TestAutomationEssentials\UnitTests\TestAutomationEssentials.UnitTests\bin\Debug\TestAutomationEssentials.MSTest.pdb" instrumentInPlace="true" />
+                <CodeCoverageItem binaryFile="C:\Work\TestAutomationEssentials\UnitTests\TestAutomationEssentials.UnitTests\bin\Debug\TestAutomationEssentials.UnitTests.dll" pdbFile="C:\Work\TestAutomationEssentials\UnitTests\TestAutomationEssentials.UnitTests\bin\Debug\TestAutomationEssentials.UnitTests.pdb" instrumentInPlace="true" />
+              </Regular>
+            </CodeCoverage>
+          </Configuration>
+        </DataCollector>
+      </DataCollectors>
+    </AgentRule>
+  </Execution>
+  <Properties />
+</TestSettings>
