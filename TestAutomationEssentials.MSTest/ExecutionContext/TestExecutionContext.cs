@@ -117,7 +117,7 @@ namespace TestAutomationEssentials.MSTest.ExecutionContext
 	    {
 			_currentState = State.Cleanup;
 		    Console.WriteLine("***************************** Cleanup " + _currentIsolationLevel.Name +
-							  "*****************************");
+							  " *****************************");
 
 		    _currentIsolationLevel.Cleanup();
 
