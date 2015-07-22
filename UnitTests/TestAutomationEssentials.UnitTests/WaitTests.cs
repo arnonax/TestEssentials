@@ -38,7 +38,7 @@ namespace TestAutomationEssentials.UnitTests
 		[TestMethod]
 		public void WaitUntilThrowsTimeoutExceptionIfConditionIsNotMetDuringTheDesignatedPeriod()
 		{
-			var timeout = 100.Milliseconds();
+			var timeout = 200.Milliseconds();
 
 			var startTime = DateTime.Now;
 			Action action = () => Wait.Until(() => false, timeout);

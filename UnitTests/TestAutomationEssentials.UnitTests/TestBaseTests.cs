@@ -204,7 +204,7 @@ using System;
 public class TestClass1 : TestBase
 {
 	[ClassInitialize]
-	public static void ClassInitialize(TestContext testContext)
+	public static void MyClassInitialize(TestContext testContext)
 	{
 	}
 
@@ -220,8 +220,73 @@ public class TestClass1 : TestBase
 }
 ");
 			var testResults = testClass.Execute();
+			TestContext.AddResultFile(testResults.FullPath);
 			Assert.AreEqual(2, testResults.Inconclusive, "Inconclusive");
-			StringAssert.Contains(testResults.UnitTestResults[0].ErrorMessage, "does not have a [ClassInitialize] method");
+			StringAssert.Contains(testResults.UnitTestResults[0].ErrorMessage, "Method TestClass1.MyClassInitialize has a [ClassInitialize] attribute, but it does not call the base class's ClassInitialize method");
+		}
+
+		[TestMethod]
+		public void IfClassInitializeIsOverridrenThenClassInitializeAttributeMustBeUsed()
+		{
+			var testClass = CreateTestClass(
+GetLinePragma() +
+@"using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestAutomationEssentials.MSTest;
+using System;
+			
+[TestClass]
+public class TestClass1 : TestBase
+{
+	protected override void ClassInitialize()
+	{
+	}
+
+	[TestMethod]
+	public void TestMethod1()
+	{
+	}
+}
+");
+			var testResults = testClass.Execute();
+			TestContext.AddResultFile(testResults.FullPath);
+			Assert.AreEqual(1, testResults.Inconclusive, "Inconclusive");
+			StringAssert.Contains(testResults.UnitTestResults[0].ErrorMessage, "Method TestClass1.ClassInitialize() will not be called");
+		}
+
+		[TestMethod]
+		public void IfClassInitializeIsUsedClassCleanupMustBeUsedToo()
+		{
+			var testClass = CreateTestClass(
+GetLinePragma() +
+@"using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestAutomationEssentials.MSTest;
+using System;
+			
+[TestClass]
+public class TestClass1 : TestBase
+{
+	[ClassInitialize]
+	public static void MyClassInitialize(TestContext testContext)
+	{
+		ClassInitialize(typeof(TestClass1));
+	}
+
+	[TestMethod]
+	public void TestMethod1()
+	{
+	}
+
+	[TestMethod]
+	public void TestMethod2()
+	{
+	}
+}
+");
+			var testResults = testClass.Execute();
+			TestContext.AddResultFile(testResults.FullPath);
+			Assert.AreEqual(2, testResults.Inconclusive, "Inconclusive");
+			StringAssert.Contains(testResults.UnitTestResults[0].ErrorMessage, "Class TestClass1 does not have a [ClassCleanup] method");
+
 		}
 
 		[TestMethod]

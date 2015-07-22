@@ -76,13 +76,14 @@ namespace TestAutomationEssentials.MSTest
 			var actualtype = GetType();
 			var publicStaticMethods = actualtype.GetMethods(BindingFlags.Public | BindingFlags.Static);
 			var classInitializedDecoratedMethod = publicStaticMethods.SingleOrDefault(x => x.GetCustomAttribute<ClassInitializeAttribute>() != null);
-			if (classInitializedDecoratedMethod == null) 
-				return;
-			
-			if(InitializedInstances.ContainsKey(actualtype))
-				return;
 
-			Assert.Inconclusive(@"Class {0} does not have a [ClassInitialize] method. Please add the following code to class '{0}' to fix it: 
+			var classInitializeImplementationClass = actualtype.GetMethod("ClassInitialize", BindingFlags.Instance|BindingFlags.NonPublic, null, new Type[0], new ParameterModifier[0]).DeclaringType;
+
+			if (classInitializedDecoratedMethod == null)
+			{
+				if (classInitializeImplementationClass != typeof (TestBase))
+				{
+					Assert.Inconclusive(@"Method {0}.ClassInitialize() will not be called unless you add the following code to class {1}:
 ************************************
 [ClassInitialize]
 public static void ClassInitialize(TestContext testContext)
@@ -90,7 +91,24 @@ public static void ClassInitialize(TestContext testContext)
 	ClassInitialize(typeof({1}));
 }}
 ************************************
-", actualtype, actualtype.Name);
+);", classInitializeImplementationClass.Name, actualtype.Name);
+				}
+
+				return;
+			}
+
+			if (!InitializedInstances.ContainsKey(actualtype))
+			{
+				Assert.Inconclusive(@"Method {0}.{1} has a [ClassInitialize] attribute, but it does not call the base class's ClassInitialize method. Please change the method to be exactly as follows: 
+************************************
+[ClassInitialize]
+public static void {1}(TestContext testContext)
+{{
+	ClassInitialize(typeof({2}));
+}}
+************************************
+", actualtype, classInitializedDecoratedMethod.Name, actualtype.Name);
+			}
 		}
 
 		[Microsoft.VisualStudio.TestTools.UnitTesting.TestCleanup]
