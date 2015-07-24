@@ -46,7 +46,6 @@ public class TestClass1 : TestBase
 }
 ");
 			var results = testClass.Execute();
-			TestContext.AddResultFile(results.FullPath);
 			Assert.AreEqual(2, results.PassedTests, "Passed tests");
 			Assert.AreEqual(0, results.FailedTests);
 		}
@@ -79,7 +78,6 @@ public class TestClass1 : TestBase
 }
 ");
 			var results = testClass.Execute();
-			TestContext.AddResultFile(results.FullPath);
 			Assert.AreEqual(2, results.PassedTests, "Passed tests");
 			Assert.AreEqual(0, results.FailedTests);
 			StringAssert.Matches(results.UnitTestResults[0].StdOut, GetOutputRegex(string.Empty, "TestMethod1", "CleanupAction1"), "Output");
@@ -119,7 +117,6 @@ public class TestClass1 : TestBase
 }
 ");
 			var results = testClass.Execute();
-			TestContext.AddResultFile(results.FullPath);
 			Assert.AreEqual(2, results.PassedTests, "Passed tests");
 			StringAssert.Matches(results.UnitTestResults[0].StdOut, GetOutputRegex("MyTestInitialize", "TestMethod1", "CleanupAction1"), "Output");
 			StringAssert.Matches(results.UnitTestResults[1].StdOut, GetOutputRegex("MyTestInitialize", "TestMethod2", "CleanupAction2"), "Output");
@@ -169,7 +166,6 @@ public class TestClass1 : TestBase
 }
 ");
 			var results = testClass.Execute();
-			TestContext.AddResultFile(results.FullPath);
 			Assert.AreEqual(2, results.PassedTests, "Passed tests");
 			StringAssert.Contains(results.UnitTestResults[0].StdOut,
 @"***************************** Initializing Test *****************************
@@ -220,7 +216,6 @@ public class TestClass1 : TestBase
 }
 ");
 			var testResults = testClass.Execute();
-			TestContext.AddResultFile(testResults.FullPath);
 			Assert.AreEqual(2, testResults.Inconclusive, "Inconclusive");
 			StringAssert.Contains(testResults.UnitTestResults[0].ErrorMessage, "Method TestClass1.MyClassInitialize has a [ClassInitialize] attribute, but it does not call the base class's ClassInitialize method");
 		}
@@ -248,7 +243,6 @@ public class TestClass1 : TestBase
 }
 ");
 			var testResults = testClass.Execute();
-			TestContext.AddResultFile(testResults.FullPath);
 			Assert.AreEqual(1, testResults.Inconclusive, "Inconclusive");
 			StringAssert.Contains(testResults.UnitTestResults[0].ErrorMessage, "Method TestClass1.ClassInitialize() will not be called");
 		}
@@ -283,14 +277,118 @@ public class TestClass1 : TestBase
 }
 ");
 			var testResults = testClass.Execute();
-			TestContext.AddResultFile(testResults.FullPath);
 			Assert.AreEqual(2, testResults.Inconclusive, "Inconclusive");
-			StringAssert.Contains(testResults.UnitTestResults[0].ErrorMessage, "Class TestClass1 does not have a [ClassCleanup] method");
-
+			var errorMessage = testResults.UnitTestResults[0].ErrorMessage;
+			StringAssert.Contains(errorMessage, "does not have a [ClassCleanup] method");
+			StringAssert.Contains(errorMessage, "TestClass1");
 		}
 
 		[TestMethod]
 		public void ClassInitializedIsCalledOnceBeforeAllTestsInClass()
+		{
+			var outputFileName = Path.GetFullPath("Output.txt");
+			File.Delete(outputFileName);
+
+			var testClass = CreateTestClass(
+GetLinePragma() +
+@"using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Runtime.CompilerServices;
+using TestAutomationEssentials.MSTest;
+using System;
+using System.IO;
+
+public class TestBaseWithMethodLogger : TestBase
+{
+	public void LogMethodCall([CallerMemberName] string callingMethod = null)
+	{
+		File.AppendAllText(@""" + outputFileName + @""", GetType() + ""."" + callingMethod + Environment.NewLine);
+	}
+}
+
+[TestClass]
+public class TestClass1 : TestBaseWithMethodLogger
+{
+	[ClassInitialize]
+	public static void MyClassInitialize(TestContext testContext)
+	{
+		ClassInitialize(typeof(TestClass1));
+	}
+
+	[ClassCleanup]
+	public static void ClassCleanup()
+	{
+		ClassCleanup(null);
+	}
+	
+	protected override void ClassInitialize()
+	{
+		LogMethodCall();
+	}
+
+	[TestMethod]
+	public void TestMethod1()
+	{
+		LogMethodCall();
+	}
+
+	[TestMethod]
+	public void TestMethod2()
+	{
+		LogMethodCall();
+	}
+}
+
+[TestClass]
+public class TestClass2 : TestBaseWithMethodLogger
+{
+	[ClassInitialize]
+	public static void MyClassInitialize(TestContext testContext)
+	{
+		ClassInitialize(typeof(TestClass2));
+	}
+
+	[ClassCleanup]
+	public static void ClassCleanup()
+	{
+		ClassCleanup(null);
+	}
+	
+	protected override void ClassInitialize()
+	{
+		LogMethodCall();
+	}
+
+	[TestMethod]
+	public void TestMethod1()
+	{
+		LogMethodCall();
+	}
+
+	[TestMethod]
+	public void TestMethod2()
+	{
+		LogMethodCall();
+	}
+}
+");
+
+			testClass.Execute();
+			var expectedResults = new[]
+			{
+				"TestClass1.ClassInitialize",
+				"TestClass1.TestMethod1",
+				"TestClass1.TestMethod2",
+				"TestClass2.ClassInitialize",
+				"TestClass2.TestMethod1",
+				"TestClass2.TestMethod2"
+			};
+
+			TestContext.AddResultFile(outputFileName);
+			CollectionAssert.AreEqual(expectedResults, File.ReadAllLines(outputFileName));
+		}
+
+		[TestMethod]
+		public void ClassInitializeCanBeSharedInACommonBaseClass()
 		{
 			
 		}
@@ -306,129 +404,6 @@ public class TestClass1 : TestBase
 		{
 			
 		}
-
-
-
-//		[TestMethod]
-//		public void TestsFailIfClassInitializeIsMissing()
-//		{
-//			var testClass = CreateTestClass(
-//GetLinePragma() +
-//@"using Microsoft.VisualStudio.TestTools.UnitTesting;
-//using TestAutomationEssentials.MSTest;
-//
-//[TestClass]
-//public class TestClass1 : TestBase
-//{
-//	[TestMethod]
-//	public void TestMethod1()
-//	{
-//	}
-//}
-//");
-//			var results = testClass.Execute();
-//			TestContext.AddResultFile(results.FullPath);
-//			Assert.AreEqual(0, results.PassedTests);
-//			Assert.AreEqual(0, results.FailedTests);
-//			Assert.AreEqual(1, results.Inconclusive);
-//			StringAssert.Contains(results.UnitTestResults.Content().ErrorMessage, "does not have a [ClassInitialize] method.");
-//		}
-
-//		[TestMethod]
-//		public void TestFailsIfClassInitializeExistsButDoesNotCallBaseClassInitialize()
-//		{
-//			var testClass = CreateTestClass(
-//GetLinePragma() +
-//@"using Microsoft.VisualStudio.TestTools.UnitTesting;
-//using TestAutomationEssentials.MSTest;
-//
-//[TestClass]
-//public class TestClass1 : TestBase
-//{
-//	[ClassInitialize]
-//	public static void ClassInit(TestContext testContext)
-//	{
-//	}
-//	
-//	[TestMethod]
-//	public void TestMethod1()
-//	{
-//	}
-//}
-//");
-//			var results = testClass.Execute();
-//			TestContext.AddResultFile(results.FullPath);
-//			Assert.AreEqual(0, results.PassedTests);
-//			Assert.AreEqual(0, results.FailedTests);
-//			Assert.AreEqual(1, results.Inconclusive);
-//			StringAssert.Contains(results.UnitTestResults.Content().ErrorMessage, "must call ClassInitialize(typeof");
-//		}
-
-//		[TestMethod]
-//		public void TestFailsIfClassCleanupIsMissing()
-//		{
-//			var testClass = CreateTestClass(
-//GetLinePragma() +
-//@"using Microsoft.VisualStudio.TestTools.UnitTesting;
-//using TestAutomationEssentials.MSTest;
-//
-//[TestClass]
-//public class TestClass1 : TestBase
-//{
-//	[ClassInitialize]
-//	public static void ClassInit(TestContext testContext)
-//	{
-//		ClassInitialize(typeof(TestClass1));
-//	}
-//	
-//	[TestMethod]
-//	public void TestMethod1()
-//	{
-//	}
-//}
-//");
-//			var results = testClass.Execute();
-//			TestContext.AddResultFile(results.FullPath);
-//			Assert.AreEqual(0, results.PassedTests);
-//			Assert.AreEqual(0, results.FailedTests);
-//			Assert.AreEqual(1, results.Inconclusive);
-//			StringAssert.Contains(results.UnitTestResults.Content().ErrorMessage, "does not have a [ClassCleanup] method");
-//		}
-
-//		[TestMethod]
-//		public void TestSucceedsIfCleanupExistsAndCallsBase()
-//		{
-//			var testClass = CreateTestClass(
-//GetLinePragma() +
-//@"using Microsoft.VisualStudio.TestTools.UnitTesting;
-//using TestAutomationEssentials.MSTest;
-//
-//[TestClass]
-//public class TestClass1 : TestBase
-//{
-//	[ClassInitialize]
-//	public static void ClassInit(TestContext testContext)
-//	{
-//		ClassInitialize(typeof(TestClass1));
-//	}
-//	
-//	[ClassCleanup]
-//	public static void ClassCleanup()
-//	{
-//		ClassCleanup(null);
-//	}
-//
-//	[TestMethod]
-//	public void TestMethod1()
-//	{
-//	}
-//}
-//");
-//			var results = testClass.Execute();
-//			TestContext.AddResultFile(results.FullPath);
-//			Assert.AreEqual(1, results.PassedTests, "# of Passed tests");
-//			Assert.AreEqual(0, results.FailedTests, "# of failed tests");
-//		}
 
 		private string GetLinePragma([CallerLineNumber] int lineNumber = 0, [CallerFilePath] string file = "")
 		{
@@ -446,16 +421,18 @@ public class TestClass1 : TestBase
 			CompilerResults results = csc.CompileAssemblyFromSource(parameters, testClassCode);
 			Assert.AreEqual(0, results.Errors.Count, string.Join(Environment.NewLine, results.Errors.Cast<CompilerError>()));
 
-			return new TestClass(outputName);
+			return new TestClass(outputName, TestContext);
 		}
 
 		private class TestClass
 		{
 			private readonly string _fileName;
+			private readonly TestContext _testContext;
 
-			public TestClass(string fileName)
+			public TestClass(string fileName, TestContext testContext)
 			{
 				_fileName = fileName;
+				_testContext = testContext;
 			}
 
 			public TestResults Execute()
@@ -486,6 +463,8 @@ public class TestClass1 : TestBase
 
 				Console.WriteLine("TrxFile: \"file://{0}\"", trxFile);
 				
+				_testContext.AddResultFile(trxFile);
+
 				return new TestResults(trxFile);
 			}
 

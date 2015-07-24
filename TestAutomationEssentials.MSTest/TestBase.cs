@@ -166,11 +166,6 @@ public static void {1}(TestContext testContext)
 
 		protected static void ClassInitialize(Type testClass)
 		{
-			ClassInitialize(testClass, Functions.EmptyAction<IIsolationContext>());
-		}
-
-		private static void ClassInitialize(Type testClass, Action<IIsolationContext> initialize)
-		{
 			AssertClassCleanupIsCalled(testClass);
 
 			var instance = (TestBase)Activator.CreateInstance(testClass);
@@ -185,7 +180,7 @@ public static void {1}(TestContext testContext)
 		{
 			var publicStaticMethods = testClass.GetMethods(BindingFlags.Public | BindingFlags.Static);
 			if (publicStaticMethods.All(x => x.GetCustomAttribute<ClassCleanupAttribute>() == null))
-				Assert.Inconclusive(@"Class {0} does not have a [ClassCleanup] method. Please add the following code to class '{0}' to fix it:
+				Assert.Inconclusive(@"Class {0} have a proper [ClassInitialize] method, but does not have a [ClassCleanup] method. Please add the following code to class '{0}' to fix it:
 ************************************
 [ClassCleanup]
 public static void ClassCleanup()
@@ -202,13 +197,13 @@ public static void ClassCleanup()
 //			AssemblyCleanup(null);
 //		}
 
-//		/// <summary>
-//		/// Call this method from your [ClassCleanup] method in order to ensure proper cleanup of all relevant actions that were done in the [ClassInitialize] method
-//		/// </summary>
-//		/// <param name="dummy">This argument has no use, it's there just to let you use the name ClassCleanup in your test class without having the compiler complaining that it hides a member with the same name in the base class. Simply pass <b>null</b> here.</param>
-//		protected static void ClassCleanup(object dummy)
-//		{
-//			_testExuecutionContext.PopIsolationLevel();
-//		}
+		/// <summary>
+		/// Call this method from your [ClassCleanup] method in order to ensure proper cleanup of all relevant actions that were done in the [ClassInitialize] method
+		/// </summary>
+		/// <param name="dummy">This argument has no use, it's there just to let you use the name ClassCleanup in your test class without having the compiler complaining that it hides a member with the same name in the base class. Simply pass <b>null</b> here.</param>
+		protected static void ClassCleanup(object dummy)
+		{
+			TestExecutionContext.PopIsolationLevel();
+		}
 	}
 }
