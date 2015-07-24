@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -140,6 +141,7 @@ public static void {1}(TestContext testContext)
 			TestExecutionContext.AddCleanupAction(cleanupAction);
 		}
 
+		[ExcludeFromCodeCoverage]
 		protected virtual void ClassInitialize()
 		{
 		}

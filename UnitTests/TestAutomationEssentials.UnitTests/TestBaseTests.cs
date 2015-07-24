@@ -390,7 +390,85 @@ public class TestClass2 : TestBaseWithMethodLogger
 		[TestMethod]
 		public void ClassInitializeCanBeSharedInACommonBaseClass()
 		{
-			
+			var outputFileName = Path.GetFullPath("Output.txt");
+			File.Delete(outputFileName);
+
+			var testClass = CreateTestClass(
+				GetLinePragma() +
+				@"using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Runtime.CompilerServices;
+using TestAutomationEssentials.MSTest;
+using System;
+using System.IO;
+
+public class CommonTestBase : TestBase
+{
+	public void LogMethodCall([CallerMemberName] string callingMethod = null)
+	{
+		File.AppendAllText(@""" + outputFileName + @""", GetType() + ""."" + callingMethod + Environment.NewLine);
+	}
+
+	protected override void ClassInitialize()
+	{
+		LogMethodCall();
+	}
+}
+
+[TestClass]
+public class TestClass1 : CommonTestBase
+{
+	[ClassInitialize]
+	public static void ClassInitialize(TestContext testContext)
+	{
+		ClassInitialize(typeof(TestClass1));
+	}
+
+	[ClassCleanup]
+	public static void ClassCleanup()
+	{
+		ClassCleanup(null);
+	}
+
+	[TestMethod]
+	public void TestMethod1()
+	{
+		LogMethodCall();
+	}
+}
+
+[TestClass]
+public class TestClass2 : CommonTestBase
+{
+	[ClassInitialize]
+	public static void ClassInitialize(TestContext testContext)
+	{
+		ClassInitialize(typeof(TestClass2));
+	}
+
+	[ClassCleanup]
+	public static void ClassCleanup()
+	{
+		ClassCleanup(null);
+	}
+
+	[TestMethod]
+	public void TestMethod1()
+	{
+		LogMethodCall();
+	}
+}
+
+");
+			testClass.Execute();
+			var expectedResult = new[]
+			{
+				"TestClass1.ClassInitialize",
+				"TestClass1.TestMethod1",
+				"TestClass2.ClassInitialize",
+				"TestClass2.TestMethod1"
+			};
+
+			CollectionAssert.AreEqual(expectedResult, File.ReadAllLines(outputFileName));
 		}
 
 		[TestMethod]
