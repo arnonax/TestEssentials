@@ -474,7 +474,97 @@ public class TestClass2 : CommonTestBase
 		[TestMethod]
 		public void CleanupActionsInClassInitializedAreCalledAfterAllTestsInClass()
 		{
-		
+			var outputFileName = Path.GetFullPath("Output.txt");
+			File.Delete(outputFileName);
+
+			var testClass = CreateTestClass(
+				GetLinePragma() +
+				@"using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Runtime.CompilerServices;
+using TestAutomationEssentials.MSTest;
+using System;
+using System.IO;
+
+public class TestBaseWithMethodLogger : TestBase
+{
+	public void LogMethodCall([CallerMemberName] string callingMethod = null)
+	{
+		File.AppendAllText(@""" + outputFileName + @""", GetType() + ""."" + callingMethod + Environment.NewLine);
+	}
+}
+
+[TestClass]
+public class TestClass1 : TestBaseWithMethodLogger
+{
+	[ClassInitialize]
+	public static void MyClassInitialize(TestContext testContext)
+	{
+		ClassInitialize(typeof(TestClass1));
+	}
+
+	[ClassCleanup]
+	public static void ClassCleanup()
+	{
+		ClassCleanup(null);
+	}
+	
+	protected override void ClassInitialize()
+	{
+		LogMethodCall();
+		AddCleanupAction(ClassCleanupAction1);
+		AddCleanupAction(ClassCleanupAction2);
+	}
+
+	private void ClassCleanupAction1()
+	{
+		LogMethodCall();
+	}
+
+	private void ClassCleanupAction2()
+	{
+		LogMethodCall();
+	}
+
+	private void TestCleanupAction1()
+	{
+		LogMethodCall();
+	}
+
+	private void TestCleanupAction2()
+	{
+		LogMethodCall();
+	}
+
+	[TestMethod]
+	public void TestMethod1()
+	{
+		AddCleanupAction(TestCleanupAction1);
+		LogMethodCall();
+	}
+
+	[TestMethod]
+	public void TestMethod2()
+	{
+		AddCleanupAction(TestCleanupAction2);
+		LogMethodCall();
+		Assert.Fail(); // cleanup should still be called!
+	}
+}");
+			testClass.Execute();
+
+			var expectedResults = new[]
+			{
+				"TestClass1.ClassInitialize",
+				"TestClass1.TestMethod1",
+				"TestClass1.TestCleanupAction1",
+				"TestClass1.TestMethod2",
+				"TestClass1.TestCleanupAction2",
+				"TestClass1.ClassCleanupAction2",
+				"TestClass1.ClassCleanupAction1"
+			};
+
+			TestContext.AddResultFile(outputFileName);
+			CollectionAssert.AreEqual(expectedResults, File.ReadAllLines(outputFileName));
 		}
 
 		[TestMethod]
