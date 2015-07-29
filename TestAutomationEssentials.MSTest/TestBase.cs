@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -19,7 +20,12 @@ namespace TestAutomationEssentials.MSTest
 		private static readonly TestExecutionContext TestExecutionContext = new TestExecutionContext("Assembly", Functions.EmptyAction<IIsolationContext>());
 		protected static readonly Dictionary<Type, TestBase> InitializedInstances = new Dictionary<Type, TestBase>();
 //		public TestContext TestContext { get; set; }
-		private static bool _classCleanupPending = false;
+		private static bool _classCleanupPending;
+
+		protected TestBase()
+		{
+			CopyFields();
+		}
 
 		[Microsoft.VisualStudio.TestTools.UnitTesting.TestInitialize]
 		public void InitializeTest()
@@ -119,20 +125,24 @@ public static void {1}(TestContext testContext)
 			TestExecutionContext.PopIsolationLevel();
 		}
 
-//		private void CopyFields()
-//		{
-//			var thisType = GetType();
-//			var initializedInstance = InitializedInstances[thisType];
-//			var fields = thisType.GetFields(BindingFlags.Instance | BindingFlags.NonPublic);
-//			foreach (var fieldInfo in fields)
-//			{
-//				var valueFromInitializedInstance = fieldInfo.GetValue(initializedInstance);
-//				var valueFromCurrentInstance = fieldInfo.GetValue(this);
-//				var defaultValue = fieldInfo.FieldType.GetDefaultValue();
-//				if (valueFromCurrentInstance == defaultValue && valueFromInitializedInstance != defaultValue)
-//					fieldInfo.SetValue(this, valueFromInitializedInstance);
-//			}
-//		}
+		private void CopyFields()
+		{
+			var thisType = GetType();
+
+			TestBase initializedInstance;
+			if (!InitializedInstances.TryGetValue(thisType, out initializedInstance))
+				return;
+
+			var fields = thisType.GetFields(BindingFlags.Instance | BindingFlags.NonPublic);
+			foreach (var fieldInfo in fields)
+			{
+				var valueFromInitializedInstance = fieldInfo.GetValue(initializedInstance);
+				//var valueFromCurrentInstance = fieldInfo.GetValue(this);
+				//var defaultValue = fieldInfo.FieldType.GetDefaultValue();
+				//if (valueFromCurrentInstance.Equals(defaultValue) && !valueFromInitializedInstance.Equals(defaultValue))
+					fieldInfo.SetValue(this, valueFromInitializedInstance);
+			}
+		}
 
 		protected virtual void TestInitialize()
 		{ }

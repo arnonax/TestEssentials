@@ -670,6 +670,48 @@ public class TestClass2 : TestBaseWithMethodLogger
 			CollectionAssert.AreEqual(expectedResults, File.ReadAllLines(outputFileName));
 		}
 
+		[TestMethod]
+		public void InstanceClassMemberArePreservedBetweenClassInitializeAndTestMethods()
+		{
+			var testClass = CreateTestClass(
+GetLinePragma() +
+@"using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestAutomationEssentials.MSTest;
+using System;
+			
+[TestClass]
+public class TestClass1 : TestBase
+{
+	[ClassInitialize]
+	public static void ClassInitialize(TestContext testContext)
+	{
+		ClassInitialize(typeof(TestClass1));
+	}
+
+	[ClassCleanup]
+	public static void ClassCleanup()
+	{
+		ClassCleanup(null);
+	}
+
+	private bool _instanceMemberWasSet = false;
+
+	protected override void ClassInitialize()
+	{
+		_instanceMemberWasSet = true;
+	}
+
+	[TestMethod]
+	public void TestMethod1()
+	{
+		Assert.IsTrue(_instanceMemberWasSet);
+	}
+}
+");
+			var testResults = testClass.Execute();
+			Assert.AreEqual(1, testResults.PassedTests, "Passed");
+		}
+
 		private string GetLinePragma([CallerLineNumber] int lineNumber = 0, [CallerFilePath] string file = "")
 		{
 			return string.Format("#line {0} \"{1}\"\n", lineNumber + 1, file);
