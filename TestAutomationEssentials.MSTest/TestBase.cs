@@ -19,6 +19,7 @@ namespace TestAutomationEssentials.MSTest
 		private static readonly TestExecutionContext TestExecutionContext = new TestExecutionContext("Assembly", Functions.EmptyAction<IIsolationContext>());
 		protected static readonly Dictionary<Type, TestBase> InitializedInstances = new Dictionary<Type, TestBase>();
 //		public TestContext TestContext { get; set; }
+		private static bool _classCleanupPending = false;
 
 		[Microsoft.VisualStudio.TestTools.UnitTesting.TestInitialize]
 		public void InitializeTest()
@@ -168,6 +169,12 @@ public static void {1}(TestContext testContext)
 
 		protected static void ClassInitialize(Type testClass)
 		{
+			if (_classCleanupPending)
+			{
+				ClassCleanup(null);
+				_classCleanupPending = false;
+			}
+
 			AssertClassCleanupIsCalled(testClass);
 
 			var instance = (TestBase)Activator.CreateInstance(testClass);
@@ -176,6 +183,8 @@ public static void {1}(TestContext testContext)
 			{
 				instance.ClassInitialize();
 			});
+
+			_classCleanupPending = true;
 		}
 
 		private static void AssertClassCleanupIsCalled(Type testClass)
@@ -205,6 +214,7 @@ public static void ClassCleanup()
 		/// <param name="dummy">This argument has no use, it's there just to let you use the name ClassCleanup in your test class without having the compiler complaining that it hides a member with the same name in the base class. Simply pass <b>null</b> here.</param>
 		protected static void ClassCleanup(object dummy)
 		{
+			_classCleanupPending = false;
 			TestExecutionContext.PopIsolationLevel();
 		}
 	}

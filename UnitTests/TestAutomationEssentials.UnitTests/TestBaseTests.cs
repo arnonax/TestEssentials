@@ -570,7 +570,104 @@ public class TestClass1 : TestBaseWithMethodLogger
 		[TestMethod]
 		public void CleanupActionsInClassInitializedAreCalledBeforeNextClassInitialize()
 		{
-			
+			var outputFileName = Path.GetFullPath("Output.txt");
+			File.Delete(outputFileName);
+
+			var testClass = CreateTestClass(
+				GetLinePragma() +
+@"using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Runtime.CompilerServices;
+using TestAutomationEssentials.MSTest;
+using System;
+using System.IO;
+
+public class TestBaseWithMethodLogger : TestBase
+{
+	public void LogMethodCall([CallerMemberName] string callingMethod = null)
+	{
+		File.AppendAllText(@""" + outputFileName + @""", GetType() + ""."" + callingMethod + Environment.NewLine);
+	}
+}
+
+[TestClass]
+public class TestClass1 : TestBaseWithMethodLogger
+{
+	[ClassInitialize]
+	public static void MyClassInitialize(TestContext testContext)
+	{
+		ClassInitialize(typeof(TestClass1));
+	}
+
+	[ClassCleanup]
+	public static void ClassCleanup()
+	{
+		ClassCleanup(null);
+	}
+	
+	protected override void ClassInitialize()
+	{
+		LogMethodCall();
+		AddCleanupAction(Class1CleanupAction);
+	}
+
+	private void Class1CleanupAction()
+	{
+		LogMethodCall();
+	}
+
+	[TestMethod]
+	public void TestMethod1()
+	{
+		LogMethodCall();
+	}
+}
+
+[TestClass]
+public class TestClass2 : TestBaseWithMethodLogger
+{
+	[ClassInitialize]
+	public static void ClassInitialize(TestContext context)
+	{
+		ClassInitialize(typeof(TestClass2));
+	}
+
+	[ClassCleanup]
+	public static void ClassCleanup()
+	{
+		ClassCleanup(null);
+	}
+
+	protected override void ClassInitialize()
+	{
+		LogMethodCall();
+		AddCleanupAction(Class2CleanupAction);
+	}
+
+	private void Class2CleanupAction()
+	{
+		LogMethodCall();
+	}
+
+	[TestMethod]
+	public void TestMethod1()
+	{
+		LogMethodCall();
+	}
+}");
+			testClass.Execute();
+
+			var expectedResults = new[]
+			{
+				"TestClass1.ClassInitialize",
+				"TestClass1.TestMethod1",
+				"TestClass1.Class1CleanupAction",
+				"TestClass2.ClassInitialize",
+				"TestClass2.TestMethod1",
+				"TestClass2.Class2CleanupAction"
+			};
+
+			TestContext.AddResultFile(outputFileName);
+			CollectionAssert.AreEqual(expectedResults, File.ReadAllLines(outputFileName));
 		}
 
 		private string GetLinePragma([CallerLineNumber] int lineNumber = 0, [CallerFilePath] string file = "")
