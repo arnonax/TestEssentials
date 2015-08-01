@@ -157,15 +157,15 @@ public static void {1}(TestContext testContext)
 		{
 		}
 
-//		[Obsolete("Override PrintFlowManagerTestBase.TestInitialize method instead of using the [TestInitialize] attribute")]
-//		[AttributeUsage(AttributeTargets.Method)]
-//		public class TestInitializeAttribute : Attribute
-//		{ }
+		[Obsolete("Override PrintFlowManagerTestBase.TestInitialize method instead of using the [TestInitialize] attribute", true)]
+		[AttributeUsage(AttributeTargets.Method)]
+		public class TestInitializeAttribute : Attribute
+		{ }
 
-//		[Obsolete("Use AddCleanupAction instead")]
-//		[AttributeUsage(AttributeTargets.Method)]
-//		public class TestCleanupAttribute : Attribute
-//		{ }
+		[Obsolete("Use AddCleanupAction instead", true)]
+		[AttributeUsage(AttributeTargets.Method)]
+		public class TestCleanupAttribute : Attribute
+		{ }
 
 //		protected static void AssemblyInitialize(Action<IIsolationContext> initializationMethod)
 //		{

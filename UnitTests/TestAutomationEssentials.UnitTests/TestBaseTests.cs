@@ -712,6 +712,43 @@ public class TestClass1 : TestBase
 			Assert.AreEqual(1, testResults.PassedTests, "Passed");
 		}
 
+		[TestMethod]
+		public void CompilationErrorOccursIfUsingTestInitializedOrTestCleanupAttributesDirectly()
+		{
+			var compileResults = Compile(
+				GetLinePragma() +
+				@"using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestAutomationEssentials.MSTest;
+using System;
+			
+[TestClass]
+public class TestClass1 : TestBase
+{
+#line 10
+	[TestInitialize] // Compile error!
+	public void TestInitialize()
+	{
+	}
+
+#line 20
+	[TestCleanup]
+	public void TestCleanup() // Compile error
+	{
+	}
+}");
+
+			const string obsoleteErrorCode = "CS0619";
+			var errors = compileResults.Errors.Cast<CompilerError>().Where(x => x.IsWarning == false).ToArray();
+			Assert.AreEqual(2, errors.Count(), "Number of compilation errors");
+			var error = errors[0];
+			Assert.AreEqual(10, error.Line);
+			Assert.AreEqual(obsoleteErrorCode, error.ErrorNumber, error.ErrorText);
+
+			error = errors[1];
+			Assert.AreEqual(20, error.Line);
+			Assert.AreEqual(obsoleteErrorCode, error.ErrorNumber, error.ErrorText);
+		}
+
 		private string GetLinePragma([CallerLineNumber] int lineNumber = 0, [CallerFilePath] string file = "")
 		{
 			return string.Format("#line {0} \"{1}\"\n", lineNumber + 1, file);
@@ -719,16 +756,28 @@ public class TestClass1 : TestBase
 
 		private TestClass CreateTestClass(string testClassCode)
 		{
-			var csc = new CSharpCodeProvider(new Dictionary<string, string> { { "CompilerVersion", "v4.0" } });
 			const string outputName = "mytest.dll";
-
-			var parameters = new CompilerParameters(new[] { "mscorlib.dll", "System.Core.dll", typeof(TestClassAttribute).Assembly.Location, typeof(TestBase).Assembly.Location }, outputName, true);
-			parameters.GenerateExecutable = false;
-			parameters.IncludeDebugInformation = true;
-			CompilerResults results = csc.CompileAssemblyFromSource(parameters, testClassCode);
+			var results = Compile(testClassCode, outputName);
 			Assert.AreEqual(0, results.Errors.Count, string.Join(Environment.NewLine, results.Errors.Cast<CompilerError>()));
 
 			return new TestClass(outputName, TestContext);
+		}
+
+		private static CompilerResults Compile(string testClassCode, string outputName = "dummy.dll")
+		{
+			var csc = new CSharpCodeProvider(new Dictionary<string, string> {{"CompilerVersion", "v4.0"}});
+
+			var parameters =
+				new CompilerParameters(
+					new[]
+					{
+						"mscorlib.dll", "System.Core.dll", typeof (TestClassAttribute).Assembly.Location,
+						typeof (TestBase).Assembly.Location
+					}, outputName, true);
+			parameters.GenerateExecutable = false;
+			parameters.IncludeDebugInformation = true;
+			CompilerResults results = csc.CompileAssemblyFromSource(parameters, testClassCode);
+			return results;
 		}
 
 		private class TestClass
