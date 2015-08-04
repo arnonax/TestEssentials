@@ -749,6 +749,62 @@ public class TestClass1 : TestBase
 			Assert.AreEqual(obsoleteErrorCode, error.ErrorNumber, error.ErrorText);
 		}
 
+		[TestMethod]
+		public void WhenExceptionOccursInTestInitializeThenOnInitializationExceptionIsCalled()
+		{
+			var outputFileName = Path.GetFullPath("Output.txt");
+			File.Delete(outputFileName);
+
+			var testClass = CreateTestClass(
+GetLinePragma() +
+@"using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Runtime.CompilerServices;
+using TestAutomationEssentials.MSTest;
+using System;
+using System.IO;
+
+public class TestBaseWithMethodLoggerAndInitializationExceptionHandler : TestBase
+{
+	public void LogMethodCall([CallerMemberName] string callingMethod = null)
+	{
+		File.AppendAllText(@""" + outputFileName + @""", GetType() + ""."" + callingMethod + Environment.NewLine);
+	}
+
+	protected override void OnInitializationException(Exception ex)
+	{
+		LogMethodCall();
+		File.AppendAllText(@""" + outputFileName + @""", ex.Message);
+	}
+}
+
+[TestClass]
+public class TestClass1 : TestBaseWithMethodLoggerAndInitializationExceptionHandler
+{
+	protected override void TestInitialize()
+	{
+		throw new Exception(""Hello"");
+	}
+
+	[TestMethod]
+	public void TestMethod1()
+	{
+		
+	}
+}
+");
+			var testResults = testClass.Execute();
+			Assert.AreEqual(1, testResults.FailedTests, "Failed");
+
+			var expectedResults = new[]
+			{
+				"TestClass1.OnInitializationException",
+				"Hello"
+			};
+
+			TestContext.AddResultFile(outputFileName);
+			CollectionAssert.AreEqual(expectedResults, File.ReadAllLines(outputFileName));
+		}
+
 		private string GetLinePragma([CallerLineNumber] int lineNumber = 0, [CallerFilePath] string file = "")
 		{
 			return string.Format("#line {0} \"{1}\"\n", lineNumber + 1, file);

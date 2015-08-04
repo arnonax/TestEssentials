@@ -33,21 +33,21 @@ namespace TestAutomationEssentials.MSTest
 			AssertClassInitializeIsCalled();
 //			Console.WriteLine("Tests started: {0}", DateTime.Now);
 
-//			try
-//			{
+			try
+			{
 				TestExecutionContext.PushIsolationLevel("Test", ctx => TestInitialize());
-//			}
-//			catch(Exception ex)
-//			{
-//				OnInitializationException(ex);
-//				throw;
-//			}
+			}
+			catch(Exception ex)
+			{
+				OnInitializationException(ex);
+				throw;
+			}
 		}
 
-//		protected virtual void OnInitializationException(Exception exception)
-//		{
+		protected virtual void OnInitializationException(Exception exception)
+		{
 //			TakeScreenshot("Initialize");
-//		}
+		}
 
 //		private void TakeScreenshot(string name)
 //		{
