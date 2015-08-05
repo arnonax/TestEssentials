@@ -14,6 +14,49 @@ using TestAutomationEssentials.MSTest.ExecutionContext;
 
 namespace TestAutomationEssentials.MSTest
 {
+	namespace UI
+	{
+		[TestClass]
+		public abstract class TestBase : MSTest.TestBase
+		{
+			protected override void OnTestFailure(TestContext testContext)
+			{
+				TakeScreenshot(testContext);
+			}
+
+			private void TakeScreenshot(TestContext testContext)
+			{
+				var filename = Path.GetFullPath(testContext.FullyQualifiedTestClassName + ".jpg");
+				try
+				{
+					var screenLeft = SystemInformation.VirtualScreen.Left;
+					var screenTop = SystemInformation.VirtualScreen.Top;
+					var screenWidth = SystemInformation.VirtualScreen.Width;
+					var screenHeight = SystemInformation.VirtualScreen.Height;
+
+					// Create a bitmap of the appropriate size to receive the screenshot.
+					using (var bmp = new Bitmap(screenWidth, screenHeight))
+					{
+						// Draw the screenshot into our bitmap.
+						using (var g = Graphics.FromImage(bmp))
+						{
+							g.CopyFromScreen(screenLeft, screenTop, 0, 0, bmp.Size);
+						}
+
+						bmp.Save(filename, ImageFormat.Jpeg);
+					}
+					testContext.AddResultFile(filename);
+				}
+				catch (Exception ex)
+				{
+					Console.WriteLine("An exception occured while trying to take screenshot:");
+					Console.WriteLine(ex);
+				}
+			}
+
+		}
+	}
+
 	[TestClass]
 	public abstract class TestBase
 	{
@@ -44,40 +87,9 @@ namespace TestAutomationEssentials.MSTest
 			}
 		}
 
-		protected virtual void OnTestFailure(TestContext exception)
+		protected virtual void OnTestFailure(TestContext testContext)
 		{
-//			TakeScreenshot("Initialize");
 		}
-
-//		private void TakeScreenshot(string name)
-//		{
-//			var filename = Path.GetFullPath(TestContext.FullyQualifiedTestClassName + "." + name + ".jpg");
-//			try
-//			{
-//				var screenLeft = SystemInformation.VirtualScreen.Left;
-//				var screenTop = SystemInformation.VirtualScreen.Top;
-//				var screenWidth = SystemInformation.VirtualScreen.Width;
-//				var screenHeight = SystemInformation.VirtualScreen.Height;
-
-//				// Create a bitmap of the appropriate size to receive the screenshot.
-//				using (var bmp = new Bitmap(screenWidth, screenHeight))
-//				{
-//					// Draw the screenshot into our bitmap.
-//					using (var g = Graphics.FromImage(bmp))
-//					{
-//						g.CopyFromScreen(screenLeft, screenTop, 0, 0, bmp.Size);
-//					}
-
-//					bmp.Save(filename, ImageFormat.Jpeg);
-//				}
-//				TestContext.AddResultFile(filename);
-//			}
-//			catch (Exception ex)
-//			{
-//				Console.WriteLine("An exception occured while trying to take screenshot:");
-//				Console.WriteLine(ex);
-//			}
-//		}
 
 		private void AssertClassInitializeIsCalled()
 		{

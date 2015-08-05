@@ -832,6 +832,42 @@ public class TestClass1 : MyTestBase
 			Assert.AreEqual("An error occured in TestMethod1", File.ReadAllText(outputFileName));
 		}
 
+		[TestMethod]
+		public void UITestBaseTakesScreenshotOnFailure()
+		{
+			var testClass = CreateTestClass(
+GetLinePragma() +
+@"using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Runtime.CompilerServices;
+using TestAutomationEssentials.MSTest.UI;
+using System;
+using System.IO;
+
+[TestClass]
+public class TestClass1 : TestBase
+{
+	[TestMethod]
+	public void TestMethod1()
+	{
+		throw new Exception(""Something wrong..."");
+	}
+}
+");
+			var testResults = testClass.Execute();
+			Assert.AreEqual(1, testResults.FailedTests, "Failed");
+
+			var lastTestResultsFolder =
+				Directory.GetDirectories(Directory.GetCurrentDirectory())
+					.Select(dirName => new DirectoryInfo(dirName))
+					.OrderByDescending(x => x.LastWriteTime)
+					.First();
+
+			var outputDirectory =
+				Directory.GetDirectories(lastTestResultsFolder.FullName, "out", SearchOption.AllDirectories).Content();
+
+			Assert.AreEqual(1, Directory.GetFiles(outputDirectory, "*.jpg", SearchOption.AllDirectories).Length, "JPeg files");
+		}
+		
 		private string GetLinePragma([CallerLineNumber] int lineNumber = 0, [CallerFilePath] string file = "")
 		{
 			return string.Format("#line {0} \"{1}\"\n", lineNumber + 1, file);
