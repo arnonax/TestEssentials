@@ -49,6 +49,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="ConfigurationTests.cs" />
     <Compile Include="ExtensionMethodsUnitTests.cs" />
     <Compile Include="FunctionsTests.cs" />
     <Compile Include="PathUtilsTests.cs" />
