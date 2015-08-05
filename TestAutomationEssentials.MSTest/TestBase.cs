@@ -123,6 +123,8 @@ public static void {1}(TestContext testContext)
 		public void CleanupTest()
 		{
 			TestExecutionContext.PopIsolationLevel();
+			if (TestContext.CurrentTestOutcome != UnitTestOutcome.Passed)
+				OnTestFailure(TestContext);
 		}
 
 		private void CopyFields()

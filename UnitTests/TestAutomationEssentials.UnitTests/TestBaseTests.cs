@@ -793,6 +793,45 @@ public class TestClass1 : MyTestBase
 			Assert.AreEqual("An error occured in TestMethod1", File.ReadAllText(outputFileName));
 		}
 
+		[TestMethod]
+		public void WhenExceptionOccursInTestMethodThenOnTestFailureIsCalled()
+		{
+			var outputFileName = Path.GetFullPath("Output.txt");
+			File.Delete(outputFileName);
+
+			var testClass = CreateTestClass(
+GetLinePragma() +
+@"using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Runtime.CompilerServices;
+using TestAutomationEssentials.MSTest;
+using System;
+using System.IO;
+
+public class MyTestBase : TestBase
+{
+	protected override void OnTestFailure(TestContext testContext)
+	{
+		File.WriteAllText(@""" + outputFileName + @""", ""An error occured in "" + testContext.TestName);
+	}
+}
+
+[TestClass]
+public class TestClass1 : MyTestBase
+{
+	[TestMethod]
+	public void TestMethod1()
+	{
+		throw new Exception(""Something wrong..."");
+	}
+}
+");
+			var testResults = testClass.Execute();
+			Assert.AreEqual(1, testResults.FailedTests, "Failed");
+
+			TestContext.AddResultFile(outputFileName);
+			Assert.AreEqual("An error occured in TestMethod1", File.ReadAllText(outputFileName));
+		}
+
 		private string GetLinePragma([CallerLineNumber] int lineNumber = 0, [CallerFilePath] string file = "")
 		{
 			return string.Format("#line {0} \"{1}\"\n", lineNumber + 1, file);
