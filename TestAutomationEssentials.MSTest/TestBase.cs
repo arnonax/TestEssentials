@@ -19,7 +19,7 @@ namespace TestAutomationEssentials.MSTest
 	{
 		private static readonly TestExecutionContext TestExecutionContext = new TestExecutionContext("Assembly", Functions.EmptyAction<IIsolationContext>());
 		protected static readonly Dictionary<Type, TestBase> InitializedInstances = new Dictionary<Type, TestBase>();
-//		public TestContext TestContext { get; set; }
+		public TestContext TestContext { private get; set; }
 		private static bool _classCleanupPending;
 
 		protected TestBase()
@@ -31,20 +31,20 @@ namespace TestAutomationEssentials.MSTest
 		public void InitializeTest()
 		{
 			AssertClassInitializeIsCalled();
-//			Console.WriteLine("Tests started: {0}", DateTime.Now);
+			Console.WriteLine("Tests started: {0}", DateTime.Now);
 
 			try
 			{
 				TestExecutionContext.PushIsolationLevel("Test", ctx => TestInitialize());
 			}
-			catch(Exception ex)
+			catch(Exception)
 			{
-				OnInitializationException(ex);
+				OnTestFailure(TestContext);
 				throw;
 			}
 		}
 
-		protected virtual void OnInitializationException(Exception exception)
+		protected virtual void OnTestFailure(TestContext exception)
 		{
 //			TakeScreenshot("Initialize");
 		}

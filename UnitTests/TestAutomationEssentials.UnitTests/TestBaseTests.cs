@@ -750,7 +750,7 @@ public class TestClass1 : TestBase
 		}
 
 		[TestMethod]
-		public void WhenExceptionOccursInTestInitializeThenOnInitializationExceptionIsCalled()
+		public void WhenExceptionOccursInTestInitializeThenOnTestFailureIsCalled()
 		{
 			var outputFileName = Path.GetFullPath("Output.txt");
 			File.Delete(outputFileName);
@@ -763,26 +763,20 @@ using TestAutomationEssentials.MSTest;
 using System;
 using System.IO;
 
-public class TestBaseWithMethodLoggerAndInitializationExceptionHandler : TestBase
+public class MyTestBase : TestBase
 {
-	public void LogMethodCall([CallerMemberName] string callingMethod = null)
+	protected override void OnTestFailure(TestContext testContext)
 	{
-		File.AppendAllText(@""" + outputFileName + @""", GetType() + ""."" + callingMethod + Environment.NewLine);
-	}
-
-	protected override void OnInitializationException(Exception ex)
-	{
-		LogMethodCall();
-		File.AppendAllText(@""" + outputFileName + @""", ex.Message);
+		File.WriteAllText(@""" + outputFileName + @""", ""An error occured in "" + testContext.TestName);
 	}
 }
 
 [TestClass]
-public class TestClass1 : TestBaseWithMethodLoggerAndInitializationExceptionHandler
+public class TestClass1 : MyTestBase
 {
 	protected override void TestInitialize()
 	{
-		throw new Exception(""Hello"");
+		throw new Exception(""Something wrong..."");
 	}
 
 	[TestMethod]
@@ -795,14 +789,8 @@ public class TestClass1 : TestBaseWithMethodLoggerAndInitializationExceptionHand
 			var testResults = testClass.Execute();
 			Assert.AreEqual(1, testResults.FailedTests, "Failed");
 
-			var expectedResults = new[]
-			{
-				"TestClass1.OnInitializationException",
-				"Hello"
-			};
-
 			TestContext.AddResultFile(outputFileName);
-			CollectionAssert.AreEqual(expectedResults, File.ReadAllLines(outputFileName));
+			Assert.AreEqual("An error occured in TestMethod1", File.ReadAllText(outputFileName));
 		}
 
 		private string GetLinePragma([CallerLineNumber] int lineNumber = 0, [CallerFilePath] string file = "")
