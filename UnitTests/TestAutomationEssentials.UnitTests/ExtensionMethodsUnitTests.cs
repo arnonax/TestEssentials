@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -147,14 +148,34 @@ namespace TestAutomationEssentials.UnitTests
 			var emptyList = new List<int> {3};
 			Assert.AreEqual(3, emptyList.Content());
 		}
-		
+
+		[TestMethod]
+		public void FindThrowsArgumentNullExceptionIfPropertyAccessorIsNull()
+		{
+			var dummySource = new[] {1, 2, 3};
+			Expression<Func<int, int>> propertyAccessor = null;
+			// ReSharper disable once ExpressionIsAlwaysNull
+			var ex = TestUtils.ExpectException<ArgumentNullException>(() => dummySource.Find(propertyAccessor, 2));
+			Assert.AreEqual("propertyAccessor", ex.ParamName, "ParamName");
+		}
+
+		[TestMethod]
+		public void FindThrowsArgumentNullExceptionIfConditionIsNull()
+		{
+			var dummySource = new[] { 1, 2, 3 };
+			Expression<Func<int, bool>> condition = null;
+			// ReSharper disable once ExpressionIsAlwaysNull
+			var ex = TestUtils.ExpectException<ArgumentNullException>(() => dummySource.Find(condition));
+			Assert.AreEqual("condition", ex.ParamName, "ParamName");
+		}
+
 		[TestMethod]
 		public void FindDisplaysClearErrorMessageWhenNoElementMatchesCondition()
 		{
 			var emptyList = new List<int> { 1, 2,3};
 			Expression<Func<int, bool>> expr = x => x == 4;
 			var ex = TestUtils.ExpectException<InvalidOperationException>(() => emptyList.Find(expr));
-			Assert.AreEqual("Sequence of type '" + IntTypeName + "' contains no elements that matches the condition '" + expr + "'", ex.Message);
+			Assert.AreEqual("Sequence of type '" + IntTypeName + "' contains no element that matches the condition '" + expr + "'", ex.Message);
 		}
 
 		[TestMethod]
@@ -208,7 +229,7 @@ namespace TestAutomationEssentials.UnitTests
 			Action action = () => list.Find(x => x.StringValue, "4");
 			var ex = TestUtils.ExpectException<InvalidOperationException>(action);
 
-			StringAssert.Contains(ex.Message, "contains no elements that matches the condition 'x => x.StringValue == 4");
+			StringAssert.Contains(ex.Message, "contains no element that matches the condition 'x => x.StringValue == 4");
 		}
 
 		[TestMethod]
@@ -218,6 +239,27 @@ namespace TestAutomationEssentials.UnitTests
 				select new {Value = n, StringValue = n.ToString()};
 
 			Assert.AreEqual(2, list.Find(x => x.StringValue, "2").Value, "Find didn't return the expected result");
+		}
+
+		[TestMethod]
+		[SuppressMessage("ReSharper", "ExpressionIsAlwaysNull")]
+		[SuppressMessage("ReSharper", "AccessToModifiedClosure")]
+		public void AppendFormatLineThrowsArgumentNullExceptionForAllOfItsArguments()
+		{
+			StringBuilder sb = null;
+			string format = null;
+			object[] args = null;
+			
+			Func<ArgumentNullException> getException = 
+				() => TestUtils.ExpectException<ArgumentNullException>(() => sb.AppendFormatLine(format, args));
+			
+			Assert.AreEqual("sb", getException().ParamName);
+			sb = new StringBuilder();
+
+			Assert.AreEqual("format", getException().ParamName);
+
+			format = "something";
+			Assert.AreEqual("args", getException().ParamName);
 		}
 
 		[TestMethod]
@@ -248,11 +290,26 @@ namespace TestAutomationEssentials.UnitTests
 			Assert.AreEqual(null, default(string), "Just to make sure :-)");
 			Assert.AreEqual(default(string), typeof(string).GetDefaultValue());
 		}
-
+		
 		[TestClass]
-		[ExcludeFromCodeCoverage] // must be on a class level in order to apply to the lamdba inside the test :-(
+		[ExcludeFromCodeCoverage] // must be on a class level in order to apply to the lamdba inside the tests :-(
 		public class AnonymousClass
 		{
+			[TestMethod]
+			[SuppressMessage("ReSharper", "ExpressionIsAlwaysNull")]
+			public void TryGetThrowsArgumentNullExceptionOnlyIfFuncIsNull()
+			{
+				var someObject = new object();
+				Func<object, object> func = null;
+				// ReSharper disable once AccessToModifiedClosure
+				var ex = TestUtils.ExpectException<ArgumentNullException>(() => someObject.TryGet(func));
+				Assert.AreEqual("func", ex.ParamName, "When only func is null");
+
+				someObject = null;
+				ex = TestUtils.ExpectException<ArgumentNullException>(() => someObject.TryGet(func));
+				Assert.AreEqual("func", ex.ParamName, "When both func and obj are null");
+			}
+
 			[TestMethod]
 			public void TryGetReturnsNullIfSourceIsNull()
 			{
@@ -278,6 +335,15 @@ namespace TestAutomationEssentials.UnitTests
 			// ReSharper disable once ReturnValueOfPureMethodIsNotUsed
 			TestUtils.ExpectException<NullReferenceException>( () => nullList.Equals(null), "Just to make sure, regular Equals throws a NullReferenceException");
 			Assert.IsTrue(nullList.SafeEquals(null));
+		}
+
+		[TestMethod]
+		public void SafeEqualsCanCompareValueTypes()
+		{
+			Assert.IsFalse(3.SafeEquals(2));
+			Assert.IsTrue(3.SafeEquals(3));
+			Assert.IsFalse(((object)null).SafeEquals(3));
+			Assert.IsFalse(3.SafeEquals((object)null));
 		}
 
 		[TestMethod]
@@ -343,12 +409,47 @@ namespace TestAutomationEssentials.UnitTests
 
 			var additionalEntries = new Dictionary<int, string>
 			{
-				{2, "Two"},
-				{3, "Three"}
+				{2, "Dos"},
+				{3, "Tres"}
 			};
 
 			var ex = TestUtils.ExpectException<ArgumentException>(() => originalDictionary.AddRange(additionalEntries));
-			Assert.AreEqual("An item with the same key has already been added.", ex.Message, "Exception message");
+			Assert.AreEqual("additionalElements", ex.ParamName);
+		}
+
+		[TestMethod]
+		public void AddRangeDontAddPartOfTheElementsIfAnyKeyAlreadyExist()
+		{
+			var originalDictionary = new Dictionary<int, string>
+			{
+				{1, "One"},
+				{2, "Two"}
+			};
+
+			var additionalEntries = new Dictionary<int, string>
+			{
+				{3, "Tres"},
+				{4, "Quatro"},
+				{2, "Dos"}
+			};
+
+			TestUtils.ExpectException<ArgumentException>(() => originalDictionary.AddRange(additionalEntries));
+			Assert.AreEqual(2, originalDictionary.Count);
+			Assert.AreEqual("Two", originalDictionary[2]);
+		}
+
+		[TestMethod]
+		[SuppressMessage("ReSharper", "ExpressionIsAlwaysNull")]
+		public void AddRangeThrowsArgumentNullExceptionIfAnyOfTheArgumentsIsNull()
+		{
+			Dictionary<int, string> dic1 = null, dic2 = null;
+
+			// ReSharper disable once AccessToModifiedClosure
+			Func<ArgumentNullException> getException = () => TestUtils.ExpectException<ArgumentNullException>(() => dic1.AddRange(dic2));
+			Assert.AreEqual("originalDictionary", getException().ParamName);
+
+			dic1 = new Dictionary<int, string>();
+			Assert.AreEqual("additionalElements", getException().ParamName);
 		}
 	}
 }

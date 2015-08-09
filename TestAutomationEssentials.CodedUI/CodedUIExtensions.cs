@@ -182,10 +182,10 @@ namespace TestAutomationEssentials.CodedUI
 		}
 
 		/// <summary>
-		/// Returns whether the speciied control is visible
+		/// Determines whether the speciied control is visible
 		/// </summary>
 		/// <param name="control">The control to check</param>
-		/// <returns>true if the control is visible, otherwise false</returns>
+		/// <returns><b>true</b> if the control is visible, otherwise <b>false</b></returns>
 		public static bool IsVisible(this UITestControl control)
 		{
 			return control.Exists && (ControlStates)control.GetProperty("State") != ControlStates.Offscreen;
