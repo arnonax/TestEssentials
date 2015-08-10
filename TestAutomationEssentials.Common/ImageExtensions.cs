@@ -5,9 +5,17 @@ using System.IO;
 
 namespace TestAutomationEssentials.Common
 {
+	/// <summary>
+	/// Provides useful methods to work with Images
+	/// </summary>
 	[ExcludeFromCodeCoverage]
 	public static class ImageExtensions
 	{
+		/// <summary>
+		/// Creates an image from a byte array
+		/// </summary>
+		/// <param name="bytes">A byte array that comprise the image, in every format that may be stored in a valid image file</param>
+		/// <returns>The corresponding image</returns>
 		public static Image ToImage(this byte[] bytes)
 		{
 			using (var stream = new MemoryStream(bytes))
@@ -16,6 +24,17 @@ namespace TestAutomationEssentials.Common
 			}
 		}
 
+		/// <summary>
+		/// Resizes the given image to fit in the specified size
+		/// </summary>
+		/// <param name="image">The image to resize</param>
+		/// <param name="targetSize">The target size of the image</param>
+		/// <returns>A new <see cref="Bitmap"/> object that contains the resized image</returns>
+		/// <remarks>
+		/// The method can either shrink or grow the original image, but always keeps the original ratio. If the ratio of the original
+		/// image is not the same as of the target size, then the image is centered and the borders (either top & bottom or left & right)
+		/// are left empty (black)
+		/// </remarks>
 		public static Bitmap FitToSize(this Image image, Size targetSize)
 		{
 			if (image == null)
