@@ -3,8 +3,21 @@ using System.Linq.Expressions;
 
 namespace TestAutomationEssentials.Common
 {
+	/// <summary>
+	/// Provide convinient methods for waiting for a condition to come true.
+	/// </summary>
 	public class Wait
 	{
+		/// <summary>
+		/// Waits until the specified condition becomes true
+		/// </summary>
+		/// <param name="conditionExpr">A lamba expression containing the condition</param>
+		/// <param name="timeout">The maximum time to wait for the condition</param>
+		/// <exception cref="ArgumentNullException"><paramref name="conditionExpr"/> is null</exception>
+		/// <exception cref="TimeoutException">The condition didn't become true for the specified timeout</exception>
+		/// <example>
+		/// Wait.Until(() => PageIsLoaded(), 30.Seconds());
+		/// </example>
 		public static void Until(Expression<Func<bool>> conditionExpr, TimeSpan timeout)
 		{
 			if (conditionExpr == null)
@@ -15,6 +28,16 @@ namespace TestAutomationEssentials.Common
 			Until(conditionExpr.Compile(), timeout, timeoutMessage);
 		}
 
+		/// <summary>
+		/// Waits until the specified condition becomes false
+		/// </summary>
+		/// <param name="conditionExpr">A lambda expression containing the condition</param>
+		/// <param name="timeout">The maximum time to wait for the condition to become false</param>
+		/// <exception cref="ArgumentNullException"><paramref name="conditionExpr"/> is null</exception>
+		/// <exception cref="TimeoutException">The condition didn't become false for the specified timeout</exception>
+		/// <example>
+		/// Wait.While(() => PleaseWaitMessageAppears(), 30.Seconds());
+		/// </example>
 		public static void While(Expression<Func<bool>>  conditionExpr, TimeSpan timeout)
 		{
 			if (conditionExpr == null)
