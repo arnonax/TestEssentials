@@ -57,7 +57,7 @@ namespace TestAutomationEssentials.MSTest.Configuration
 	{
 		private XDocument _document;
 
-		public void Load(XDocument document)
+		internal void Load(XDocument document)
 		{
 			_document = document;
 			LoadConfigurationParametersUsingAttribute();
@@ -82,11 +82,23 @@ namespace TestAutomationEssentials.MSTest.Configuration
 			}
 		}
 
+		/// <summary>
+		/// Returns a value with the specified element name from the configuration file
+		/// </summary>
+		/// <param name="elementName">The name of the element</param>
+		/// <returns>The value (inner text) of the element as a string, or <b>null</b> if this element is missing</returns>
 		protected string GetValue(string elementName)
 		{
 			return GetValue(elementName, (string)null);
 		}
 
+		/// <summary>
+		/// Returns a value with the specified element name from the configuration file
+		/// </summary>
+		/// <typeparam name="T">The type of the value</typeparam>
+		/// <param name="elementName">The name of the element</param>
+		/// <param name="defaultvalue">The value (inner text) of the element, or <paramref name="defaultvalue"/> if the element is missing</param>
+		/// <returns></returns>
 		protected T GetValue<T>(string elementName, T defaultvalue)
 		{
 			return (T)GetValue(typeof (T), elementName, defaultvalue);
@@ -101,17 +113,41 @@ namespace TestAutomationEssentials.MSTest.Configuration
 			return Convert.ChangeType(element.Value, type);
 		}
 
+		/// <summary>
+		/// When overriden in a derived class, returns the XmlNamespace that is used in the XML configuration file.
+		/// </summary>
 		protected abstract string XmlNamespace { get; }
 
+		/// <summary>
+		/// Marks a property as a configuration parameter
+		/// </summary>
+		/// <remarks>
+		/// Properties marked with that attribute on classes that derive from <see cref="ConfigurationBase"/> are automatically
+		/// set according to their corresponding values in the configuration file upon the call to <see cref="TestConfig.Load{TConfiguration}"/>.
+		/// The property can have a private setter.
+		/// <para>
+		/// You can specify a default value that will be used if the elemenet does not exist in the configuration file.
+		/// </para>
+		/// </remarks>
 		[AttributeUsage(AttributeTargets.Property)]
 		protected class ConfigurationParameterAttribute : Attribute
 		{
+			/// <summary>
+			/// Gets or sets the default value of the property that will be used in case the element does not exist in the configuration file
+			/// </summary>
 			public object DefaultValue { get; set; }
 
+			/// <summary>
+			/// Initialized as a new instance with <b>null</b> as the default value
+			/// </summary>
 			public ConfigurationParameterAttribute()
 			{
 			}
 
+			/// <summary>
+			/// Initiailized a new instance with the specified default value
+			/// </summary>
+			/// <param name="defaultValue"><see cref="DefaultValue"/></param>
 			public ConfigurationParameterAttribute(object defaultValue)
 			{
 				DefaultValue = defaultValue;
