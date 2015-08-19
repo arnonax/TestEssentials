@@ -48,8 +48,23 @@ namespace TestAutomationEssentials.Common
 			Until(() => !condition(), timeout, timeoutMessage);
 		}
 
-		private static void Until(Func<bool> condition, TimeSpan timeout, string timeoutMessage)
+		/// <summary>
+		/// Waits until the specified condition becomes true. In case of a timeout, the specified message is used in the exception
+		/// </summary>
+		/// <param name="condition">The condition to wait for to become true</param>
+		/// <param name="timeout">The maximum time to wait for the condition</param>
+		/// <param name="timeoutMessage">The message to use in the exception in case of a timeout</param>
+		/// <exception cref="ArgumentNullException"><paramref name="condition"/> is null</exception>
+		/// <exception cref="TimeoutException">The condition didn't become true for the specified timeout. The message of the 
+		/// exception is specified by the <paramref name="timeoutMessage"/> argument</exception>
+		/// <example>
+		/// Wait.Until(() => PageIsLoaded(), 30.Seconds(), "Page wasn't loaded!");
+		/// </example>
+		public static void Until(Func<bool> condition, TimeSpan timeout, string timeoutMessage)
 		{
+			if (condition == null)
+				throw new ArgumentNullException("condition");
+
 			var conditionMet = IfNot(condition, timeout);
 			if (!conditionMet)
 				throw new TimeoutException(timeoutMessage);
