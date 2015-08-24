@@ -44,9 +44,9 @@
   <ItemGroup>
     <Compile Include="Configuration\ConfigurationBase.cs" />
     <Compile Include="Configuration\TestConfig.cs" />
-    <Compile Include="ExecutionContext\IISolationContext.cs" />
+    <Compile Include="ExecutionContext\IIsolationScope.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ExecutionContext\TestExecutionContext.cs" />
+    <Compile Include="ExecutionContext\TestExecutionScopesManager.cs" />
     <Compile Include="TestBase.cs" />
     <Compile Include="TestUtils.cs" />
   </ItemGroup>

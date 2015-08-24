@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestAutomationEssentials.Common;
 
 namespace TestAutomationEssentials.MSTest.ExecutionContext
 {
-    public class TestExecutionContext : IIsolationContext
+	/// <summary>
+	/// Managed nestable scopes of isolation. Upon exit from each scope, it calls the cleanup actions that were registered to it during its lifetime
+	/// </summary>
+    public class TestExecutionScopesManager : IIsolationScope
     {
-	    private class IsolationLevel : IIsolationContext
+	    private class IsolationLevel : IIsolationScope
 	    {
 			private readonly Stack<Action> _cleanupActions = new Stack<Action>();
 
@@ -63,18 +65,22 @@ namespace TestAutomationEssentials.MSTest.ExecutionContext
 	    private State _currentState = State.Initialize;
 	    private readonly Stack<IsolationLevel> _isolationLevels = new Stack<IsolationLevel>();
 
-	    public TestExecutionContext(string name, Action<IIsolationContext> initialize)
+		/// <summary>
+		/// Initializes a new TestExecutionScopesManager object, with one (default) isolation scope
+		/// </summary>
+		/// <param name="name">The name of the isolation scope</param>
+		/// <param name="initialize">A delegate to an action that is performed on initialization. If an exception occurs inside this 
+		/// method, then the scope is automatically destroyed, calling any cleanup actions that were added during this method</param>
+	    public TestExecutionScopesManager(string name, Action<IIsolationScope> initialize)
         {
-			PushIsolationLevel(name, initialize);
+			BeginIsolationScope(name, initialize);
         }
 
-        public void Cleanup()
-        {
-			CleanupCurrentLevel();
-			Assert.AreEqual(0, _isolationLevels.Count, "Some isolation levels were not been cleaned!");
-        }
-
-        public void AddCleanupAction(Action action)
+		/// <summary>
+		/// Adds a delegate to an action that will be executed on cleanup
+		/// </summary>
+		/// <param name="action">A delegate to the action to perform</param>
+		public void AddCleanupAction(Action action)
         {
 	        if (_currentState == State.Cleanup)
 		        throw new InvalidOperationException("Adding cleanup actions from within cleanup is not supported");
@@ -82,17 +88,26 @@ namespace TestAutomationEssentials.MSTest.ExecutionContext
 	        _currentIsolationLevel.AddCleanupAction(action);
         }
 
-	    public void PushIsolationLevel(string isolationLevelName, Action<IIsolationContext> initialize)
+		/// <summary>
+		/// Begins a new, nested, isolation scope
+		/// </summary>
+		/// <param name="isolationScopeName">The name of the new isolation scope</param>
+		/// <param name="initialize">A delegate to an action that is performed on initialization. If an exception occurs inside this 
+		/// method, then the scope is automatically destroyed, calling any cleanup actions that were added during this method</param>
+	    public void BeginIsolationScope(string isolationScopeName, Action<IIsolationScope> initialize)
 	    {
+		    if (initialize == null)
+			    initialize = Functions.EmptyAction<IIsolationScope>();
+
 			_currentState = State.Initialize;
 		    var lastIsolationLevel = _currentIsolationLevel;
-			_currentIsolationLevel = new IsolationLevel(isolationLevelName);
+			_currentIsolationLevel = new IsolationLevel(isolationScopeName);
 
-			Console.WriteLine("***************************** Initializing " + isolationLevelName + " *****************************");
+			Console.WriteLine("***************************** Initializing " + isolationScopeName + " *****************************");
 			try
 			{
 				initialize(this);
-				Console.WriteLine("***************************** Initializing " + isolationLevelName + " Completed succesfully *****************************");
+				Console.WriteLine("***************************** Initializing " + isolationScopeName + " Completed succesfully *****************************");
 			}
 			catch
 			{
@@ -107,7 +122,10 @@ namespace TestAutomationEssentials.MSTest.ExecutionContext
 			_currentState = State.Normal;
 	    }
 
-	    public void PopIsolationLevel()
+		/// <summary>
+		/// Ends the current isolation scope, calling all cleanup actions that were added to this scope in reverse order
+		/// </summary>
+	    public void EndIsolationScope()
 	    {
 		    CleanupCurrentLevel();
 		    _currentIsolationLevel = _isolationLevels.Pop();

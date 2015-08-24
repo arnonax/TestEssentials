@@ -59,7 +59,7 @@ namespace TestAutomationEssentials.MSTest
 	[TestClass]
 	public abstract class TestBase
 	{
-		private static readonly TestExecutionContext TestExecutionContext = new TestExecutionContext("Assembly", Functions.EmptyAction<IIsolationContext>());
+		private static readonly TestExecutionScopesManager TestExecutionScopesManager = new TestExecutionScopesManager("Assembly", Functions.EmptyAction<IIsolationScope>());
 		protected static readonly Dictionary<Type, TestBase> InitializedInstances = new Dictionary<Type, TestBase>();
 		public TestContext TestContext { private get; set; }
 		private static bool _classCleanupPending;
@@ -77,7 +77,7 @@ namespace TestAutomationEssentials.MSTest
 
 			try
 			{
-				TestExecutionContext.PushIsolationLevel("Test", ctx => TestInitialize());
+				TestExecutionScopesManager.BeginIsolationScope("Test", ctx => TestInitialize());
 			}
 			catch(Exception)
 			{
@@ -133,7 +133,7 @@ public static void {1}(TestContext testContext)
 		[Microsoft.VisualStudio.TestTools.UnitTesting.TestCleanup]
 		public void CleanupTest()
 		{
-			TestExecutionContext.PopIsolationLevel();
+			TestExecutionScopesManager.EndIsolationScope();
 			if (TestContext.CurrentTestOutcome != UnitTestOutcome.Passed)
 				OnTestFailure(TestContext);
 		}
@@ -162,7 +162,7 @@ public static void {1}(TestContext testContext)
 
 		public static void AddCleanupAction(Action cleanupAction)
 		{
-			TestExecutionContext.AddCleanupAction(cleanupAction);
+			TestExecutionScopesManager.AddCleanupAction(cleanupAction);
 		}
 
 		[ExcludeFromCodeCoverage]
@@ -202,7 +202,7 @@ public static void {1}(TestContext testContext)
 
 			var instance = (TestBase)Activator.CreateInstance(testClass);
 			InitializedInstances[testClass] = instance;
-			TestExecutionContext.PushIsolationLevel("Class Initialize", isolationContext =>
+			TestExecutionScopesManager.BeginIsolationScope("Class Initialize", isolationContext =>
 			{
 				instance.ClassInitialize();
 			});
@@ -238,7 +238,7 @@ public static void ClassCleanup()
 		protected static void ClassCleanup(object dummy)
 		{
 			_classCleanupPending = false;
-			TestExecutionContext.PopIsolationLevel();
+			TestExecutionScopesManager.EndIsolationScope();
 		}
 	}
 }
