@@ -30,5 +30,37 @@ namespace TestAutomationEssentials.UnitTests
 			var caughtException = TestUtils.ExpectException<FormatException>(() => { throw thrownException; });
 			Assert.AreEqual(thrownException, caughtException, "Caught Exception is not the same as the thrown exception");
 		}
+
+		[TestMethod]
+		public void ExpectExceptionThrowsArgumentNullExceptionIfActionIsNull()
+		{
+			var caughtException = TestUtils.ExpectException<ArgumentNullException>(
+				() => TestUtils.ExpectException<FormatException>(null));
+
+			Assert.AreEqual("action", caughtException.ParamName);
+		}
+
+		[TestMethod]
+		public void ExpectExceptionThrowsArgumentNullExceptionIfMessageOrArgsAreNull()
+		{
+			var caughtException = TestUtils.ExpectException<ArgumentNullException>(
+				() => TestUtils.ExpectException<FormatException>(
+					() =>
+					{
+						throw new FormatException();
+					}, null));
+
+			Assert.AreEqual("message", caughtException.ParamName);
+
+			caughtException = TestUtils.ExpectException<ArgumentNullException>(
+				() => TestUtils.ExpectException<FormatException>(
+					() =>
+					{
+						throw new FormatException();
+					}, "Dummy message", null));
+
+			Assert.AreEqual("messageArgs", caughtException.ParamName);
+
+		}
 	}
 }
