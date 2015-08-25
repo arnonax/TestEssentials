@@ -7,6 +7,9 @@ namespace TestAutomationEssentials.MSTest.ExecutionContext
 	/// <summary>
 	/// Managed nestable scopes of isolation. Upon exit from each scope, it calls the cleanup actions that were registered to it during its lifetime
 	/// </summary>
+	/// <remarks>
+	/// If you're using MSTest, you should probably use <see cref="TestBase"/> instead of using this class directly.
+	/// </remarks>
     public class TestExecutionScopesManager : IIsolationScope
     {
 	    private class IsolationLevel : IIsolationScope
@@ -116,8 +119,7 @@ namespace TestAutomationEssentials.MSTest.ExecutionContext
 				throw;
 			}
 
-			if (lastIsolationLevel != null)
-				_isolationLevels.Push(lastIsolationLevel);
+			_isolationLevels.Push(lastIsolationLevel);
 
 			_currentState = State.Normal;
 	    }

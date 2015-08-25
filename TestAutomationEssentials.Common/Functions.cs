@@ -15,6 +15,9 @@ namespace TestAutomationEssentials.Common
 		/// <returns>A new method that returns the opposite result of <paramref name="func"/></returns>
 		public static Func<bool> Negate(this Func<bool> func)
 		{
+			if (func == null)
+				throw new ArgumentNullException("func");
+
 			return () => !func();
 		}
 

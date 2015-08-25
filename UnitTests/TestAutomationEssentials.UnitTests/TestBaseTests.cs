@@ -671,6 +671,80 @@ public class TestClass2 : TestBaseWithMethodLogger
 		}
 
 		[TestMethod]
+		public void CleanupActionsInAssemblyInitializedAreCalledAfterAllTestsInTheAssemblyCompletes()
+		{
+			var outputFileName = Path.GetFullPath("Output.txt");
+			File.Delete(outputFileName);
+
+			var testClass = CreateTestClass(
+				GetLinePragma() +
+@"using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Runtime.CompilerServices;
+using TestAutomationEssentials.MSTest;
+using System;
+using System.IO;
+
+public class TestBaseWithMethodLogger : TestBase
+{
+	public void LogMethodCall([CallerMemberName] string callingMethod = null)
+	{
+		LogMethodCall(GetType(), callingMethod);
+	}
+
+	public static void LogMethodCall(Type type, [CallerMemberName] string callingMethod = null)
+	{
+		File.AppendAllText(@""" + outputFileName + @""", type + ""."" + callingMethod + Environment.NewLine);
+	}
+}
+
+[TestClass]
+public class TestClass1 : TestBaseWithMethodLogger
+{
+	[AssemblyInitialize]
+	public static void AssemblyInitialize(TestContext testContext)
+	{
+		AddCleanupAction(AssemblyCleanupAction);
+	}
+
+	private static void AssemblyCleanupAction()
+	{
+		LogMethodCall(typeof(TestClass1));
+	}
+	
+	[AssemblyCleanup]
+	public static void AssemblyCleanup()
+	{
+		AssemblyCleanup(null);
+	}
+
+	[TestMethod]
+	public void Test1()
+	{
+		LogMethodCall();
+	}
+}
+
+[TestClass]
+public class TestClass2 : TestBaseWithMethodLogger
+{
+	[TestMethod]
+	public void Test2()
+	{
+		LogMethodCall();
+	}
+}
+");
+			testClass.Execute();
+
+			TestContext.AddResultFile(outputFileName);
+			var allLines = File.ReadAllLines(outputFileName);
+
+			Assert.AreEqual("TestClass1.AssemblyCleanupAction", allLines.Last());
+			Assert.IsTrue(allLines.Contains("TestClass1.Test1"));
+			Assert.IsTrue(allLines.Contains("TestClass2.Test2"));
+		}
+
+		[TestMethod]
 		public void InstanceClassMemberArePreservedBetweenClassInitializeAndTestMethods()
 		{
 			var testClass = CreateTestClass(
