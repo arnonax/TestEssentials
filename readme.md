@@ -24,7 +24,7 @@ This project is composed from 3 assemblies:
 ## How to use this project
 There are few ways that you can take advantage of this project:
 
-1. Download it from GitHub (coming soon!)
+1. Download any of the 3 project from NuGet!
 
 2. Clone the GitHub repository to your machine, and compile (or add it to your solution)
 

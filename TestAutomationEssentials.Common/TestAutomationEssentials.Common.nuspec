@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>TestAutomationEssentials.Common</id>
+    <version>1.0.0.1</version>
+    <title>Test Automation Essentials - Common</title>
+    <owners>Arnon Axelrod</owners>
+	<authors>Arnon Axelrod</authors>
+	<projectUrl>https://github.com/arnonax/TestEssentials</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Provide useful utility methods and classes that can be used by test automation, but not only...</description>
+    <tags>Test-Automation</tags>
+  </metadata>
+</package>
