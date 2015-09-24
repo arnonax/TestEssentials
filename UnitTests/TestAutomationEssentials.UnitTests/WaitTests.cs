@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq.Expressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestAutomationEssentials.Common;
 using TestAutomationEssentials.MSTest;
@@ -47,6 +46,21 @@ namespace TestAutomationEssentials.UnitTests
 
 			Assert.IsTrue(endTime - startTime >= timeout, "Wait.Until didn't wait enough (startTime={0}, endTime={1})", startTime, endTime);
 			Assert.IsTrue(endTime - startTime <= timeout.MutliplyBy(1.1), "Wait.Until waited for too long (startTime={0}, endTime={1})", startTime, endTime);
+		}
+
+		[TestMethod]
+		public void WaitUntilThrowsTimeoutExceptionWithFormatterMessage()
+		{
+			var timeout = 200.Milliseconds();
+
+			Action action = () => Wait.Until(() => false, timeout);
+			const string messageFormat = "This is a message with parameters: '{0}', '{1}'";
+			const string arg1 = "Something";
+			const double arg2 = 3.5;
+			var ex = TestUtils.ExpectException<TimeoutException>(action, messageFormat, arg1, arg2);
+
+			var expectedMessage = string.Format(messageFormat, arg1, arg2);
+			Assert.AreNotEqual(expectedMessage, ex.Message, "Wait.Until should throw the exception with the specified formatted message");
 		}
 
 		[TestMethod]
