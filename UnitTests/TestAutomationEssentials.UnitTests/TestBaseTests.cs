@@ -91,6 +91,7 @@ public class TestClass1 : TestBase
 GetLinePragma() +
 @"using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestAutomationEssentials.MSTest;
+using TestAutomationEssentials.Common;
 using System;
 			
 [TestClass]
@@ -98,20 +99,20 @@ public class TestClass1 : TestBase
 {
 	protected override void TestInitialize()
 	{
-		Console.WriteLine(""MyTestInitialize"");
+		Logger.WriteLine(""MyTestInitialize"");
 	}
 
 	[TestMethod]
 	public void TestMethod1()
 	{
-		Console.WriteLine(""TestMethod1"");
+		Logger.WriteLine(""TestMethod1"");
 		AddCleanupAction(() => { Console.WriteLine(""CleanupAction1""); });
 	}
 
 	[TestMethod]
 	public void TestMethod2()
 	{
-		Console.WriteLine(""TestMethod2"");
+		Logger.WriteLine(""TestMethod2"");
 		AddCleanupAction(() => { Console.WriteLine(""CleanupAction2""); });
 	}
 }
@@ -124,11 +125,11 @@ public class TestClass1 : TestBase
 
 		private static Regex GetOutputRegex(string testInitializeOutput, string testMethodOutput, string cleanupActionOutput)
 		{
-			return new Regex(@"\*+ Initializing Test \*+\n" + 
+			return new Regex(@".*\*+ Initializing Test \*+\n.*" + 
 				testInitializeOutput + 
-@"\n?\*+ Initializing Test Completed succesfully \*+\n" + 
+@"\n?.*\*+ Initializing Test Completed succesfully \*+\n.*" + 
 testMethodOutput + 
-@"\n?\*+ Cleanup Test \*+\n" + 
+@"\n?.*\*+ Cleanup Test \*+\n.*" + 
 cleanupActionOutput);
 		}
 
@@ -167,24 +168,60 @@ public class TestClass1 : TestBase
 ");
 			var results = testClass.Execute();
 			Assert.AreEqual(2, results.PassedTests, "Passed tests");
-			StringAssert.Contains(results.UnitTestResults[0].StdOut,
+			AssertLogContains(results.UnitTestResults[0].StdOut,
 @"***************************** Initializing Test *****************************
 MyTestInitialize
 ***************************** Initializing Test Completed succesfully *****************************
 TestMethod1
 ***************************** Cleanup Test *****************************
 CleanupAction1
-MyTestInitialize.Cleanup".Replace("\r\n", "\n")
+MyTestInitialize.Cleanup"
 				, "Test1 Output");
-			StringAssert.Contains(results.UnitTestResults[1].StdOut, 
+			AssertLogContains(results.UnitTestResults[1].StdOut, 
 @"***************************** Initializing Test *****************************
 MyTestInitialize
 ***************************** Initializing Test Completed succesfully *****************************
 TestMethod2
 ***************************** Cleanup Test *****************************
 CleanupAction2
-MyTestInitialize.Cleanup".Replace("\r\n", "\n"),
+MyTestInitialize.Cleanup",
 				"Test 2 Output");
+		}
+
+		private void AssertLogContains(string actual, string expected, string message)
+		{
+			var actualLines = GetLines(actual).ToArray();
+			var expectedLines = GetLines(expected).ToArray();
+			for (var i = 0; i < actualLines.Length - expectedLines.Length+1; i++)
+			{
+				if (Matches(actualLines.SubArray(i, expectedLines.Length), expectedLines))
+					return;
+			}
+
+			Assert.Fail("The expected lines was not found in the log: {0}\nExpected:\n{1}\n\nActual:\n{2}", message, expected, actual);
+		}
+
+		private static bool Matches(IReadOnlyList<string> actualLines, IReadOnlyList<string> expectedLines)
+		{
+			for (var i = 0; i < actualLines.Count; i++)
+			{
+				if (!actualLines[i].Contains(expectedLines[i]))
+					return false;
+			}
+
+			return true;
+		}
+
+		private static IEnumerable<string> GetLines(string multilineString)
+		{
+			using (var reader = new StringReader(multilineString))
+			{
+				string line;
+				while ((line = reader.ReadLine()) != null)
+				{
+					yield return line;
+				}
+			}
 		}
 
 		[TestMethod]
@@ -965,7 +1002,8 @@ public class TestClass1 : TestBase
 					new[]
 					{
 						"mscorlib.dll", "System.Core.dll", typeof (TestClassAttribute).Assembly.Location,
-						typeof (TestBase).Assembly.Location
+						typeof (TestBase).Assembly.Location,
+						typeof(Logger).Assembly.Location
 					}, outputName, true);
 			parameters.GenerateExecutable = false;
 			parameters.IncludeDebugInformation = true;
@@ -998,19 +1036,19 @@ public class TestClass1 : TestBase
 					RedirectStandardOutput = true,
 				};
 
-				Console.WriteLine("Executing: {0} {1}", msTestFullPath, parameters);
+				Logger.WriteLine("Executing: {0} {1}", msTestFullPath, parameters);
 				using (var msTest = Process.Start(startInfo))
 				{
 					msTest.WaitForExit();
 					var output = msTest.StandardOutput.ReadToEnd();
 					var error = msTest.StandardError.ReadToEnd();
-					Console.WriteLine("Output:");
-					Console.WriteLine(output);
-					Console.WriteLine("Error:");
-					Console.WriteLine(error);
+					Logger.WriteLine("Output:");
+					Logger.WriteLine(output);
+					Logger.WriteLine("Error:");
+					Logger.WriteLine(error);
 				}
 
-				Console.WriteLine("TrxFile: \"file://{0}\"", trxFile);
+				Logger.WriteLine("TrxFile: \"file://{0}\"", trxFile);
 				
 				_testContext.AddResultFile(trxFile);
 

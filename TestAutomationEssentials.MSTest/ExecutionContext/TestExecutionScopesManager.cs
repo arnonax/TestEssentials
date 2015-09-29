@@ -36,8 +36,8 @@ namespace TestAutomationEssentials.MSTest.ExecutionContext
 					catch (Exception ex)
 					{
 						exceptions.Add(ex);
-						Console.WriteLine("Exception occured in cleanup. Resuming to additional cleanup actions if exists, though they may fail too.");
-						Console.WriteLine(ex);
+						Logger.WriteLine("Exception occured in cleanup. Resuming to additional cleanup actions if exists, though they may fail too.");
+						Logger.WriteLine(ex);
 					}
 				}
 
@@ -106,11 +106,11 @@ namespace TestAutomationEssentials.MSTest.ExecutionContext
 		    var lastIsolationLevel = _currentIsolationLevel;
 			_currentIsolationLevel = new IsolationLevel(isolationScopeName);
 
-			Console.WriteLine("***************************** Initializing " + isolationScopeName + " *****************************");
+			Logger.WriteLine("***************************** Initializing " + isolationScopeName + " *****************************");
 			try
 			{
 				initialize(this);
-				Console.WriteLine("***************************** Initializing " + isolationScopeName + " Completed succesfully *****************************");
+				Logger.WriteLine("***************************** Initializing " + isolationScopeName + " Completed succesfully *****************************");
 			}
 			catch
 			{
@@ -136,7 +136,7 @@ namespace TestAutomationEssentials.MSTest.ExecutionContext
 	    private void CleanupCurrentLevel()
 	    {
 			_currentState = State.Cleanup;
-		    Console.WriteLine("***************************** Cleanup " + _currentIsolationLevel.Name +
+		    Logger.WriteLine("***************************** Cleanup " + _currentIsolationLevel.Name +
 							  " *****************************");
 
 		    _currentIsolationLevel.Cleanup();

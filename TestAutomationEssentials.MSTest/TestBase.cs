@@ -55,8 +55,8 @@ namespace TestAutomationEssentials.MSTest
 				}
 				catch (Exception ex)
 				{
-					Console.WriteLine("An exception occured while trying to take screenshot:");
-					Console.WriteLine(ex);
+					Logger.WriteLine("An exception occured while trying to take screenshot:");
+					Logger.WriteLine(ex);
 				}
 			}
 
@@ -90,7 +90,7 @@ namespace TestAutomationEssentials.MSTest
 		public void InitializeTest()
 		{
 			AssertClassInitializeIsCalled();
-			Console.WriteLine("Tests started: {0}", DateTime.Now);
+			Logger.WriteLine("Tests started: {0}", DateTime.Now);
 
 			try
 			{
