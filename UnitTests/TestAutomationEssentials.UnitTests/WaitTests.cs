@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq.Expressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestAutomationEssentials.Common;
 using TestAutomationEssentials.MSTest;
@@ -15,6 +16,14 @@ namespace TestAutomationEssentials.UnitTests
 		{
 			Action action = () => Wait.Until(null, 1.Seconds());
 			TestUtils.ExpectException<ArgumentNullException>(action);
+		}
+
+		[TestMethod]
+		public void WaitUntilThrowsArgumentOutOfRangeExceptionIfRangeIsNegative()
+		{
+			Action action = () => Wait.Until(() => false, -3.Seconds());
+			var ex = TestUtils.ExpectException<ArgumentOutOfRangeException>(action);
+			Assert.AreEqual("timeout", ex.ParamName);
 		}
 
 		[TestMethod]
@@ -64,10 +73,140 @@ namespace TestAutomationEssentials.UnitTests
 		}
 
 		[TestMethod]
+		public void WaitUntilValidatesItsArguments()
+		{
+			{
+				Action action = () => Wait.Until(null, 5.Seconds(), "dummy message");
+				var ex = TestUtils.ExpectException<ArgumentNullException>(action);
+				Assert.AreEqual("condition", ex.ParamName);
+			}
+			{
+				Action action = () => Wait.Until(() => true, -5.Seconds(), "timeout can't be negative!");
+				var ex = TestUtils.ExpectException<ArgumentOutOfRangeException>(action);
+				Assert.AreEqual("timeout", ex.ParamName);
+			}
+			{
+				Action action = () => Wait.Until(() => true, 5.Seconds(), null);
+				var ex = TestUtils.ExpectException<ArgumentNullException>(action);
+				Assert.AreEqual("timeoutMessage", ex.ParamName);
+			}
+			{
+				Action action = () => Wait.Until(() => true, 5.Seconds(), "dummy timeout message", null);
+				var ex = TestUtils.ExpectException<ArgumentNullException>(action);
+				Assert.AreEqual("args", ex.ParamName);
+			}
+		}
+
+		[TestMethod]
+		[SuppressMessage("ReSharper", "AccessToModifiedClosure")]
+		public void WaitUntilOverloadWithTwoExpressionsValidatesItsArguments()
+		{
+			Expression<Func<int>> expr = null;
+			Expression<Func<int, bool>> conditionExpr = i => true;
+			var timeout = 2.Seconds();
+
+			Action methodUnderTest = () => Wait.Until(expr, conditionExpr, timeout);
+		
+			ArgumentException ex = TestUtils.ExpectException<ArgumentNullException>(methodUnderTest);
+			Assert.AreEqual("getResultExpr", ex.ParamName);
+			expr = () => 1;
+			
+			conditionExpr = null;
+			ex = TestUtils.ExpectException<ArgumentNullException>(methodUnderTest);
+			Assert.AreEqual("conditionExpr", ex.ParamName);
+			conditionExpr = i => false;
+			
+			timeout = -1.Seconds();
+			ex = TestUtils.ExpectException<ArgumentOutOfRangeException>(methodUnderTest);
+			Assert.AreEqual("timeout", ex.ParamName);
+		}
+
+		[TestMethod]
+		[SuppressMessage("ReSharper", "AccessToModifiedClosure")]
+		public void WaitUntilOverloadWithTwoDelegatesValidatesItsArguments()
+		{
+			Func<int> getResult = () => 1;
+			Func<int, bool> condition = i => true;
+			var timeout = 1.Seconds();
+			var timeoutMessage = "Dummy {0}";
+			object[] args = {"Arg"};
+			
+			Action methodUnderTest = () => Wait.Until(getResult, condition, timeout, timeoutMessage, args);
+
+			getResult = null;
+			ArgumentException ex = TestUtils.ExpectException<ArgumentNullException>(methodUnderTest);
+			Assert.AreEqual("getResult", ex.ParamName);
+			getResult = () => 1;
+
+			condition = null;
+			ex = TestUtils.ExpectException<ArgumentNullException>(methodUnderTest);
+			Assert.AreEqual("condition", ex.ParamName);
+			condition = i => true;
+
+			timeout = -1.Seconds();
+			ex = TestUtils.ExpectException<ArgumentOutOfRangeException>(methodUnderTest);
+			Assert.AreEqual("timeout", ex.ParamName);
+			timeout = 1.Seconds();
+
+			timeoutMessage = null;
+			ex = TestUtils.ExpectException<ArgumentNullException>(methodUnderTest);
+			Assert.AreEqual("timeoutMessage", ex.ParamName);
+			timeoutMessage = "Dummy {0}";
+
+			args = null;
+			ex = TestUtils.ExpectException<ArgumentNullException>(methodUnderTest);
+			Assert.AreEqual("args", ex.ParamName);
+		}
+
+		[TestMethod]
+		[SuppressMessage("ReSharper", "AccessToModifiedClosure")]
+		public void WaitIfValidatesItsArguments()
+		{
+			Func<bool> condition = () => false;
+			var period = 1.Seconds();
+			Action methodUnderTest = () => Wait.If(condition, period);
+
+			condition = null;
+			ArgumentException ex = TestUtils.ExpectException<ArgumentNullException>(methodUnderTest);
+			Assert.AreEqual("condition", ex.ParamName);
+			condition = () => false;
+
+			period = -1.Seconds();
+			ex = TestUtils.ExpectException<ArgumentOutOfRangeException>(methodUnderTest);
+			Assert.AreEqual("period", ex.ParamName);
+		}
+
+		[TestMethod]
+		[SuppressMessage("ReSharper", "AccessToModifiedClosure")]
+		public void WaitIfNotValidatesItsArguments()
+		{
+			Func<bool> condition = () => true;
+			var period = 1.Seconds();
+			Action methodUnderTest = () => Wait.IfNot(condition, period);
+
+			condition = null;
+			ArgumentException ex = TestUtils.ExpectException<ArgumentNullException>(methodUnderTest);
+			Assert.AreEqual("condition", ex.ParamName);
+			condition = () => true;
+
+			period = -1.Seconds();
+			ex = TestUtils.ExpectException<ArgumentOutOfRangeException>(methodUnderTest);
+			Assert.AreEqual("period", ex.ParamName);
+		}
+
+		[TestMethod]
 		public void WaitWhileThrowsExceptionWhenConditionIsNull()
 		{
 			Action action = () => Wait.While(null, 1.Seconds());
 			TestUtils.ExpectException<ArgumentNullException>(action);
+		}
+
+		[TestMethod]
+		public void WaitWhileThrowsArgumentOutOfRangeExceptionIfRangeIsNegative()
+		{
+			Action action = () => Wait.While(() => true, -3.Seconds());
+			var ex = TestUtils.ExpectException<ArgumentOutOfRangeException>(action);
+			Assert.AreEqual("timeout", ex.ParamName);
 		}
 
 		[TestMethod]
@@ -162,6 +301,30 @@ namespace TestAutomationEssentials.UnitTests
 
 			Assert.IsTrue(endTime - startTime >= timeout, "Wait.IfNot didn't wait enough (startTime={0}, endTime={1})", startTime, endTime);
 			Assert.IsTrue(endTime - startTime <= timeout.MutliplyBy(1.1), "Wait.IfNot waited for too long (startTime={0}, endTime={1})", startTime, endTime);
+		}
+
+		[TestMethod]
+		public void WaitUntilReturnsTheResultOfTheFirstFunctionIfTheSecondFunctionReturnsTrue()
+		{
+			var enumerator = new [] {1, 3, 4, 5}.GetEnumerator();
+			Func<int> getNextItem = () =>
+			{
+				enumerator.MoveNext();
+				return (int)enumerator.Current;
+			};
+			var result = Wait.Until(() => getNextItem(), item => item%2 == 0, 100.Milliseconds());
+			Assert.AreEqual(4, result);
+		}
+
+		[TestMethod]
+		public void WaitUntilThrowsTimeoutExceptionIfTheConditionIsNotMet()
+		{
+			Func<int> foo = () => 1;
+			var ex = TestUtils.ExpectException<TimeoutException>(() => Wait.Until(() => foo(), item => item != 1, 100.Milliseconds()));
+			StringAssert.Contains(ex.Message, "foo");
+
+			ex = TestUtils.ExpectException<TimeoutException>(() => Wait.Until(() => foo(), item => item != 1, 100.Milliseconds(), "DummyMessage{0}", 3));
+			StringAssert.Contains(ex.Message, "DummyMessage3");
 		}
 	}
 }
