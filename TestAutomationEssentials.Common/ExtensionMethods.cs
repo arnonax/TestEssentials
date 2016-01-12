@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 
 namespace TestAutomationEssentials.Common
@@ -311,5 +313,90 @@ namespace TestAutomationEssentials.Common
 				originalDictionary.Add(pair.Key, pair.Value);
 			}
 		}
+
+	    /// <summary>
+	    /// Returns the description of an enum member, according to its DescriptionAttribute if present
+	    /// </summary>
+	    /// <param name="value">The value of the enum</param>
+	    /// <typeparam name="TEnum">The typeof the enum</typeparam>
+	    /// <returns>The description of the enum member according to the DescriptionAttribute if present, or the member's name</returns>
+	    /// <exception cref="InvalidOperationException">TEnum is not an enum type</exception>
+	    /// <example>
+	    /// enum Countries
+	    /// {
+	    ///     [Description("United States")]   
+	    ///     US,
+	    ///     [Description("United Kingdom")]
+	    ///     UK,
+	    ///     Israel
+	    /// }
+	    /// 
+	    /// Console.WriteLine(Countries.US.GetDescription()); // United States
+	    /// Console.WriteLine(Countries.UK.GetDescription()); // United Kingdom
+	    /// COnsole.WriteLine(Countries.Israel.GetDescription()); // Israel
+	    /// </example>
+	    public static string GetDescription<TEnum>(this TEnum value)
+	        where TEnum : struct
+	    {
+	        var type = typeof(TEnum);
+	        if(!type.IsEnum)
+                throw new ArgumentException(string.Format("{0} is not an enum", type.Name));
+
+	        var field = type.GetField(value.ToString());
+	        var descriptionAttribute = field.GetCustomAttribute<DescriptionAttribute>();
+	        if (descriptionAttribute == null)
+	            return value.ToString();
+
+	        return descriptionAttribute.Description;
+	    }
+
+	    /// <summary>
+	    /// Returns the enum value whose name or description corresponds to the specified string
+	    /// </summary>
+	    /// <param name="value">The string to parse</param>
+	    /// <typeparam name="TEnum">The type of the enum</typeparam>
+	    /// <returns>The enum's value whose name or description corresponds to the specified string</returns>
+	    /// <exception cref="ArgumentException"><typeparamref name="TEnum"/> is not an enum type</exception>
+	    /// <exception cref="FormatException">The specified string does not match any of the names or descriptions of the enum members</exception>
+	    /// <remarks>
+	    /// If members of the enum has a <see cref="DescriptionAttribute"/> applied to them, then the specified value can match either
+	    /// the name of the member or the value of the <see cref="DescriptionAttribute"/>.
+	    /// </remarks>
+	    /// <example>
+		/// enum Countries
+		/// {
+		///     [Description("United States")]   
+		///     US,
+		///     [Description("United Kingdom")]
+		///     UK,
+		///     Israel
+		/// }
+		/// 
+		/// Countries countries;
+		/// countries = "United State".ParseAs&lt;Countries&gt;(); // countries == Countries.US
+		/// countries = "United Kingdom".ParseAs&lt;Countries&gt;(); // countries == Countries.UK
+		/// countries = "UK".ParseAs&lt;Countries&gt;(); // countries == Countries.UK
+		/// countries = "Israel".ParseAs&lt;Countries&gt;(); // countries == Countries.Israel (note that there's no Description attribute on Israel)
+	    /// </example>
+	    public static TEnum ParseAs<TEnum>(this string value)
+            where TEnum : struct
+	    {
+            var type = typeof(TEnum);
+            if (!type.IsEnum)
+				throw new ArgumentException(string.Format("{0} is not an enum", type.Name));
+
+	        TEnum result;
+	        if (Enum.TryParse(value, out result))
+	            return result;
+
+	        var fields = type.GetFields();
+            var field = fields.SingleOrDefault(
+	                f => f.GetCustomAttribute<DescriptionAttribute>().TryGet(x => x.Description) == value);
+
+            if (field == null)
+                throw new FormatException(string.Format("'{0}' is cannot be parsed as type '{1}'", value, type.Name));
+
+            return (TEnum)field.GetValue(null);
+	    }
 	}
 }

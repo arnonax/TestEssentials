@@ -398,5 +398,71 @@ namespace TestAutomationEssentials.UnitTests
 			dic1 = new Dictionary<int, string>();
 			Assert.AreEqual("additionalElements", getException().ParamName);
 		}
+
+		private const string Value1Description = "The description of Value1";
+		private const string Value2Description = "The description of Value2";
+		private enum DummyEnum
+		{
+			[System.ComponentModel.Description(Value1Description)]
+			Value1,
+
+			[System.ComponentModel.Description(Value2Description)]
+			Value2,
+
+			Value3
+		}
+
+		[TestMethod]
+		public void GetDescriptionReturnsTheValueFromTheDescriptionAttribute()
+		{
+			Assert.AreEqual(Value1Description, DummyEnum.Value1.GetDescription());
+			Assert.AreEqual(Value2Description, DummyEnum.Value2.GetDescription());
+		}
+
+		[TestMethod]
+		public void GetDescriptionReturnsTheNameOfTheEnumMemberIfTheresNoDescriptionAttribute()
+		{
+			Assert.AreEqual("Value3", DummyEnum.Value3.GetDescription());
+		}
+
+		private struct DummyStruct
+		{
+#pragma warning disable 169 // not used, but ParseAsThrowsAnArgumentExceptionIfTypeArgumentIsNoAnEnum supposedly use it by name
+			public int Whatever;
+#pragma warning restore 169
+		}
+
+		[TestMethod]
+		public void GetDescriptionThrowsArgumentExceptionIfArgumentIsNotAnEnum()
+		{
+			DummyStruct dummy = new DummyStruct();
+			TestUtils.ExpectException<ArgumentException>(() => dummy.GetDescription());
+		}
+
+		[TestMethod]
+		public void ParseAsReturnsTheEnumValueThatCorrespondsToTheDescriptionString()
+		{
+			Assert.AreEqual(DummyEnum.Value1, Value1Description.ParseAs<DummyEnum>());
+			Assert.AreEqual(DummyEnum.Value2, Value2Description.ParseAs<DummyEnum>());
+		}
+
+		[TestMethod]
+		public void ParseAsReturnsTheEnumValueThatCorrespondsToTheMemberName()
+		{
+			Assert.AreEqual(DummyEnum.Value1, "Value1".ParseAs<DummyEnum>(), "Member with description");
+			Assert.AreEqual(DummyEnum.Value3, "Value3".ParseAs<DummyEnum>(), "Member without description");
+		}
+
+		[TestMethod]
+		public void ParseAsThrowsAnArgumentExceptionIfTypeArgumentIsNoAnEnum()
+		{
+			TestUtils.ExpectException<ArgumentException>(() => "Whatever".ParseAs<DummyStruct>());
+		}
+
+		[TestMethod]
+		public void ParseAsThrowsFormatExceptionIfTheStringIsNotANameOfAMemberOrDescriptionOfAMember()
+		{
+			TestUtils.ExpectException<FormatException>(() => "Value4".ParseAs<DummyEnum>());
+		}
 	}
 }
