@@ -68,6 +68,11 @@ namespace TestAutomationEssentials.Common
 			return result;
 		}
 
+		/// <summary>
+		/// Returns the bytes of a bitmap as they would be saved to a .bmp file
+		/// </summary>
+		/// <param name="image">The image to serialize</param>
+		/// <returns>A byte array containing the serialized image as a bitmap</returns>
         public static byte[] GetBitmapBytes(this Image image)
         {
             var bitmap = new Bitmap(image);
@@ -76,9 +81,6 @@ namespace TestAutomationEssentials.Common
                 bitmap.Save(memoryStream, ImageFormat.Bmp);
                 return memoryStream.ToArray();
             }
-
         }
-
-       
 	}
 }
