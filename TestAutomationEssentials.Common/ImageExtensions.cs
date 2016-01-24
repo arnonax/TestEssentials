@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 
 namespace TestAutomationEssentials.Common
@@ -66,5 +67,18 @@ namespace TestAutomationEssentials.Common
 			}
 			return result;
 		}
+
+        public static byte[] GetBitmapBytes(this Image image)
+        {
+            var bitmap = new Bitmap(image);
+            using (var memoryStream = new MemoryStream())
+            {
+                bitmap.Save(memoryStream, ImageFormat.Bmp);
+                return memoryStream.ToArray();
+            }
+
+        }
+
+       
 	}
 }

@@ -55,7 +55,8 @@ namespace TestAutomationEssentials.Common
 			var indent = _indentation + 1;
 
 			var sb = new StringBuilder();
-			sb.Append(DateTime.Now.ToString("T"));
+
+            sb.Append(DateTime.Now.ToString("HH:mm:ss.fff"));
 			sb.Append('\t', indent);
 			sb.AppendFormat(format, args);
 			_writeLineImpl(sb.ToString());

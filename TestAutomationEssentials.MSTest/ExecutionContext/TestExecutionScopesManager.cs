@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.ExceptionServices;
 using TestAutomationEssentials.Common;
 
 namespace TestAutomationEssentials.MSTest.ExecutionContext
@@ -25,7 +27,7 @@ namespace TestAutomationEssentials.MSTest.ExecutionContext
 
 		    public void Cleanup()
 		    {
-				List<Exception> exceptions = new List<Exception>();
+				var exceptions = new List<ExceptionDispatchInfo>();
 				while (!_cleanupActions.IsEmpty())
 				{
 					var action = _cleanupActions.Pop();
@@ -35,7 +37,7 @@ namespace TestAutomationEssentials.MSTest.ExecutionContext
 					}
 					catch (Exception ex)
 					{
-						exceptions.Add(ex);
+						exceptions.Add(ExceptionDispatchInfo.Capture(ex));
 						Logger.WriteLine("Exception occured in cleanup. Resuming to additional cleanup actions if exists, though they may fail too.");
 						Logger.WriteLine(ex);
 					}
@@ -46,9 +48,10 @@ namespace TestAutomationEssentials.MSTest.ExecutionContext
 				    case 0:
 					    return;
 				    case 1:
-					    throw exceptions.Content();
+					    exceptions.Content().Throw();
+						break;
 				    default:
-					    throw new AggregateException("Multiple exception occured during Cleanup", exceptions);
+					    throw new AggregateException("Multiple exception occured during Cleanup", exceptions.Select(ex => ex.SourceException));
 			    }
 		    }
 
@@ -97,7 +100,7 @@ namespace TestAutomationEssentials.MSTest.ExecutionContext
 		/// <param name="isolationScopeName">The name of the new isolation scope</param>
 		/// <param name="initialize">A delegate to an action that is performed on initialization. If an exception occurs inside this 
 		/// method, then the scope is automatically destroyed, calling any cleanup actions that were added during this method</param>
-	    public void BeginIsolationScope(string isolationScopeName, Action<IIsolationScope> initialize)
+	    public IDisposable BeginIsolationScope(string isolationScopeName, Action<IIsolationScope> initialize)
 	    {
 		    if (initialize == null)
 			    initialize = Functions.EmptyAction<IIsolationScope>();
@@ -122,7 +125,33 @@ namespace TestAutomationEssentials.MSTest.ExecutionContext
 			_isolationLevels.Push(lastIsolationLevel);
 
 			_currentState = State.Normal;
+
+			return new IsolationScopeDisposer(this);
 	    }
+
+		/// <summary>
+		/// Begins a new, nested, isolation scope
+		/// </summary>
+		/// <param name="isolationScopeName">The name of the new isolation scope</param>
+		public IDisposable BeginIsolationScope(string isolationScopeName)
+		{
+			return BeginIsolationScope(isolationScopeName, Functions.EmptyAction<IIsolationScope>());
+		}
+
+		private class IsolationScopeDisposer : IDisposable
+		{
+			private readonly TestExecutionScopesManager _testExecutionScopesManager;
+
+			public IsolationScopeDisposer(TestExecutionScopesManager testExecutionScopesManager)
+			{
+				_testExecutionScopesManager = testExecutionScopesManager;
+			}
+
+			public void Dispose()
+			{
+				_testExecutionScopesManager.EndIsolationScope();
+			}
+		}
 
 		/// <summary>
 		/// Ends the current isolation scope, calling all cleanup actions that were added to this scope in reverse order

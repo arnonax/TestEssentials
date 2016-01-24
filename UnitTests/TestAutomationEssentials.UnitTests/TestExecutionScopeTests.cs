@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestAutomationEssentials.Common;
 using TestAutomationEssentials.MSTest;
 using TestAutomationEssentials.MSTest.ExecutionContext;
+using TestAutomationEssentials.TrxParser.Generated;
 
 namespace TestAutomationEssentials.UnitTests
 {
@@ -158,6 +159,22 @@ namespace TestAutomationEssentials.UnitTests
 			Assert.AreEqual(2, aggregatedEx.InnerExceptions.Count, "Invalid number of inner exceptions");
 			Assert.IsTrue(aggregatedEx.InnerExceptions.Contains(ex1), "1st exception is not found in the aggergate exception");
 			Assert.IsTrue(aggregatedEx.InnerExceptions.Contains(ex2), "2nd exception is not found in the aggergate exception");
+		}
+
+		[TestMethod]
+		public void StackTraceOfCleanupActionContainsTheOriginalLineItWasThrown()
+		{
+			var manager = new TestExecutionScopesManager("dummy", Functions.EmptyAction<IIsolationScope>());
+			manager.AddCleanupAction(MethodThatThrowsException);
+
+			var ex = TestUtils.ExpectException<Exception>(manager.EndIsolationScope);
+			
+			StringAssert.Contains(ex.StackTrace, "MethodThatThrowsException");
+		}
+
+		private static void MethodThatThrowsException()
+		{
+			throw new Exception("dummy exception");
 		}
 	}
 }

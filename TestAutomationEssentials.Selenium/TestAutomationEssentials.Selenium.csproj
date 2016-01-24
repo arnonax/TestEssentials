@@ -4,17 +4,19 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{7DA754D8-A907-4BE5-A038-418F7C906F09}</ProjectGuid>
+    <ProjectGuid>{B9588B2F-0845-4F17-A6A4-48B9C1AA8654}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TestAutomationEssentials.MSTest</RootNamespace>
-    <AssemblyName>TestAutomationEssentials.MSTest</AssemblyName>
+    <RootNamespace>TestAutomationEssentials.Selenium</RootNamespace>
+    <AssemblyName>TestAutomationEssentials.Selenium</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -24,7 +26,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\TestAutomationEssentials.MSTest.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -35,35 +36,53 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="WebDriver, Version=2.48.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Selenium.WebDriver.2.48.2\lib\net40\WebDriver.dll</HintPath>
+    </Reference>
+    <Reference Include="WebDriver.Support, Version=2.48.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Selenium.Support.2.48.2\lib\net40\WebDriver.Support.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssertsAggregator.cs" />
-    <Compile Include="Configuration\ConfigurationBase.cs" />
-    <Compile Include="Configuration\TestConfig.cs" />
-    <Compile Include="ExecutionContext\IIsolationScope.cs" />
-    <Compile Include="LoggerAssert.cs" />
+    <Compile Include="Browser.cs" />
+    <Compile Include="BrowserElement.cs" />
+    <Compile Include="BrowserWindow.cs" />
+    <Compile Include="ElementsContainer.cs" />
+    <Compile Include="Frame.cs" />
+    <Compile Include="IDOMRoot.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ExecutionContext\TestExecutionScopesManager.cs" />
-    <Compile Include="TestBase.cs" />
-    <Compile Include="TestUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TestAutomationEssentials.Common\TestAutomationEssentials.Common.csproj">
-      <Project>{877e7e63-6481-40f1-85bc-d18e7be94772}</Project>
+      <Project>{877E7E63-6481-40F1-85BC-D18E7BE94772}</Project>
       <Name>TestAutomationEssentials.Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TestAutomationEssentials.MSTest\TestAutomationEssentials.MSTest.csproj">
+      <Project>{7DA754D8-A907-4BE5-A038-418F7C906F09}</Project>
+      <Name>TestAutomationEssentials.MSTest</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

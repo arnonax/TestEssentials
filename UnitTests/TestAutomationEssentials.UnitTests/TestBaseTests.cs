@@ -188,7 +188,8 @@ MyTestInitialize.Cleanup",
 				"Test 2 Output");
 		}
 
-		private void AssertLogContains(string actual, string expected, string message)
+		// ReSharper disable once UnusedParameter.Local
+		private static void AssertLogContains(string actual, string expected, string message)
 		{
 			var actualLines = GetLines(actual).ToArray();
 			var expectedLines = GetLines(expected).ToArray();
@@ -850,7 +851,7 @@ public class TestClass1 : TestBase
 
 			const string obsoleteErrorCode = "CS0619";
 			var errors = compileResults.Errors.Cast<CompilerError>().Where(x => x.IsWarning == false).ToArray();
-			Assert.AreEqual(2, errors.Count(), "Number of compilation errors");
+			Assert.AreEqual(2, errors.Length, "Number of compilation errors");
 			var error = errors[0];
 			Assert.AreEqual(10, error.Line);
 			Assert.AreEqual(obsoleteErrorCode, error.ErrorNumber, error.ErrorText);
@@ -944,6 +945,37 @@ public class TestClass1 : MyTestBase
 		}
 
 		[TestMethod]
+		public void WhenATestFailsAndAlsoACleanupActionFailsThenTheTestFailureIsReported()
+		{
+			var outputFileName = Path.GetFullPath("Output.txt");
+			File.Delete(outputFileName);
+
+			var testClass = CreateTestClass(
+				GetLinePragma() +
+				@"using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Runtime.CompilerServices;
+using TestAutomationEssentials.MSTest;
+using System;
+using System.IO;
+
+[TestClass]
+public class TestClass1 : TestBase
+{
+	[TestMethod]
+	public void TestMethod1()
+	{
+		AddCleanupAction(() => { throw new Exception(""CleanupAction failure...""); });
+		throw new Exception(""TestMethod failure..."");
+	}
+}
+");
+			var testResults = testClass.Execute();
+			Assert.AreEqual(1, testResults.FailedTests, "Failed");
+
+			StringAssert.Contains(testResults.UnitTestResults[0].ErrorMessage, "TestMethod failure...");
+		}
+
+		[TestMethod]
 		public void UITestBaseTakesScreenshotOnFailure()
 		{
 			var testClass = CreateTestClass(
@@ -978,7 +1010,7 @@ public class TestClass1 : TestBase
 
 			Assert.AreEqual(1, Directory.GetFiles(outputDirectory, "*.jpg", SearchOption.AllDirectories).Length, "JPeg files");
 		}
-		
+
 		private string GetLinePragma([CallerLineNumber] int lineNumber = 0, [CallerFilePath] string file = "")
 		{
 			return string.Format("#line {0} \"{1}\"\n", lineNumber + 1, file);
@@ -1003,11 +1035,13 @@ public class TestClass1 : TestBase
 					{
 						"mscorlib.dll", "System.Core.dll", typeof (TestClassAttribute).Assembly.Location,
 						typeof (TestBase).Assembly.Location,
-						typeof(Logger).Assembly.Location
-					}, outputName, true);
-			parameters.GenerateExecutable = false;
-			parameters.IncludeDebugInformation = true;
-			CompilerResults results = csc.CompileAssemblyFromSource(parameters, testClassCode);
+						typeof (Logger).Assembly.Location
+					}, outputName, true)
+				{
+					GenerateExecutable = false,
+					IncludeDebugInformation = true
+				};
+			var results = csc.CompileAssemblyFromSource(parameters, testClassCode);
 			return results;
 		}
 

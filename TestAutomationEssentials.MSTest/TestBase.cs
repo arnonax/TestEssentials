@@ -69,10 +69,17 @@ namespace TestAutomationEssentials.MSTest
 	[TestClass]
 	public abstract class TestBase
 	{
-		private static readonly TestExecutionScopesManager TestExecutionScopesManager = new TestExecutionScopesManager("Assembly", Functions.EmptyAction<IIsolationScope>());
+		/// <summary>
+		/// Returns the object that manages the nested isolation scopes. You can use this member is you have a need to create your own isolation scopes.
+		/// </summary>
+		public static readonly TestExecutionScopesManager TestExecutionScopesManager = new TestExecutionScopesManager("Assembly", Functions.EmptyAction<IIsolationScope>());
 		private static readonly Dictionary<Type, TestBase> InitializedInstances = new Dictionary<Type, TestBase>();
 		
-		public TestContext TestContext { private get; set; }
+		/// <summary>
+		/// Provides information and utilities related to the current MSTest execution. The setter of this property is used by MSTest - don't call it directly!
+		/// </summary>
+		public TestContext TestContext { get; set; }
+
 		private static bool _classCleanupPending;
 
 		/// <summary>
@@ -157,9 +164,30 @@ public static void {1}(TestContext testContext)
 		[Microsoft.VisualStudio.TestTools.UnitTesting.TestCleanup]
 		public void CleanupTest()
 		{
-			TestExecutionScopesManager.EndIsolationScope();
-			if (TestContext.CurrentTestOutcome != UnitTestOutcome.Passed)
+			//var testFailed = TestContext.CurrentTestOutcome != UnitTestOutcome.Passed;
+			//try
+			//{
+				TestExecutionScopesManager.EndIsolationScope();
+			//}
+			//catch
+			//{
+			//	if (!testFailed)
+			//		throw;
+
+			//	Logger.WriteLine("!!!! One or more exceptions occured in cleaup. See details above !!!");
+			//}
+
+			//if (!testFailed) 
+			//	return;
+
+			//try
+			//{
 				OnTestFailure(TestContext);
+			//}
+			//catch(Exception ex)
+			//{
+			//	Logger.WriteLine(ex);
+			//}
 		}
 
 		private void CopyFields()
