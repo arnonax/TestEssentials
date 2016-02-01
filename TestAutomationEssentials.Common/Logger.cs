@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace TestAutomationEssentials.Common
@@ -21,7 +22,13 @@ namespace TestAutomationEssentials.Common
 			/// <summary>
 			/// Provides the implementation that writes the line to the debugger's trace output
 			/// </summary>
-			public static readonly Action<string> Trace = str => System.Diagnostics.Trace.WriteLine(str);
+			public static readonly Action<string> Trace = WriteTrace;
+
+			[ExcludeFromCodeCoverage]
+			private static void WriteTrace(string str)
+			{
+				System.Diagnostics.Trace.WriteLine(str);
+			}
 		}
 
 		private static int _indentation;
@@ -84,6 +91,8 @@ namespace TestAutomationEssentials.Common
 		/// </summary>
 		public static void DecreaseIndent()
 		{
+			if (_indentation == 0)
+				throw new InvalidOperationException("Indentation is already at its minimum. Can't decrease any further.");
 			_indentation--;
 		}
 
