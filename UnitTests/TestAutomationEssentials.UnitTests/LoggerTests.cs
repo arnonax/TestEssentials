@@ -12,7 +12,7 @@ namespace TestAutomationEssentials.UnitTests
 	public class LoggerTests
 	{
 		private const int LengthOfDateTime = 12;
-		private List<string> _output = new List<string>();
+		private readonly List<string> _output = new List<string>();
 
 		[TestInitialize]
 		public void TestInitialize()

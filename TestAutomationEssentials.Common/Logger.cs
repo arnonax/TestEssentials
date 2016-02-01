@@ -49,6 +49,7 @@ namespace TestAutomationEssentials.Common
 			if (writeLineImpl == null)
 				throw new ArgumentNullException("writeLineImpl");
 
+			_indentation = 0;
 			_writeLineImpl = writeLineImpl;
 		}
 
