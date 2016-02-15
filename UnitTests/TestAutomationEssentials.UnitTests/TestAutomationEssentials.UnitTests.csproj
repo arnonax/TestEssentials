@@ -53,6 +53,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="AssertsAggregatorTests.cs" />
     <Compile Include="ConfigurationTests.cs" />
     <Compile Include="DateTimeExtensionsTests.cs" />
     <Compile Include="ExtensionMethodsUnitTests.cs" />

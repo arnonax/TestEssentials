@@ -135,5 +135,16 @@ namespace TestAutomationEssentials.Common
 
 			return String.Format("{0}:{1:00} " + uom, mainValue, subValue);
 		}
+
+		/// <summary>
+		/// Rounds toward zero the given date/time's ticks to the nearest millisecond.
+		/// </summary>
+		/// <param name="dateTime">The date/time value to round</param>
+		/// <returns>The rounded date/time</returns>
+		public static DateTime TrimMilliseconds(this DateTime dateTime)
+		{
+			var ticks = dateTime.Ticks/TimeSpan.TicksPerMillisecond;
+			return new DateTime(ticks * TimeSpan.TicksPerMillisecond);
+		}
 	}
 }

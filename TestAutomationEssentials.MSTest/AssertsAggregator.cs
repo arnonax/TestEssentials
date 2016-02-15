@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestAutomationEssentials.Common;
 
@@ -41,6 +42,9 @@ namespace TestAutomationEssentials.MSTest
         /// <param name="description">The description for the section that is written to the log</param>
         public AssertsAggregator(string description)
         {
+			if (description == null)
+				throw  new ArgumentNullException("description");
+
             _description = description;
             _loggerSection = Logger.StartSection("Verifying: {0}", description);
         }
@@ -49,11 +53,12 @@ namespace TestAutomationEssentials.MSTest
 	    /// Closes the evaluation section in the log and thrown an <see cref="AssertFailedException"/> if one of the assertions in it failed.
 	    /// </summary>
 	    /// <exception cref="AssertFailedException">One or more of the assertions in the scope failed</exception>
-	    public void Dispose()
+	    [ExcludeFromCodeCoverage]
+		public void Dispose()
         {
             try
             {
-                if (_failed)
+                if (!_failed)
                     return;
 
                 Assert.Fail("Verfying '{0}' failed. See log for details.", _description);
@@ -106,6 +111,7 @@ namespace TestAutomationEssentials.MSTest
             });
         }
 
+		[ExcludeFromCodeCoverage]
         private void Try(Action action)
         {
             try

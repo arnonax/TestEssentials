@@ -7,8 +7,9 @@ using TestAutomationEssentials.MSTest;
 
 namespace TestAutomationEssentials.UnitTests
 {
-	[ExcludeFromCodeCoverage]
 	[TestClass]
+	[ExcludeFromCodeCoverage] // needed in class level because lambda expressions are class-level methods. (used in the call
+							  // to ExpectException inside InitializeValidateItsArgument test.
 	public class LoggerTests
 	{
 		private const int LengthOfDateTime = 12;
@@ -30,17 +31,17 @@ namespace TestAutomationEssentials.UnitTests
 		[TestMethod]
 		public void WriteLineWritesTheCurrentTimeAtTheBeginningOfTheLine()
 		{
-			var timeBefore = DateTime.Now;
+			var timeBefore = DateTime.Now.TrimMilliseconds();
 			const string text = "TEST";
 			Logger.WriteLine(text);
-			var timeAfter = DateTime.Now;
+			var timeAfter = DateTime.Now.TrimMilliseconds();
 
 			var splittedString = _output.Content().Split(new[] {'\t'}, 2);
 			var loggedTimeAsString = splittedString[0];
 			var loggedText = splittedString[1];
 			var loggedTime = DateTime.Parse(loggedTimeAsString);
 
-			Assert.IsTrue(timeBefore <= loggedTime && loggedTime <= timeAfter, "Logged time '{0}' should be between '{1}' and '{2}'", loggedTime, timeBefore, timeAfter);
+			Assert.IsTrue(timeBefore <= loggedTime && loggedTime <= timeAfter, "Logged time '{0:O}' should be between '{1:O}' and '{2:O}'", loggedTime, timeBefore, timeAfter);
 			Assert.AreEqual(text, loggedText, "text");
 		}
 
