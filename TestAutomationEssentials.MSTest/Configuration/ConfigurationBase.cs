@@ -104,6 +104,7 @@ namespace TestAutomationEssentials.MSTest.Configuration
 			return (T)GetValue(typeof (T), elementName, defaultvalue);
 		}
 
+		// TODO: support enums!
 		private object GetValue(Type type, string elementName, object defaultValue)
 		{
 			var element = _document.Root.Element(XName.Get(elementName, XmlNamespace));
