@@ -24,8 +24,11 @@ namespace TestAutomationEssentials.MSTest
         /// <exception cref="AssertFailedException"><paramref name="actual"/> is not equal to <paramref name="expected"/></exception>
         public static void AreEqual<T>(T expected, T actual, string expectationMessage, params object[] args)
         {
-            if (expectationMessage == null || args == null)
-                throw new ArgumentNullException();
+            if (expectationMessage == null)
+                throw new ArgumentNullException("expectationMessage");
+
+			if (args == null)
+				throw new ArgumentNullException("args");
 
             var message = string.Format(expectationMessage, args);
             Logger.WriteLine("Verifying that '{0}' equals to '{1}' ('{2}')", expected, actual, message);
