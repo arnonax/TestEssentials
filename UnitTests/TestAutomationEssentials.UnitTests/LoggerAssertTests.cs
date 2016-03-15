@@ -51,5 +51,17 @@ namespace TestAutomationEssentials.UnitTests
 				Assert.AreEqual("args", ex.ParamName);
 			}
 		}
+
+		[TestMethod]
+		public void AreEqualsValidatesDatesWithinThreshold()
+		{
+			var date1 = new DateTime(2016, 3, 1, 12, 34, 56);
+			var date2 = date1.Add(1.Seconds());
+			LoggerAssert.AreEqual(date1, date2, 2.Seconds(), "Dates should be equal +/- 2 seconds");
+
+			var date3 = date1.Add(5.Seconds());
+			TestUtils.ExpectException<AssertFailedException>(() => LoggerAssert.AreEqual(date1, date3, 2.Seconds(), "This assert should fail!"), 
+				"5 seconds are too big a difference...");
+		}
 	}
 }

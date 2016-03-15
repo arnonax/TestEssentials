@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -49,6 +50,12 @@ namespace TestAutomationEssentials.MSTest
         public static void AreEqual(DateTime expected, DateTime actual, TimeSpan threashold, string expectationMessage,
             params object[] args)
         {
+			if (expectationMessage == null)
+				throw new ArgumentNullException("expectationMessage");
+
+			if (args == null)
+				throw new ArgumentNullException("args");
+
             IsTrue((expected - actual).Absolute() <= threashold, "'{0}' equals to '{1}'+/-'{2}' ('{3}')",
                 expected, actual, threashold, string.Format(expectationMessage, args));
         }
@@ -64,14 +71,24 @@ namespace TestAutomationEssentials.MSTest
         /// <exception cref="AssertFailedException">The actual image is not identical to the expected one</exception>
         public static void AreEqual(Image expectedImage, Image actualImage, string expectationMessage, params object[] args)
         {
+			if (expectedImage == null)
+				throw new ArgumentNullException("expectedImage");
+
+			if (actualImage == null)
+				throw new ArgumentNullException("actualImage");
+
+			if (expectationMessage == null)
+				throw new ArgumentNullException("expectationMessage");
+
+			if (args == null)
+				throw new ArgumentNullException("args");
+
             var expectedBytes = expectedImage.GetBitmapBytes();
             var actualBytes = actualImage.GetBitmapBytes();
 
             Logger.WriteLine("Verifying that images are equals");
-            if (!(expectedBytes.SequenceEqual(actualBytes)))
+            if (!expectedBytes.SequenceEqual(actualBytes))
             {
-                // AddResultImage(expectedImage, "Expected");
-                //AddResultImage(actualImage, "Actual");
                 Assert.Fail(expectationMessage, args);
             }
         }
@@ -88,6 +105,9 @@ namespace TestAutomationEssentials.MSTest
         {
             if (expectationMessage == null)
                 throw new ArgumentNullException("expectationMessage");
+
+			if (args == null)
+				throw new ArgumentNullException("args");
 
             var message = string.Format(expectationMessage, args);
             Logger.WriteLine("Verifying that condition is true: '{0}'", message);
@@ -118,6 +138,21 @@ namespace TestAutomationEssentials.MSTest
 		/// <exception cref="AssertFailedException">The actual sequence has different elements or different order than the expected one</exception>
 		public static void AreEqual<T>(IEnumerable<T> expected, IEnumerable<T> actual, string expectationMessage, params object[] args)
         {
+			if (expected == null)
+				throw new ArgumentNullException("expected");
+
+			if (actual == null)
+				throw new ArgumentNullException("actual");
+
+			if (expectationMessage == null)
+				throw new ArgumentNullException("expectationMessage");
+
+			if (args == null)
+				throw new ArgumentNullException("args");
+
+			if (args == null)
+				throw new ArgumentNullException("args");
+
             // TODO: improve the message in case of failure
 			var message = string.Format(expectationMessage, args);
             Logger.WriteLine("Verifying that the collections are equal ('{0}')", message);
@@ -135,6 +170,15 @@ namespace TestAutomationEssentials.MSTest
 		/// <exception cref="AssertFailedException">The actual sequence has different elements or different order than the expected one</exception>
 		public static void Contains(string value, string substring, string validationMessage, params object[] args)
         {
+			if (value == null)
+				throw new ArgumentNullException("value");
+
+			if (substring == null)
+				throw new ArgumentNullException("substring");
+
+			if (validationMessage == null)
+				throw new ArgumentNullException("validationMessage");
+
             var message = string.Format(validationMessage, args);
             Logger.WriteLine("Verifying that '{0}' contains '{1}' ('{2}')", value, substring, message);
             StringAssert.Contains(value, substring, message);
