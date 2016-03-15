@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>TestAutomationEssentials.Selenium</id>
+        <version>0.9.0.0</version>
+        <title>Test Automation Essentials - Selenium</title>
+        <authors>Arnon Axelrod</authors>
+        <owners>Arnon Axelrod</owners>
+        <projectUrl>https://github.com/arnonax/TestEssentials</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Provide useful utility methods and classes that can be used by Selenium based tests</description>
+        <tags>Test-Automation;Selenium</tags>
+        <dependencies>
+            <dependency id="TestAutomationEssentials.Common" version="1.0.0.1" />
+        </dependencies>
+    </metadata>
+    <files />
+</package>
