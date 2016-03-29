@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenQA.Selenium;
@@ -7,7 +8,9 @@ namespace TestAutomationEssentials.Selenium
 {
 	public abstract class ElementsContainer
 	{
-		protected ElementsContainer(string description)
+	    public const int DefaultWaitTimeout = 30;
+
+	    protected ElementsContainer(string description)
 		{
 			Description = description;
 		}
@@ -28,7 +31,7 @@ namespace TestAutomationEssentials.Selenium
 
 		public abstract IDOMRoot DOMRoot { get; }
 
-		public BrowserElement WaitForElement(By by, string description, int seconds = 30)
+		public BrowserElement WaitForElement(By by, string description, int seconds = DefaultWaitTimeout)
 		{
 			Activate();
 
@@ -65,11 +68,9 @@ namespace TestAutomationEssentials.Selenium
 							new BrowserElement(this, @by, matches => matches.ElementAt(i), string.Format("{0}[{1}]", description, i)));
 		}
 
-        public IWebElement FindElementWithActivation(By @by, int seconds = 60)
-        {
-            Activate();
-            var webDriver = GetSearchContext();
-            return webDriver.FindElement(@by);
-        }
+	    public bool ElementAppears(By by)
+	    {
+	        return GetSearchContext().FindElements(by).Any(el => el.Displayed);
+	    }
 	}
 }
