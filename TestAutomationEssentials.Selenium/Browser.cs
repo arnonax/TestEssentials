@@ -70,63 +70,25 @@ namespace TestAutomationEssentials.Selenium
 			MainWindow.NavigateToUrl(url);
 		}
 
+		/// <summary>
+		/// Returns the underlying IWebDriver object
+		/// </summary>
+		/// <returns></returns>
 		public IWebDriver GetWebDriver()
 		{
 			CheckDisposed();
 			return WebDriver;
 		}
 
+		/// <summary>
+		/// Closes the Selenium driver
+		/// </summary>
 		public void Dispose()
 		{
 			if (!_isDisposed)
 				WebDriver.Quit();
 
 			_isDisposed = true;
-		}
-
-		public IEnumerable<BrowserElement> WaitForElements(By @by, string description, int seconds = 30)
-		{
-			CheckDisposed();
-			return
-				WebDriver.FindElements(@by)
-					.Select((x, i) => new BrowserElement(this, @by, matches => matches.ElementAt(i), String.Format("{0}[{1}]", description, i)));
-		}
-
-		public T WaitUntil<T>(Func<T> condition, int seconds = 60)
-		{
-			return WaitUntil(d => condition(), seconds);
-		}
-
-		public T WaitUntil<T>(Func<T> condition, T defaultValue, int seconds = 60)
-		{
-			return WaitUntil(d => condition(), defaultValue, seconds);
-		}
-
-		public T WaitUntil<T>(Func<IWebDriver, T> condition, int seconds = 60)
-		{
-			CheckDisposed();
-			var wait = new WebDriverWait(WebDriver, GetTimeout(seconds));
-			wait.IgnoreExceptionTypes(typeof(StaleElementReferenceException)); // If we get this exception, we should continue to wait, because it could be that it wasn't refreshed yet.
-			return wait.Until(condition);
-		}
-
-		public T WaitUntil<T>(Func<IWebDriver, T> condition, T defaultValue, int seconds = 30)
-		{
-			T result;
-			try
-			{
-				result = WaitUntil(condition, seconds);
-			}
-			catch
-			{
-				result = default(T);
-			}
-			return result;
-		}
-
-		public TimeSpan GetTimeout(int seconds = 60)
-		{
-			return TimeSpan.FromSeconds(seconds);
 		}
 
 		public BrowserWindow OpenWindow(Action action, string windowDescription)
