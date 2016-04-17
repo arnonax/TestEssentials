@@ -49,7 +49,7 @@ namespace TestAutomationEssentials.Common
 		/// <typeparam name="T">The type of object</typeparam>
 		/// <param name="obj1">First object to compare</param>
 		/// <param name="obj2">2nd object to compare</param>
-		/// <returns><b>true</b> if the values of <paramref name="obj1"/> and <see cref="obj2"/> are the same, even if it's <b>null</b>. Otherwise <b>false</b></returns>
+        /// <returns><b>true</b> if the values of <paramref name="obj1"/> and <paramref name="obj2"/> are the same, even if it's <b>null</b>. Otherwise <b>false</b></returns>
 		public static bool SafeEquals<T>(this T obj1, T obj2)
 		{
 			return obj1 == null && obj2 == null

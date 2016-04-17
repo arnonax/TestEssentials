@@ -128,7 +128,9 @@ namespace TestAutomationEssentials.Selenium
 			{
 				try
 				{
-					return WebElement.Displayed;
+				    var webElement = WebElement;
+                    // WebElement may return null if the element is not displayed
+				    return webElement != null && WebElement.Displayed;
 				}
 				catch (StaleElementReferenceException)
 				{
@@ -172,9 +174,9 @@ namespace TestAutomationEssentials.Selenium
 			doublClick.Perform();
 		}
 
-		private OpenQA.Selenium.Interactions.Actions CreateActionsSequence()
+		private Actions CreateActionsSequence()
 		{
-			return new OpenQA.Selenium.Interactions.Actions(DOMRoot.Browser.GetWebDriver());
+			return new Actions(DOMRoot.Browser.GetWebDriver());
 		}
 
 		IWebElement ISearchContext.FindElement(By @by)
@@ -248,6 +250,15 @@ namespace TestAutomationEssentials.Selenium
 	        var action = CreateActionsSequence();
             var dragAndDrop = action.MoveToElement(WebElement).DragAndDrop(WebElement, targetWebElement).Build();
             dragAndDrop.Perform();
+        }
+
+        public void WaitToDisappear(int seconds = DefaultWaitTimeout)
+        {
+            Wait.While(() =>
+            {
+                var element = WebElement;
+                return element != null && element.Displayed;
+            }, seconds.Seconds(), "Element '{0}' still appears after '{1}' seconds", Description, seconds);
         }
 	}
 }

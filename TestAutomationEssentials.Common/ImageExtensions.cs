@@ -33,7 +33,7 @@ namespace TestAutomationEssentials.Common
 		/// <returns>A new <see cref="Bitmap"/> object that contains the resized image</returns>
 		/// <remarks>
 		/// The method can either shrink or grow the original image, but always keeps the original ratio. If the ratio of the original
-		/// image is not the same as of the target size, then the image is centered and the borders (either top & bottom or left & right)
+		/// image is not the same as of the target size, then the image is centered and the borders (either top &amp; bottom or left &amp; right)
 		/// are left empty (black)
 		/// </remarks>
 		public static Bitmap FitToSize(this Image image, Size targetSize)

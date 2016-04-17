@@ -40,15 +40,41 @@ namespace TestAutomationEssentials.Common
 		/// <example>
 		/// Wait.While(() => PleaseWaitMessageAppears(), 30.Seconds());
 		/// </example>
-		public static void While(Expression<Func<bool>>  conditionExpr, TimeSpan timeout)
+		public static void While(Expression<Func<bool>> conditionExpr, TimeSpan timeout)
 		{
 			ValidateNullArgument(conditionExpr, "conditionExpr");
 			ValidateTimeout(timeout);
 
 			var timeoutMessage = "The condition '" + conditionExpr + "' is still true after " + timeout.ToSpokenString();
 			var condition = conditionExpr.Compile();
-			Until(() => !condition(), timeout, timeoutMessage);
+			While(condition, timeout, timeoutMessage);
 		}
+
+	    /// <summary>
+        /// Waits until the specified condition becomes false
+	    /// </summary>
+        /// <param name="condition">The condition to wait for to become false</param>
+        /// <param name="timeout">The maximum time to wait for the condition to become false</param>
+        /// <param name="timeoutMessage">The message to use in the exception in case of a timeout</param>
+        /// <param name="args">Additional format arguments to embedd in <paramref name="timeoutMessage"/></param>
+        /// <exception cref="ArgumentNullException">Any of the arguments is null</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative</exception>
+        /// <exception cref="FormatException">timeoutMessage is invalid.-or- The index of a format item is less than zero, or greater
+        ///     than or equal to the length of the args array.</exception>
+        /// <exception cref="TimeoutException">The condition didn't become false for the specified timeout. The message of the 
+        /// exception is specified by the <paramref name="timeoutMessage"/> argument</exception>
+        /// <example>
+        /// Wait.While(() => PopupIsDisplayed(), 30.Seconds(), "Popup didn't disappear!");
+        /// </example>
+        public static void While(Func<bool> condition, TimeSpan timeout, string timeoutMessage, params object[] args)
+	    {
+            ValidateNullArgument(condition, "condition");
+            ValidateNullArgument(timeoutMessage, "timeoutMessage");
+            ValidateNullArgument(args, "args");
+            ValidateTimeout(timeout);
+
+            Until(() => !condition(), timeout, timeoutMessage);
+	    }
 
 		/// <summary>
 		/// Waits until the specified condition becomes true. In case of a timeout, the specified message is used in the exception
@@ -57,7 +83,7 @@ namespace TestAutomationEssentials.Common
 		/// <param name="timeout">The maximum time to wait for the condition to become true</param>
 		/// <param name="timeoutMessage">The message to use in the exception in case of a timeout</param>
 		/// <param name="args">Additional format arguments to embedd in <paramref name="timeoutMessage"/></param>
-		/// <exception cref="ArgumentNullException"><paramref name="condition"/> is null</exception>
+		/// <exception cref="ArgumentNullException">Any of the arguments is null</exception>
 		/// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative</exception>
 		/// <exception cref="FormatException">timeoutMessage is invalid.-or- The index of a format item is less than zero, or greater
 		///     than or equal to the length of the args array.</exception>
