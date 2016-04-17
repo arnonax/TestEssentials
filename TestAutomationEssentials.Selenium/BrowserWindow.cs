@@ -1,12 +1,22 @@
+using OpenQA.Selenium;
 using TestAutomationEssentials.Common;
 
 namespace TestAutomationEssentials.Selenium
 {
+	/// <summary>
+	/// Represents a browser window
+	/// </summary>
 	public class BrowserWindow : ElementsContainer, IDOMRoot
 	{
 		private readonly Browser _browser;
 		private readonly string _windowHandle;
 
+		/// <summary>
+		/// Initializes the <see cref="BrowserWindow"/> given the specified browser, window handle, and a description
+		/// </summary>
+		/// <param name="browser">The browser object that this window belongs to</param>
+		/// <param name="windowHandle">The handle of the browser window as returned from <see cref="IWebDriver.WindowHandles"/> or <see cref="IWebDriver.CurrentWindowHandle"/></param>
+		/// <param name="description">The description of the window, as you want to appear in the log</param>
 		public BrowserWindow(Browser browser, string windowHandle, string description)
 			: base(description)
 		{
@@ -29,11 +39,17 @@ namespace TestAutomationEssentials.Selenium
 			get { return this; }
 		}
 
+		/// <summary>
+		/// Returns the owning browser
+		/// </summary>
 		public Browser Browser
 		{
 			get { return _browser; }
 		}
 
+		/// <summary>
+		/// Returns the current title of the window
+		/// </summary>
 		public string Title
 		{
 			get
@@ -43,6 +59,12 @@ namespace TestAutomationEssentials.Selenium
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the current URL of the browser window
+		/// </summary>
+		/// <remarks>
+		/// Setting this property is exactly the same as calling <see cref="NavigateToUrl"/>
+		/// </remarks>
 		public string Url
 		{
 			get
@@ -52,11 +74,13 @@ namespace TestAutomationEssentials.Selenium
 			}
 			set
 			{
-				Activate();
-				Browser.GetWebDriver().Url = value;
+				NavigateToUrl(value);
 			}
 		}
 
+		/// <summary>
+		/// Closes the current window
+		/// </summary>
 		public void Close()
 		{
 			var webDriver = _browser.GetWebDriver();
@@ -80,6 +104,13 @@ namespace TestAutomationEssentials.Selenium
 			Activate();
 		}
 
+		/// <summary>
+		/// Navigates the current browser window to the specified URL
+		/// </summary>
+		/// <param name="url">The URL to navigate to</param>
+		/// <remarks>
+		/// This method records the operation to the log using <see cref="Logger"/>
+		/// </remarks>
 		public void NavigateToUrl(string url)
 		{
 			Logger.WriteLine("Navigating to '{0}' on '{1}' window", url, Description);
