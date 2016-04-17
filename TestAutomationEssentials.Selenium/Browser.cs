@@ -133,13 +133,13 @@ namespace TestAutomationEssentials.Selenium
 			return newWindow;
 		}
 
-		protected void CheckDisposed()
+		private void CheckDisposed()
 		{
 			if (_isDisposed)
 				throw new ObjectDisposedException("Browser object has been disposed");
 		}
 
-		protected internal override void Activate()
+		protected internal sealed override void Activate()
 		{
 			MainWindow.Activate();
 		}
