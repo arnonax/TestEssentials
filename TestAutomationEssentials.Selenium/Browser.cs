@@ -8,32 +8,44 @@ using TestAutomationEssentials.MSTest;
 
 namespace TestAutomationEssentials.Selenium
 {
+	/// <summary>
+	/// Represents an instance of a browser
+	/// </summary>
 	public class Browser : ElementsContainer, IDOMRoot
 	{
+		/// <summary>
+		/// Provides access to the underlying <see cref="IWebDriver"/>
+		/// </summary>
 		protected readonly IWebDriver WebDriver;
 		private bool _isDisposed;
 		internal IDOMRoot ActiveDOM;
 
-		protected Browser(string description, IWebDriver webDriver) : base(description)
+		/// <summary>
+		/// Initializes the instance of the object using the specified description and <see cref="IWebDriver"/>
+		/// </summary>
+		/// <param name="description">The description of the browser. This is used for logging</param>
+		/// <param name="webDriver">The WebDriver instance that is used to communicate with the browser</param>
+		/// <exception cref="ArgumentNullException">one of the arguments are null</exception>
+		public Browser(string description, IWebDriver webDriver) : base(description)
 		{
+			if (description == null)
+				throw new ArgumentNullException("description");
+
+			if (webDriver == null)
+				throw new ArgumentNullException("webDriver");
+
 			WebDriver = webDriver;
 			var mainWindowHandle = WebDriver.CurrentWindowHandle;
 			MainWindow = new BrowserWindow(this, mainWindowHandle, "Main window");
 			ActiveDOM = MainWindow;
 		}
 
-		public string Url
-		{
-			get
-			{
-				CheckDisposed();
-				return WebDriver.Url;
-			}
-		}
-
+		/// <summary>
+		/// Returns the browser window that was activew when the browser was opened
+		/// </summary>
 		public BrowserWindow MainWindow { get; private set; }
 
-		public override IDOMRoot DOMRoot
+		internal override IDOMRoot DOMRoot
 		{
 			get
 			{
@@ -47,6 +59,10 @@ namespace TestAutomationEssentials.Selenium
 			get { return this; }
 		}
 
+		/// <summary>
+		/// Navigates the main window to the specified url
+		/// </summary>
+		/// <param name="url">The url to navigate to</param>
 		public void NavigateToUrl(string url)
 		{
 			CheckDisposed();

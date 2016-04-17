@@ -26,7 +26,7 @@ namespace TestAutomationEssentials.Selenium
 			return new Frame(element);
 		}
 
-		public abstract IDOMRoot DOMRoot { get; }
+		internal abstract IDOMRoot DOMRoot { get; }
 
 		public BrowserElement WaitForElement(By by, string description, int seconds = 30)
 		{

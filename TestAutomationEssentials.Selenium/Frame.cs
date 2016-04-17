@@ -42,7 +42,7 @@ namespace TestAutomationEssentials.Selenium
 			get { return _frameElement.DOMRoot.Browser; }
 		}
 
-		public override IDOMRoot DOMRoot
+		internal override IDOMRoot DOMRoot
 		{
 			get { return this; }
 		}

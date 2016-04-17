@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Interactions;
 using TestAutomationEssentials.Common;
 
 namespace TestAutomationEssentials.Selenium
@@ -12,7 +11,7 @@ namespace TestAutomationEssentials.Selenium
 	{
 		private readonly IDOMRoot _domRoot;
 
-		public override IDOMRoot DOMRoot
+		internal override IDOMRoot DOMRoot
 		{
 			get { return _domRoot; }
 		}
