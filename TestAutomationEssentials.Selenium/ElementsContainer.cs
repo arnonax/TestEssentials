@@ -12,6 +12,9 @@ namespace TestAutomationEssentials.Selenium
 
 	    protected ElementsContainer(string description)
 		{
+			if (description == null)
+				throw new ArgumentNullException("description");
+
 			Description = description;
 		}
 

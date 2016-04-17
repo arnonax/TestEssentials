@@ -49,6 +49,7 @@ namespace TestAutomationEssentials.Selenium
 
 		protected virtual void SwitchToFrame()
 		{
+			// TODO: check if GetWebElement() is needed here (and at all)
 			_webDriver.SwitchTo().Frame(_frameElement.GetWebElement());
 		}
 	}
