@@ -2,7 +2,7 @@
 
 Test Automation Essentials is a set of tools that are handy for any test automation project. It contains all the code that I want to take with me from one project to another. I hope you'll find it useful for your projects too :-)
 
-This project is composed from 3 assemblies:
+This project is composed from 4 assemblies:
 
 1. **TestAutomationEssentials.Common** - this assembly contains useful utilities and extension methods that are not related directly to test automation. In fact, you can find many of these utilities useful for non test project too! This assembly includes:
    * Useful extension methods like `TryGet` (which provides functionality similiar to the [Null-Conditional Operator](https://msdn.microsoft.com/en-us/magazine/dn802602.aspx)) in C# 6, without C# 6!) and `IsEmpty` extension method of `IEnumerable`
@@ -16,9 +16,14 @@ This project is composed from 3 assemblies:
    * `TestUtils.ExpectException<T>(Action)`: a better (IMHO) way to assert for exceptions than the `[ExpectedException]` attribute.
    * A useful mechanism to work with configuration files in your tests.
 
-3. **TestAutomationEssentials.CodedUI** - this assembly provide useful extension methods, specifically for Coded UI, that allows you to work without UIMaps but in an easy to read (and write) way. In fact, the API it provides is pretty similiar to Selenium's. For example, you can write: `var customerNameTextBox = mainWindow.Find<WinPanel>(By.Id("CustomerDetails")).Find<WinText>(By.Name("CustomerName"));`
+3. **TestAutomationEssentials.CodedUI** - this assembly provides useful extension methods, specifically for Coded UI, that allows you to work without UIMaps but in an easy to read (and write) way. In fact, the API it provides is pretty similiar to Selenium's. For example, you can write: `var customerNameTextBox = mainWindow.Find<WinPanel>(By.Id("CustomerDetails")).Find<WinText>(By.Name("CustomerName"));`
 
-    In addition, it provides few other extension methods that improves the readability of the code. For example: `myControl.RightClick();`, `myControl.DragTo(otherControl);` and the **very useful** method `myControl.IsVisible()`!
+   In addition, it provides few other extension methods that improves the readability of the code. For example: `myControl.RightClick();`, `myControl.DragTo(otherControl);` and the **very useful** method `myControl.IsVisible()`!
+
+4. **TestAutomationEssentials.Selenium** - this assembly wrapps some of Selenium's native API, and provides the following benefits:
+   * A WaitForElement method that simpilfies the usage of explicit wait (i.e. WebDriverWait), and avoiding the the time-wasting implicit wait when using FindElements.
+   * An automatic logging of every click and SendKeys actions
+   * A straight-forward API to handle frames/iframes and multiple browser windows, avoiding unneccesary `StaleElementException`s and the combersome need for `SwitchTo()`.
 
 
 ## How to use this project
