@@ -398,5 +398,17 @@ namespace TestAutomationEssentials.Common
 
             return (TEnum)field.GetValue(null);
 	    }
+
+        /// <summary>
+        /// Truncates the given string to the specified length
+        /// </summary>
+        /// <param name="text">The original string</param>
+        /// <param name="maxLength">The maximum length to keep</param>
+        /// <returns>If <paramref name="maxLength"/> is greater than the length of <paramref name="text"/> this method returns <paramref name="text"/>,
+        /// otherwise, it returns the first <paramref name="maxLength"/> characters of <paramref name="text"/></returns>
+        public static string Truncate(this string text, int maxLength)
+        {
+            return text.Length > maxLength ? text.Substring(0, maxLength) : text;
+        }
 	}
 }
