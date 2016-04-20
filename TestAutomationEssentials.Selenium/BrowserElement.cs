@@ -183,7 +183,7 @@ namespace TestAutomationEssentials.Selenium
 				{
 				    var webElement = WebElement;
                     // WebElement may return null if the element is not displayed
-				    return webElement != null && WebElement.Displayed;
+				    return webElement != null && webElement.Displayed;
 				}
 				catch (StaleElementReferenceException)
 				{
@@ -324,11 +324,7 @@ namespace TestAutomationEssentials.Selenium
         /// <exception cref="TimeoutException">The current element hasn't been disappeared for the specified period</exception>
         public void WaitToDisappear(int seconds = DefaultWaitTimeout)
         {
-            Wait.While(() =>
-            {
-                var element = WebElement;
-                return element != null && element.Displayed;
-            }, seconds.Seconds(), "Element '{0}' still appears after '{1}' seconds", Description, seconds);
+            Wait.While(() => Displayed, seconds.Seconds(), "Element '{0}' still appears after '{1}' seconds", Description, seconds);
         }
 	}
 }

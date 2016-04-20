@@ -428,9 +428,11 @@ namespace TestAutomationEssentials.UnitTests
 		private struct DummyStruct
 		{
 #pragma warning disable 169 // not used, but ParseAsThrowsAnArgumentExceptionIfTypeArgumentIsNoAnEnum supposedly use it by name
-			public int Whatever;
+#pragma warning disable 649 // Compiler warning CS0649
+            public int Whatever;
+#pragma warning disable 649
 #pragma warning restore 169
-		}
+        }
 
 		[TestMethod]
 		public void GetDescriptionThrowsArgumentExceptionIfArgumentIsNotAnEnum()
