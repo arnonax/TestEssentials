@@ -34,7 +34,10 @@ namespace TestAutomationEssentials.Selenium
 			_browser.ActiveDOM = this;
 		}
 
-		internal override IDOMRoot DOMRoot
+		/// <summary>
+		/// Always returns itself
+		/// </summary>
+		public override IDOMRoot DOMRoot
 		{
 			get { return this; }
 		}

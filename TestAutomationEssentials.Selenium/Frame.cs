@@ -42,7 +42,10 @@ namespace TestAutomationEssentials.Selenium
 			get { return _frameElement.DOMRoot.Browser; }
 		}
 
-		internal override IDOMRoot DOMRoot
+		/// <summary>
+		/// the root of the DOM that contains this object. This can be the browser, the containing frame or a window.
+		/// </summary>
+		public override IDOMRoot DOMRoot
 		{
 			get { return this; }
 		}

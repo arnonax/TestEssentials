@@ -19,7 +19,7 @@ namespace TestAutomationEssentials.Selenium
 		private readonly IDOMRoot _domRoot;
 
 		/// <summary>
-		/// Returns the root of the DOM that contains this object. This can be the browser, a frame or a window.
+		/// Returns the root of the DOM that contains this object. This can be the browser, the containing frame or a window.
 		/// </summary>
 		public override IDOMRoot DOMRoot
 		{

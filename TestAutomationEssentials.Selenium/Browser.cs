@@ -44,7 +44,10 @@ namespace TestAutomationEssentials.Selenium
 		/// </summary>
 		public BrowserWindow MainWindow { get; private set; }
 
-		internal override IDOMRoot DOMRoot
+		/// <summary>
+		/// Always returns itself
+		/// </summary>
+		public override IDOMRoot DOMRoot
 		{
 			get
 			{

@@ -70,7 +70,10 @@ namespace TestAutomationEssentials.Selenium
 			return new Frame(element);
 		}
 
-		internal abstract IDOMRoot DOMRoot { get; }
+		/// <summary>
+		/// When implemented in a derived class, should return the root of the DOM that contains this object. This can be the browser, a containing frame or a window.
+		/// </summary>
+		public abstract IDOMRoot DOMRoot { get; }
 
 		public BrowserElement WaitForElement(By by, string description, int seconds = DefaultWaitTimeout)
 		{
