@@ -4,6 +4,8 @@ using System.Collections.ObjectModel;
 using System.Drawing;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Interactions;
+using OpenQA.Selenium.Internal;
+using OpenQA.Selenium.Remote;
 using TestAutomationEssentials.Common;
 
 namespace TestAutomationEssentials.Selenium
@@ -14,7 +16,7 @@ namespace TestAutomationEssentials.Selenium
 	/// <remarks>
 	/// This class wraps Selenium's <see cref="IWebElement"/> to provide additional capabilities for logging, automatic waiting and more.
 	/// </remarks>
-	public class BrowserElement : ElementsContainer, IWebElement
+	public class BrowserElement : ElementsContainer, IWebElement, IWrapsElement
 	{
 		private readonly IDOMRoot _domRoot;
 
@@ -329,5 +331,14 @@ namespace TestAutomationEssentials.Selenium
         {
             Wait.While(() => Displayed, seconds.Seconds(), "Element '{0}' still appears after '{1}' seconds", Description, seconds);
         }
+
+		#region IWrapsElement Members
+
+		IWebElement IWrapsElement.WrappedElement
+		{
+			get { return WebElement; }
+		}
+
+		#endregion
 	}
 }
