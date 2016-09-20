@@ -105,6 +105,8 @@ namespace TestAutomationEssentials.Selenium
 
 		public IEnumerable<BrowserElement> FindElements(By @by, string description)
 		{
+			Activate();
+
 			return
 				GetSearchContext().FindElements(@by)
 					.Select(
