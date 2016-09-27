@@ -5,7 +5,6 @@ using System.Drawing;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Internal;
-using OpenQA.Selenium.Remote;
 using TestAutomationEssentials.Common;
 
 namespace TestAutomationEssentials.Selenium
@@ -70,11 +69,11 @@ namespace TestAutomationEssentials.Selenium
 		/// </summary>
 		/// <param name="container">The container that contains the relevant element. Typically this is a <see cref="Browser"/>, <see cref="BrowserWindow"/>, <see cref="Frame"/> or a containing <see cref="BrowserElement"/></param>
 		/// <param name="by">A filter mechanism used to filter the matching elements</param>
-		/// <param name="selector">A delegate that is used to select the sepecific element from the filtered element</param>
+		/// <param name="selector">A delegate that is used to select the sepecific element from the filtered elements</param>
 		/// <param name="description">The description of the new element</param>
 		/// <exception cref="ArgumentNullException">Any of the arguments is null</exception>
-		public BrowserElement(ElementsContainer container, By @by, Func<IReadOnlyCollection<IWebElement>, IWebElement> selector, string description)
-			: this(SafeGetDOMRoot(container, "container"), () => GetWebElement(container, @by, selector), description)
+		public BrowserElement(ElementsContainer container, By by, Func<IReadOnlyCollection<IWebElement>, IWebElement> selector, string description)
+			: this(SafeGetDOMRoot(container, "container"), () => GetWebElement(container, by, selector, description), description)
 		{
 		}
 
@@ -85,12 +84,12 @@ namespace TestAutomationEssentials.Selenium
 		/// <param name="by">A filter mechanism used to find the element. If multiple elements match the filter, the first one is used</param>
 		/// <param name="description">The description of the new element</param>
 		/// <exception cref="ArgumentNullException">Any of the arguments is null</exception>
-		public BrowserElement(ElementsContainer container, By @by, string description)
-			: this(SafeGetDOMRoot(container, "container"), () => container.GetSearchContext().FindElement(@by), description)
+		public BrowserElement(ElementsContainer container, By by, string description)
+			: this(SafeGetDOMRoot(container, "container"), () => container.GetSearchContext().FindElement(by), description)
 		{
 		}
 
-		private static IWebElement GetWebElement(ElementsContainer elementsContainer, By @by, Func<IReadOnlyCollection<IWebElement>, IWebElement> selector)
+		private static IWebElement GetWebElement(ElementsContainer elementsContainer, By by, Func<IReadOnlyCollection<IWebElement>, IWebElement> selector, string description)
 		{
 			if (elementsContainer == null)
 				throw new ArgumentNullException("elementsContainer");
@@ -100,8 +99,12 @@ namespace TestAutomationEssentials.Selenium
 				throw new ArgumentNullException("selector");
 
 			var searchContext = elementsContainer.GetSearchContext();
-			var matchingElements = searchContext.FindElements(@by);
-			return selector(matchingElements);
+			var matchingElements = searchContext.FindElements(by);
+			var selectedElement = selector(matchingElements);
+			if (selectedElement == null)
+				throw new NoSuchElementException(string.Format("Element '{0}' could not be found or is not available", description));
+
+			return selectedElement;
 		}
 
 		void IWebElement.Clear()
@@ -240,12 +243,12 @@ namespace TestAutomationEssentials.Selenium
 			return new Actions(DOMRoot.Browser.GetWebDriver());
 		}
 
-		IWebElement ISearchContext.FindElement(By @by)
+		IWebElement ISearchContext.FindElement(By by)
 		{
 			return WebElement.FindElement(by);
 		}
 
-		ReadOnlyCollection<IWebElement> ISearchContext.FindElements(By @by)
+		ReadOnlyCollection<IWebElement> ISearchContext.FindElements(By by)
 		{
 			return WebElement.FindElements(by);
 		}
