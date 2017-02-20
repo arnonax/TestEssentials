@@ -177,17 +177,7 @@ public static void {1}(TestContext testContext)
                 }
             }
 
-		    //try
-            //{
             TestExecutionScopesManager.EndIsolationScope();
-			//}
-			//catch
-			//{
-			//	if (!testFailed)
-			//		throw;
-
-			//	Logger.WriteLine("!!!! One or more exceptions occured in cleaup. See details above !!!");
-			//}
 		}
 
 		private void CopyFields()
