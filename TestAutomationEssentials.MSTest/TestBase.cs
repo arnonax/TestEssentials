@@ -164,10 +164,22 @@ public static void {1}(TestContext testContext)
 		[Microsoft.VisualStudio.TestTools.UnitTesting.TestCleanup]
 		public void CleanupTest()
 		{
-			//var testFailed = TestContext.CurrentTestOutcome != UnitTestOutcome.Passed;
-			//try
-			//{
-				TestExecutionScopesManager.EndIsolationScope();
+			var testFailed = TestContext.CurrentTestOutcome != UnitTestOutcome.Passed;
+		    if (testFailed)
+		    {
+		        //try
+		        //{
+		        OnTestFailure(TestContext);
+		        //}
+		        //catch(Exception ex)
+		        //{
+		        //	Logger.WriteLine(ex);
+		        //}
+		    }
+
+		    //try
+            //{
+            TestExecutionScopesManager.EndIsolationScope();
 			//}
 			//catch
 			//{
@@ -175,18 +187,6 @@ public static void {1}(TestContext testContext)
 			//		throw;
 
 			//	Logger.WriteLine("!!!! One or more exceptions occured in cleaup. See details above !!!");
-			//}
-
-			//if (!testFailed) 
-			//	return;
-
-			//try
-			//{
-				OnTestFailure(TestContext);
-			//}
-			//catch(Exception ex)
-			//{
-			//	Logger.WriteLine(ex);
 			//}
 		}
 

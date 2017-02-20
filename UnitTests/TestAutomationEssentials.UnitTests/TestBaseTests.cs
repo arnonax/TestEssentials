@@ -975,7 +975,79 @@ public class TestClass1 : TestBase
 			StringAssert.Contains(testResults.UnitTestResults[0].ErrorMessage, "TestMethod failure...");
 		}
 
-		[TestMethod]
+	    [TestMethod]
+	    public void OnTestFailureIsNotCalledIfTestPasses()
+	    {
+            var outputFileName = Path.GetFullPath("Output.txt");
+            File.Delete(outputFileName);
+
+            var testClass = CreateTestClass(
+GetLinePragma() +
+@"using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Runtime.CompilerServices;
+using TestAutomationEssentials.MSTest;
+using System;
+using System.IO;
+
+[TestClass]
+public class TestClass1 : TestBase
+{
+	protected override void OnTestFailure(TestContext testContext)
+	{
+		File.WriteAllText(@""" + outputFileName + @""", ""OnTestFailure was called"");
+	}
+
+	[TestMethod]
+	public void TestMethod1()
+	{
+		// Pass
+	}
+}
+");
+            var testResults = testClass.Execute();
+            Assert.AreEqual(0, testResults.FailedTests, "No failures expected");
+
+            TestContext.AddResultFile(outputFileName);
+            Assert.IsFalse(File.Exists(outputFileName), "File should not be created because OnTestFailure shouldn't have been called");
+        }
+
+	    [TestMethod]
+	    public void OnTestFailureShouldBeCalledBeforeCleanup()
+	    {
+            var outputFileName = Path.GetFullPath("Output.txt");
+            File.Delete(outputFileName);
+
+            var testClass = CreateTestClass(
+GetLinePragma() +
+@"using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Runtime.CompilerServices;
+using TestAutomationEssentials.MSTest;
+using System;
+using System.IO;
+
+[TestClass]
+public class TestClass1 : TestBase
+{
+	protected override void OnTestFailure(TestContext testContext)
+	{
+		File.AppendAllText(@""" + outputFileName + @""", ""OnTestFailure "");
+	}
+
+	[TestMethod]
+	public void TestMethod1()
+	{
+        AddCleanupAction(() => File.AppendAllText(@""" + outputFileName + @""", ""Cleanup""));
+		throw new Exception();
+	}
+}
+");
+            var testResults = testClass.Execute();
+            Assert.AreEqual(1, testResults.FailedTests, "Test should fail");
+            TestContext.AddResultFile(outputFileName);
+	        Assert.AreEqual("OnTestFailure Cleanup", File.ReadAllText(outputFileName));
+	    }
+
+        [TestMethod]
 		public void UITestBaseTakesScreenshotOnFailure()
 		{
 			var testClass = CreateTestClass(
