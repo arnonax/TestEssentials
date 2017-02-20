@@ -167,15 +167,15 @@ public static void {1}(TestContext testContext)
 			var testFailed = TestContext.CurrentTestOutcome != UnitTestOutcome.Passed;
 		    if (testFailed)
 		    {
-		        //try
-		        //{
-		        OnTestFailure(TestContext);
-		        //}
-		        //catch(Exception ex)
-		        //{
-		        //	Logger.WriteLine(ex);
-		        //}
-		    }
+                try
+                {
+                    OnTestFailure(TestContext);
+                }
+                catch (Exception ex)
+                {
+                    Logger.WriteLine(ex);
+                }
+            }
 
 		    //try
             //{

@@ -1047,6 +1047,45 @@ public class TestClass1 : TestBase
 	        Assert.AreEqual("OnTestFailure Cleanup", File.ReadAllText(outputFileName));
 	    }
 
+	    [TestMethod]
+	    public void CleanupShouldBeCalledEvenIfOnTestFailureThrewException()
+	    {
+            var outputFileName = Path.GetFullPath("Output.txt");
+            File.Delete(outputFileName);
+
+            var testClass = CreateTestClass(
+GetLinePragma() +
+@"using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Runtime.CompilerServices;
+using TestAutomationEssentials.MSTest;
+using System;
+using System.IO;
+
+[TestClass]
+public class TestClass1 : TestBase
+{
+	protected override void OnTestFailure(TestContext testContext)
+	{
+		throw new Exception(""Exception from OnTestFailure"");
+	}
+
+	[TestMethod]
+	public void TestMethod1()
+	{
+        AddCleanupAction(() => File.AppendAllText(@""" + outputFileName + @""", ""Cleanup""));
+		throw new Exception();
+	}
+}
+");
+
+            var testResults = testClass.Execute();
+            Assert.AreEqual(1, testResults.FailedTests, "Test should fail");
+            TestContext.AddResultFile(outputFileName);
+            Assert.AreEqual("Cleanup", File.ReadAllText(outputFileName));
+            StringAssert.Contains(testResults.UnitTestResults[0].StdOut, "Exception from OnTestFailure");
+            StringAssert.Contains(testResults.UnitTestResults[0].StdOut, " at TestClass1.OnTestFailure");
+        }
+
         [TestMethod]
 		public void UITestBaseTakesScreenshotOnFailure()
 		{
