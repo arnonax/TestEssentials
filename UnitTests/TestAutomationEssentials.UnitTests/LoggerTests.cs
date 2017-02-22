@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestAutomationEssentials.Common;
 using TestAutomationEssentials.MSTest;
@@ -12,8 +13,7 @@ namespace TestAutomationEssentials.UnitTests
 							  // to ExpectException inside InitializeValidateItsArgument test.
 	public class LoggerTests
 	{
-		private const int LengthOfDateTime = 12;
-		private readonly List<string> _output = new List<string>();
+	    private readonly List<string> _output = new List<string>();
 
 		[TestInitialize]
 		public void TestInitialize()
@@ -54,10 +54,9 @@ namespace TestAutomationEssentials.UnitTests
 			Logger.IncreaseIndent();
 			Logger.WriteLine("third line");
 
-			const int lengthOfDateTime = 12;
-			Assert.AreEqual("\tfirst line",_output[0].Substring(lengthOfDateTime));
-			Assert.AreEqual("\t\tsecond line", _output[1].Substring(lengthOfDateTime));
-			Assert.AreEqual("\t\t\tthird line", _output[2].Substring(lengthOfDateTime));
+		    Assert.AreEqual("\tfirst line", GetLineContentWithIndents(0));
+			Assert.AreEqual("\t\tsecond line", GetLineContentWithIndents(1));
+			Assert.AreEqual("\t\t\tthird line", GetLineContentWithIndents(2));
 		}
 
 		[TestMethod]
@@ -69,9 +68,9 @@ namespace TestAutomationEssentials.UnitTests
 			Logger.DecreaseIndent();
 			Logger.WriteLine("third line");
 
-			Assert.AreEqual("\tfirst line", _output[0].Substring(LengthOfDateTime));
-			Assert.AreEqual("\t\tsecond line", _output[1].Substring(LengthOfDateTime));
-			Assert.AreEqual("\tthird line", _output[2].Substring(LengthOfDateTime));
+			Assert.AreEqual("\tfirst line", GetLineContentWithIndents(0));
+			Assert.AreEqual("\t\tsecond line", GetLineContentWithIndents(1));
+			Assert.AreEqual("\tthird line", GetLineContentWithIndents(2));
 		}
 
 		[TestMethod]
@@ -91,9 +90,45 @@ namespace TestAutomationEssentials.UnitTests
 			}
 			Logger.WriteLine("last line");
 
-			Assert.AreEqual("\tstart of section", _output[0].Substring(LengthOfDateTime));
-			Assert.AreEqual("\t\tindented line", _output[1].Substring(LengthOfDateTime));
-			Assert.AreEqual("\tlast line", _output[2].Substring(LengthOfDateTime));
+			Assert.AreEqual("\tstart of section", GetLineContentWithIndents(0));
+			Assert.AreEqual("\t\tindented line", GetLineContentWithIndents(1));
+			Assert.AreEqual("\tlast line", GetLineContentWithIndents(2));
 		}
+
+	    [TestMethod]
+	    public void UsesFormatSpecifiers()
+	    {
+	        Logger.WriteLine("{0}, {1}!", "Hello", "World");
+            Assert.AreEqual("Hello, World!", GetLineContent(0));
+	    }
+
+	    [TestMethod]
+	    public void DoesNotUseTreatFormatSpecifiersIfNoArgumentsProvided()
+	    {
+	        Logger.WriteLine("{0} {1}");
+            Assert.AreEqual("{0} {1}", GetLineContent(0));
+	    }
+
+	    [TestMethod]
+	    public void HandleFormatExceptionGracefully()
+	    {
+	        Logger.WriteLine("{0}, {1}", "Hello");
+	        var lineContent = GetLineContent(0);
+            StringAssert.Contains(lineContent, "{0}, {1}");
+            StringAssert.Contains(lineContent, "Hello");
+
+	        Console.WriteLine(string.Join(Environment.NewLine, _output));
+	    }
+
+	    private string GetLineContentWithIndents(int lineNumber)
+	    {
+	        var lengthOfDateTime = 12;
+	        return _output[lineNumber].Substring(lengthOfDateTime);
+	    }
+
+	    private string GetLineContent(int lineNumber)
+	    {
+	        return GetLineContentWithIndents(lineNumber).TrimStart('\t');
+	    }
 	}
 }

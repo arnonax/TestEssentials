@@ -131,9 +131,74 @@ namespace TestAutomationEssentials.Selenium.UnitTests
             }
         }
 
+        [TestMethod]
+        public void WaitForElementThrowsTimeoutExceptionIfElementDoesNotExist()
+        {
+            const string pageSource = @"
+<html>
+<body>
+<button id=""myButtonId"">My button</button>
+</body>
+</html>
+";
+
+            using (var browser = OpenBrowserWithPage(pageSource))
+            {
+                var button = browser.WaitForElement(By.Id("myButtonId"), "button");
+                button.Click();
+                
+                // ReSharper disable once AccessToDisposedClosure
+                var ex = TestUtils.ExpectException<TimeoutException>(() => browser.WaitForElement(By.Id("mySpan"), "span", 1));
+
+                Logger.WriteLine("Actual exception:");
+                Logger.WriteLine(ex.ToString());
+
+                StringAssert.Contains(ex.Message, $"'{browser.Description}'");
+                StringAssert.Contains(ex.Message, "'span'");
+                StringAssert.Contains(ex.Message, By.Id("mySpan").ToString());
+                StringAssert.Contains(ex.Message, "'1' seconds");
+            }
+        }
+
+        [TestMethod]
+        public void ImproveMessageOfStaleElementReferenceException()
+        {
+            const string pageSource = @"
+<html>
+<script>
+function removeSpan() {
+    var span = document.getElementById(""mySpan"");
+    document.body.removeChild(span);
+}
+</script>
+<body>
+    <button id=""myButton"" onclick=""removeSpan()"">Click me</button>
+    <span id=""mySpan"">Some text</span>
+</body>
+</html
+";
+
+            using (var browser = OpenBrowserWithPage(pageSource))
+            {
+                var button = browser.WaitForElement(By.Id("myButton"), "button");
+                var span = browser.WaitForElement(By.Id("mySpan"), "span");
+                button.Click();
+                
+                // ReSharper disable once AccessToDisposedClosure
+                var ex = TestUtils.ExpectException<StaleElementReferenceException>(
+                    () => span.Click());
+
+                Logger.WriteLine("Actual exception:");
+                Logger.WriteLine(ex);
+                
+                StringAssert.Contains(ex.Message, "'span'");
+            }
+        }
+
         private Browser OpenBrowserWithPage(string pageSource)
         {
             var filename = Path.GetTempFileName();
+            File.Move(filename, filename += ".html");
             File.WriteAllText(filename, pageSource);
             TestContext.AddResultFile(filename);
             var driver = new ChromeDriver();

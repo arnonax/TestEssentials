@@ -75,26 +75,25 @@ namespace TestAutomationEssentials.Selenium
         /// </summary>
         public abstract IDOMRoot DOMRoot { get; }
 
+        /// <summary>
+        /// Finds an element, waiting for it to appear for the specified time if needed.
+        /// </summary>
+        /// <param name="by">The locator to use in order to find the element</param>
+        /// <param name="description">The description of the element to find</param>
+        /// <param name="seconds">Number of seconds to wait. If this parameter is omitted, <see cref="DefaultWaitTimeout"/> is used</param>
+        /// <returns>A <see cref="BrowserElement"/> representing the found element</returns>
+        /// <exception cref="TimeoutException">The element is not found after the specified number of seconds</exception>
         public BrowserElement WaitForElement(By by, string description, int seconds = DefaultWaitTimeout)
         {
             //Activate();
 
             var searchContext = GetSearchContext();
-            //try
-            //{
             Wait.Until(() => searchContext.FindElements(by).FirstOrDefault( /*BrowserElement.IsAvailable*/),
                 el => el != null,
                 seconds.Seconds(),
-                "");
-            //        "Element '{0}' not found inside '{1}' using '{2}' for '{3}' seconds", description, Description, @by, seconds);
+                "Element '{0}' not found inside '{1}' using '{2}' for '{3}' seconds", description, Description, by, seconds);
 
             return new BrowserElement(this, by, /*elements => elements.FirstOrDefault(BrowserElement.IsAvailable), */description);
-            //}
-            //catch (StaleElementReferenceException)
-            //{
-            //    throw new StaleElementReferenceException(
-            //        string.Format("The element '{0}' is no longer available on inside '{1}' using '{2}'", description, Description, @by));
-            //}
         }
 
         /// <summary>

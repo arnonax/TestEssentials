@@ -205,17 +205,17 @@ namespace TestAutomationEssentials.Selenium
             get
             {
                 //DOMRoot.Activate();
-                //try
-                //{
+                try
+                {
                     return _getWebElement();
-                //}
-                //catch (Exception ex)
-                //// we catch all exceptions here, because _getWebElement may throw different exceptions if the element could not be found after the first time.
-                //{
-                //    // If we can't find the element now, even though we first found it (when the constructor is called), it most probably means that it was removed from the DOM
-                //    throw new StaleElementReferenceException(
-                //        string.Format("Failed to locate element '{0}' (after it was already found before)", Description), ex);
-                //}
+                }
+                catch (Exception ex)
+                // we catch all exceptions here, because _getWebElement may throw different exceptions if the element could not be found after the first time.
+                {
+                    // If we can't find the element now, even though we first found it (when the constructor is called), it most probably means that it was removed from the DOM
+                    throw new StaleElementReferenceException(
+                        string.Format("Failed to locate element '{0}' (after it was already found before)", Description), ex);
+                }
             }
         }
 

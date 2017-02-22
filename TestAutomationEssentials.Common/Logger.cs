@@ -66,11 +66,40 @@ namespace TestAutomationEssentials.Common
 
             sb.Append(DateTime.Now.ToString("HH:mm:ss.fff"));
 			sb.Append('\t', indent);
-			sb.AppendFormat(format, args);
-			_writeLineImpl(sb.ToString());
+		    AddFormattedMessage(format, args, sb);
+		    _writeLineImpl(sb.ToString());
 		}
 
-		/// <summary>
+	    private static void AddFormattedMessage(string format, object[] args, StringBuilder sb)
+	    {
+	        if (args.Length == 0)
+	        {
+	            sb.Append(format); // ignore format specifiers if no arguments are specified. Similiar to how Console.WriteLine behaves
+	            return;
+	        }
+
+	        try
+	        {
+	            var formattedMessage = string.Format(format, args);
+	            sb.Append(formattedMessage);
+	        }
+	        catch (FormatException)
+	        {
+	            sb.AppendLine("WARNING: Failed to format line! See details below:");
+	            sb.Append("Format string:");
+	            sb.AppendLine(format);
+	            if (args.Length > 0)
+	            {
+	                sb.AppendLine("Format arguments:");
+	                for (int i = 0; i < args.Length; i++)
+	                {
+	                    sb.AppendFormat("{{{0}}}: {1}", i, args[i]);
+	                }
+	            }
+	        }
+	    }
+
+	    /// <summary>
 		/// Writes the string representation (.ToString()) of the object to the log
 		/// </summary>
 		/// <param name="obj">The object whose string representation should be written to the log</param>
