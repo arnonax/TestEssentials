@@ -106,16 +106,24 @@ namespace TestAutomationEssentials.Selenium
             return DOMRoot.Browser.GetWebDriver();
         }
 
-        //public IEnumerable<BrowserElement> FindElements(By @by, string description)
-        //{
-        //	Activate();
+        /// <summary>
+        /// Returns all child elements that match the specified locator
+        /// </summary>
+        /// <param name="by">The locator to use to find the elements</param>
+        /// <param name="description">A common description prefix to assign to the matching elements. The actual 
+        /// description of the returned elements will have a sequential number appended to the specified description</param>
+        /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="BrowserElement"/> containing the matching elements</returns>
+        public IEnumerable<BrowserElement> FindElements(By @by, string description)
+        {
+            //Activate();
 
-        //	return
-        //		GetSearchContext().FindElements(@by)
-        //			.Select(
-        //				(element, i) =>
-        //					new BrowserElement(this, @by, matches => matches.ElementAt(i), string.Format("{0}[{1}]", description, i)));
-        //}
+            return
+                GetSearchContext().FindElements(by)
+                    .Select(
+                        (element, i) =>
+                            //new BrowserElement(this, by, matches => matches.ElementAt(i), string.Format("{0}[{1}]", description, i)));
+                            new BrowserElement(DOMRoot, () => element, string.Format("{0}[{1}]", description, i)));
+        }
 
         //   public bool ElementAppears(By by)
         //   {

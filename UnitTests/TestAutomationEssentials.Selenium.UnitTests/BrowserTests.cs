@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
 using FakeItEasy;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
@@ -195,6 +197,51 @@ function removeSpan() {
             }
         }
 
+        [TestMethod]
+        public void FindElementsCanFindMultipleMatchingElements()
+        {
+            const string pageSource = @"
+<html>
+<body>
+<button class=""myClass"">My button</button>
+<input class=""myClass""/>
+</body>
+</html>
+";
+
+            using (var browser = OpenBrowserWithPage(pageSource))
+            {
+                const string description = "dummy description";
+                var elements = browser.FindElements(By.ClassName("myClass"), description).ToList();
+
+                Assert.AreEqual(2, elements.Count, "Number of returned elements");
+                var button = elements.Find(x => ((IWebElement) x).TagName == "button");
+                var descriptionPattern = new Regex(description + @"\[\d+\]");
+                StringAssert.Matches(button.Description, descriptionPattern);
+                var input = elements.Find(x => ((IWebElement) x).TagName == "input");
+                StringAssert.Matches(input.Description, descriptionPattern);
+                Assert.AreNotEqual(button.Description, input.Description);
+            }
+        }
+
+        [TestMethod]
+        public void FindElementsReturnEmptyListIfNotMatchingElementsExist()
+        {
+            const string pageSource = @"
+<html>
+<body>
+<button id=""myButtonId"">My button</button>
+</body>
+</html>
+";
+
+            using (var browser = OpenBrowserWithPage(pageSource))
+            {
+                var matchingElements = browser.FindElements(By.Id("non-existent"), "Non-existent");
+                Assert.IsTrue(matchingElements.IsEmpty());
+            }
+        }
+        
         private Browser OpenBrowserWithPage(string pageSource)
         {
             var filename = Path.GetTempFileName();

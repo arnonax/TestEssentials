@@ -15,7 +15,7 @@ namespace TestAutomationEssentials.Selenium
     /// <remarks>
     /// This class wraps Selenium's <see cref="IWebElement"/> to provide additional capabilities for logging, automatic waiting and more.
     /// </remarks>
-    public class BrowserElement : ElementsContainer//, IWebElement, IWrapsElement
+    public class BrowserElement : ElementsContainer, IWebElement//, IWrapsElement
     {
         private readonly IDOMRoot _domRoot;
 
@@ -29,7 +29,7 @@ namespace TestAutomationEssentials.Selenium
 
         private readonly Func<IWebElement> _getWebElement;
 
-        private BrowserElement(IDOMRoot domRoot, Func<IWebElement> getWebElement, string description)
+        internal /*private */BrowserElement(IDOMRoot domRoot, Func<IWebElement> getWebElement, string description)
             : base(description)
         {
             _domRoot = domRoot;
@@ -107,21 +107,27 @@ namespace TestAutomationEssentials.Selenium
         //		return selectedElement;
         //	}
 
-        //	void IWebElement.Clear()
-        //	{
-        //		WebElement.Clear();
-        //	}
+        void IWebElement.Clear()
+        {
+            //WebElement.Clear();
+        }
 
-        //	void IWebElement.SendKeys(string text)
-        //	{
-        //		WebElement.SendKeys(text);
-        //	}
+        void IWebElement.SendKeys(string text)
+        {
+            //WebElement.SendKeys(text);
+        }
 
-        //	void IWebElement.Submit()
-        //	{
-        //		WebElement.Submit();
-        //	}
+        void IWebElement.Submit()
+        {
+            //WebElement.Submit();
+        }
 
+        /// <summary>Clicks this element.</summary>
+        /// <exception cref="T:OpenQA.Selenium.ElementNotVisibleException">Thrown when the target element is not visible.</exception>
+        /// <exception cref="T:OpenQA.Selenium.StaleElementReferenceException">Thrown when the target element is no longer valid in the document DOM.</exception>
+        /// <remarks>
+        /// See further remarks of <seealso cref="IWebElement.Click"/>
+        /// </remarks>
         public void Click()
         {
             //Logger.WriteLine("Click on '{0}'", Description);
@@ -131,20 +137,22 @@ namespace TestAutomationEssentials.Selenium
             WebElement.Click();
         }
 
-        //	public string GetAttribute(string attributeName)
-        //	{
-        //		return WebElement.GetAttribute(attributeName);
-        //	}
+        public string GetAttribute(string attributeName)
+        {
+            //return WebElement.GetAttribute(attributeName);
+            throw new NotImplementedException();
+        }
 
-        //	string IWebElement.GetCssValue(string propertyName)
-        //	{
-        //		return WebElement.GetCssValue(propertyName);
-        //	}
+        string IWebElement.GetCssValue(string propertyName)
+        {
+            //return WebElement.GetCssValue(propertyName);
+            throw new NotImplementedException();
+        }
 
-        //	string IWebElement.TagName
-        //	{
-        //		get { return WebElement.TagName; }
-        //	}
+        string IWebElement.TagName
+        {
+            get { return WebElement.TagName; }
+        }
 
         /// <summary>
         //  Gets or sets the text of this element
@@ -163,42 +171,59 @@ namespace TestAutomationEssentials.Selenium
             //}
         }
 
-        //	public bool Enabled
-        //	{
-        //		get { return WebElement.Enabled; }
-        //	}
+        public bool Enabled
+        {
+            get
+            {
+                /*return WebElement.Enabled;*/
+                throw new NotImplementedException();
+            }
+        }
 
-        //	public bool Selected
-        //	{
-        //		get { return WebElement.Selected; }
-        //	}
+        public bool Selected
+        {
+            get
+            {
+                /*return WebElement.Selected;*/
+                throw new NotImplementedException();
+            }
+        }
 
-        //	public Point Location
-        //	{
-        //		get { return WebElement.Location; }
-        //	}
+        public Point Location
+        {
+            get
+            {
+                /*return WebElement.Location;*/
+                throw new NotImplementedException();
+            }
+        }
 
-        //	public Size Size
-        //	{
-        //		get { return WebElement.Size; }
-        //	}
+        public Size Size
+        {
+            get
+            {
+                /*return WebElement.Size;*/
+                throw new NotImplementedException();
+            }
+        }
 
-        //	public bool Displayed
-        //	{
-        //		get
-        //		{
-        //			try
-        //			{
-        //			    var webElement = WebElement;
-        //                   // WebElement may return null if the element is not displayed
-        //			    return webElement != null && webElement.Displayed;
-        //			}
-        //			catch (StaleElementReferenceException)
-        //			{
-        //				return false; // the element is removed from the DOM and therefore it's not displayed.
-        //			}
-        //		}
-        //	}
+        public bool Displayed
+        {
+            get
+            {
+                //try
+                //{
+                //    var webElement = WebElement;
+                //    // WebElement may return null if the element is not displayed
+                //    return webElement != null && webElement.Displayed;
+                //}
+                //catch (StaleElementReferenceException)
+                //{
+                //    return false; // the element is removed from the DOM and therefore it's not displayed.
+                //}
+                throw new NotImplementedException();
+            }
+        }
 
         private IWebElement WebElement
         {
@@ -243,15 +268,17 @@ namespace TestAutomationEssentials.Selenium
         //		return new Actions(DOMRoot.Browser.GetWebDriver());
         //	}
 
-        //	IWebElement ISearchContext.FindElement(By by)
-        //	{
-        //		return WebElement.FindElement(by);
-        //	}
+        IWebElement ISearchContext.FindElement(By by)
+        {
+            //return WebElement.FindElement(by);
+            throw new NotImplementedException();
+        }
 
-        //	ReadOnlyCollection<IWebElement> ISearchContext.FindElements(By by)
-        //	{
-        //		return WebElement.FindElements(by);
-        //	}
+        ReadOnlyCollection<IWebElement> ISearchContext.FindElements(By by)
+        {
+            //return WebElement.FindElements(by);
+            throw new NotImplementedException();
+        }
 
         //	protected internal override ISearchContext GetSearchContext()
         //	{
