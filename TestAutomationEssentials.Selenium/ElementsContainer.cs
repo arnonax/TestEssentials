@@ -125,9 +125,15 @@ namespace TestAutomationEssentials.Selenium
                             new BrowserElement(DOMRoot, () => element, string.Format("{0}[{1}]", description, i)));
         }
 
-        //   public bool ElementAppears(By by)
-        //   {
-        //       return GetSearchContext().FindElements(by).Any(el => el.Displayed);
-        //   }
+        /// <summary>
+        /// Determines whether an element matching the specified locator exists and is visible
+        /// </summary>
+        /// <param name="by">The locator of the element</param>
+        /// <returns>True if the element appears; False if not</returns>
+        public bool ElementAppears(By by)
+        {
+            return GetSearchContext().FindElements(by).Any(el => el.Displayed);
+            
+        }
     }
 }

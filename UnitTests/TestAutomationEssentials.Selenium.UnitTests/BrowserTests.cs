@@ -241,7 +241,27 @@ function removeSpan() {
                 Assert.IsTrue(matchingElements.IsEmpty());
             }
         }
-        
+
+        [TestMethod]
+        public void ElementAppearsReturnsTrueOnlyIfElementIsVisible()
+        {
+            const string pageSource = @"
+<html>
+<body>
+<button id=""visible-element"">Visible</button>
+<button hidden id=""invisible-element"">
+</body>
+</html>
+";
+
+            using (var browser = OpenBrowserWithPage(pageSource))
+            {
+                Assert.IsFalse(browser.ElementAppears(By.Id("non-existent")), "Non existent element should not appear");
+                Assert.IsFalse(browser.ElementAppears(By.Id("invisible-element")), "Hidden element should not appear");
+                Assert.IsTrue(browser.ElementAppears(By.Id("visible-element")), "Visible element should appear");
+            }
+        }
+
         private Browser OpenBrowserWithPage(string pageSource)
         {
             var filename = Path.GetTempFileName();
