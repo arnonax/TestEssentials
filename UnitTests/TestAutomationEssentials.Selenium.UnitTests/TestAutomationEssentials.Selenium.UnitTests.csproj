@@ -63,6 +63,8 @@
   <ItemGroup>
     <Compile Include="BrowserTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SeleniumTestBase.cs" />
+    <Compile Include="BrowserElementTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\TestAutomationEssentials.Common\TestAutomationEssentials.Common.csproj">

@@ -12,7 +12,7 @@ using TestAutomationEssentials.MSTest;
 namespace TestAutomationEssentials.Selenium.UnitTests
 {
     [TestClass]
-    public class BrowserTests : TestBase
+    public class BrowserTests : SeleniumTestBase
     {
         [TestMethod]
         public void ConstructorThrowsArgumentNullExceptionsIfNullsArePassed()
@@ -260,18 +260,6 @@ function removeSpan() {
                 Assert.IsFalse(browser.ElementAppears(By.Id("invisible-element")), "Hidden element should not appear");
                 Assert.IsTrue(browser.ElementAppears(By.Id("visible-element")), "Visible element should appear");
             }
-        }
-
-        private Browser OpenBrowserWithPage(string pageSource)
-        {
-            var filename = Path.GetTempFileName();
-            File.Move(filename, filename += ".html");
-            File.WriteAllText(filename, pageSource);
-            TestContext.AddResultFile(filename);
-            var driver = new ChromeDriver();
-            var browser = new Browser("test browser", driver);
-            browser.NavigateToUrl(new Uri(filename).AbsoluteUri);
-            return browser;
         }
 
         private static string GetUrlForFile(string filename)
