@@ -26,5 +26,26 @@ namespace TestAutomationEssentials.Selenium.UnitTests
                 Assert.AreEqual(string.Empty, webElement.GetAttribute("value"));
             }
         }
+
+        [TestMethod]
+        public void SendKeysAppendsText()
+        {
+            const string pageSource = @"
+<html>
+<body>
+<input id=""my-input"" value=""Hello, ""/>
+</body>
+</html>
+";
+
+            using (var browser = OpenBrowserWithPage(pageSource))
+            {
+                IWebElement webElement = browser.WaitForElement(By.Id("my-input"), "my input");
+                Assert.AreEqual("Hello, ", webElement.GetAttribute("value"));
+                webElement.SendKeys("world!");
+                Assert.AreEqual("Hello, world!", webElement.GetAttribute("value"));
+            }
+        }
+
     }
 }
