@@ -1,10 +1,13 @@
 using System;
 using System.IO;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium.Chrome;
 using TestAutomationEssentials.MSTest;
 
 namespace TestAutomationEssentials.Selenium.UnitTests
 {
+    [TestClass]
+    [DeploymentItem("chromedriver.exe")]
     public class SeleniumTestBase : TestBase
     {
         protected Browser OpenBrowserWithPage(string pageSource)

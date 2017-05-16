@@ -114,8 +114,7 @@ namespace TestAutomationEssentials.Selenium
 
         void IWebElement.SendKeys(string text)
         {
-            //WebElement.SendKeys(text);
-            throw new NotImplementedException();
+            WebElement.SendKeys(text);
         }
 
         void IWebElement.Submit()
