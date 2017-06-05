@@ -119,8 +119,7 @@ namespace TestAutomationEssentials.Selenium
 
         void IWebElement.Submit()
         {
-            //WebElement.Submit();
-            throw new NotImplementedException();
+            WebElement.Submit();
         }
 
         /// <summary>Clicks this element.</summary>
@@ -131,10 +130,7 @@ namespace TestAutomationEssentials.Selenium
         /// </remarks>
         public void Click()
         {
-            //Logger.WriteLine("Click on '{0}'", Description);
-            ////Actions action = new Actions(_domRoot.Browser.GetWebDriver());
-            ////action.MoveToElement(WebElement, 0, 0).Perform();
-            ////action.Click(WebElement).Perform();
+            Logger.WriteLine("Click on '{0}'", Description);
             WebElement.Click();
         }
 
