@@ -162,6 +162,33 @@ namespace TestAutomationEssentials.Selenium.UnitTests
                 string.Join("\n", logEntries));
         }
 
+        [TestMethod]
+        public void EnabledReturnsWhetherTheElementIsEnabled()
+        {
+            var pageSource = @"
+<html>
+<script>
+function disableCheckBox() {
+    var checkBox = document.getElementById('myCheckbox');
+    checkBox.disabled = true;
+}
+</script>
+<body>
+<button onClick='disableCheckBox()'>Click to disable the checkbox</button>
+<input type='checkbox' id='myCheckbox'/>
+</body>
+</html>";
+
+            using (var browser = OpenBrowserWithPage(pageSource))
+            {
+                var button = browser.WaitForElement(By.TagName("button"), "button");
+                var checkbox = browser.WaitForElement(By.Id("myCheckbox"), "checkbox");
+                Assert.IsTrue(checkbox.Enabled, "At first the checkbox should be enabled");
+                button.Click();
+                Assert.IsFalse(checkbox.Enabled, "After clicking the button, the checkbox should be disabled");
+            }
+        }
+
         private static List<string> RedirectLogs()
         {
             var logEntries = new List<string>();

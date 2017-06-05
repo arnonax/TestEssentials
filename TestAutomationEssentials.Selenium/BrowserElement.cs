@@ -201,12 +201,14 @@ namespace TestAutomationEssentials.Selenium
             }
         }
 
+        /// <summary>
+        /// Determines whether the element is enabled
+        /// </summary>
         public bool Enabled
         {
             get
             {
-                /*return WebElement.Enabled;*/
-                throw new NotImplementedException();
+                return WebElement.Enabled;
             }
         }
 
