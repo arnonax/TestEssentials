@@ -117,6 +117,51 @@ namespace TestAutomationEssentials.Selenium.UnitTests
             }
         }
 
+        [TestMethod]
+        public void SetTextReplacesTheTextOfAnInput()
+        {
+            const string pageSource = @"
+<html>
+<body>
+<input id='myInput' value='initial value' />
+</body>
+</html>";
+
+            using (var browser = OpenBrowserWithPage(pageSource))
+            {
+                var input = browser.WaitForElement(By.Id("myInput"), "my input");
+                input.Text = "New value";
+                Assert.AreEqual("New value", input.GetAttribute("value"));
+            }
+        }
+
+        [TestMethod]
+        public void SettingTextIsWrittenToTheLog()
+        {
+            const string pageSource = @"
+<html>
+<body>
+<input value='initial value' />
+</body>
+</html>";
+
+            var logEntries = RedirectLogs();
+
+            var inputDescription = Guid.NewGuid().ToString();
+            const string textToWrite = "New value";
+            using (var browser = OpenBrowserWithPage(pageSource))
+            {
+                var button = browser.WaitForElement(By.TagName("input"), inputDescription);
+                button.Text = textToWrite;
+            }
+
+            var expectedLogEntry = $"Type '{textToWrite}' in '{inputDescription}'";
+            Assert.AreEqual(1, logEntries.FindAll(entry => entry.EndsWith(expectedLogEntry)).Count,
+                "Entry '{0}' should be written once. All entries:\n{1}",
+                expectedLogEntry,
+                string.Join("\n", logEntries));
+        }
+
         private static List<string> RedirectLogs()
         {
             var logEntries = new List<string>();

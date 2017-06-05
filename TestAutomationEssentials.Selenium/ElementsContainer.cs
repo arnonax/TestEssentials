@@ -101,6 +101,10 @@ namespace TestAutomationEssentials.Selenium
         /// </summary>
         public string Description { get; private set; }
 
+        /// <summary>
+        /// This method is intended for internal use only. Do not call or override it directly.
+        /// </summary>
+        /// <returns></returns>
         protected internal virtual ISearchContext GetSearchContext()
         {
             return DOMRoot.Browser.GetWebDriver();

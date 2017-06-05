@@ -193,12 +193,12 @@ namespace TestAutomationEssentials.Selenium
         public string Text
         {
             get { return WebElement.Text; }
-            //set
-            //{
-            //    Logger.WriteLine("Type '{0}' in '{1}'", value, Description);
-            //    WebElement.Clear();
-            //    WebElement.SendKeys(value);
-            //}
+            set
+            {
+                Logger.WriteLine("Type '{0}' in '{1}'", value, Description);
+                WebElement.Clear();
+                WebElement.SendKeys(value);
+            }
         }
 
         public bool Enabled
