@@ -101,6 +101,22 @@ namespace TestAutomationEssentials.Selenium.UnitTests
                 string.Join("\n", logEntries));
         }
 
+        [TestMethod]
+        public void GetCssValueReturnsTheCssValueOfTheElement()
+        {
+            const string pageSource = @"
+<html>
+<body>
+<button id='myButton' style='font-weight: bold'>Click me</button>
+</body>
+</html>";
+            using (var browser = OpenBrowserWithPage(pageSource))
+            {
+                IWebElement button = browser.WaitForElement(By.Id("myButton"), "my button");
+                Assert.AreEqual("bold", button.GetCssValue("font-weight"), "GetCssValue('font-weight') of button should return 'bold'");
+            }
+        }
+
         private static List<string> RedirectLogs()
         {
             var logEntries = new List<string>();

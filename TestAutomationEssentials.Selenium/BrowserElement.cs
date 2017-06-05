@@ -176,8 +176,7 @@ namespace TestAutomationEssentials.Selenium
 
         string IWebElement.GetCssValue(string propertyName)
         {
-            //return WebElement.GetCssValue(propertyName);
-            throw new NotImplementedException();
+            return WebElement.GetCssValue(propertyName);
         }
 
         string IWebElement.TagName
