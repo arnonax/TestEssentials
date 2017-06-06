@@ -189,6 +189,25 @@ function disableCheckBox() {
             }
         }
 
+        [TestMethod]
+        public void SelectedReturnsWhetherTheElementIsSelected()
+        {
+            const string pageSource = @"
+<html>
+<body>
+<input type='checkbox'>
+</body>
+</html>";
+
+            using (var browser = OpenBrowserWithPage(pageSource))
+            {
+                var checkBox = browser.WaitForElement(By.TagName("input"), "checkBox");
+                Assert.IsFalse(checkBox.Selected, "Initially the checkbox should not be seleted");
+                checkBox.Click();
+                Assert.IsTrue(checkBox.Selected, "After click, the checkbox should be seleted");
+            }
+        }
+
         private static List<string> RedirectLogs()
         {
             var logEntries = new List<string>();

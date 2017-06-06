@@ -6,6 +6,7 @@ using FakeItEasy;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Support.Extensions;
 using TestAutomationEssentials.Common;
 using TestAutomationEssentials.MSTest;
 
@@ -74,11 +75,20 @@ namespace TestAutomationEssentials.Selenium.UnitTests
         {
             var dummyPageUrl = GetUrlForFile("dummyPage.html");
             var driver = new ChromeDriver();
+            WriteChromeVersion(driver);
             using (var browser = new Browser("", driver))
             {
                 browser.NavigateToUrl(dummyPageUrl);
                 Assert.AreEqual(new Uri(dummyPageUrl).AbsoluteUri, new Uri(driver.Url).AbsoluteUri);
             }
+        }
+
+        // For diagnosing differences bewteen local run and appVeyor:
+        private void WriteChromeVersion(ChromeDriver driver)
+        {
+            Logger.WriteLine($"user agent={driver.ExecuteJavaScript<string>("return navigator.userAgent;")}");
+            Logger.WriteLine($"app version={driver.ExecuteJavaScript<string>("return navigator.appVersion;")}");
+            Logger.WriteLine($"app name={driver.ExecuteJavaScript<string>("return navigator.appName;")}");
         }
 
         [TestMethod]

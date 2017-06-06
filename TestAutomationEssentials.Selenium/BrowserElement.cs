@@ -212,12 +212,17 @@ namespace TestAutomationEssentials.Selenium
             }
         }
 
+        /// <summary>
+        /// Returns whether the element is seleted.
+        /// </summary>
+        /// <remarks>
+        /// This operation only applies to input elements such as checkboxes, options in a select element and radio buttons.
+        /// </remarks>
         public bool Selected
         {
             get
             {
-                /*return WebElement.Selected;*/
-                throw new NotImplementedException();
+                return WebElement.Selected;
             }
         }
 
