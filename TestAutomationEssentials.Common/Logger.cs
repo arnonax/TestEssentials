@@ -66,7 +66,12 @@ namespace TestAutomationEssentials.Common
 
             sb.Append(DateTime.Now.ToString("HH:mm:ss.fff"));
 			sb.Append('\t', indent);
-			sb.AppendFormat(format, args);
+
+            if (args.Length == 0)
+		        sb.Append(format);
+		    else
+			    sb.AppendFormat(format, args);
+
 			_writeLineImpl(sb.ToString());
 		}
 

@@ -54,10 +54,9 @@ namespace TestAutomationEssentials.UnitTests
 			Logger.IncreaseIndent();
 			Logger.WriteLine("third line");
 
-			const int lengthOfDateTime = 12;
-			Assert.AreEqual("\tfirst line",_output[0].Substring(lengthOfDateTime));
-			Assert.AreEqual("\t\tsecond line", _output[1].Substring(lengthOfDateTime));
-			Assert.AreEqual("\t\t\tthird line", _output[2].Substring(lengthOfDateTime));
+		    Assert.AreEqual("\tfirst line", GetLineContent(0));
+			Assert.AreEqual("\t\tsecond line", GetLineContent(1));
+			Assert.AreEqual("\t\t\tthird line", GetLineContent(2));
 		}
 
 		[TestMethod]
@@ -69,9 +68,9 @@ namespace TestAutomationEssentials.UnitTests
 			Logger.DecreaseIndent();
 			Logger.WriteLine("third line");
 
-			Assert.AreEqual("\tfirst line", _output[0].Substring(LengthOfDateTime));
-			Assert.AreEqual("\t\tsecond line", _output[1].Substring(LengthOfDateTime));
-			Assert.AreEqual("\tthird line", _output[2].Substring(LengthOfDateTime));
+			Assert.AreEqual("\tfirst line", GetLineContent(0));
+			Assert.AreEqual("\t\tsecond line", GetLineContent(1));
+			Assert.AreEqual("\tthird line", GetLineContent(2));
 		}
 
 		[TestMethod]
@@ -91,9 +90,22 @@ namespace TestAutomationEssentials.UnitTests
 			}
 			Logger.WriteLine("last line");
 
-			Assert.AreEqual("\tstart of section", _output[0].Substring(LengthOfDateTime));
-			Assert.AreEqual("\t\tindented line", _output[1].Substring(LengthOfDateTime));
-			Assert.AreEqual("\tlast line", _output[2].Substring(LengthOfDateTime));
+			Assert.AreEqual("\tstart of section", GetLineContent(0));
+			Assert.AreEqual("\t\tindented line", GetLineContent(1));
+			Assert.AreEqual("\tlast line", GetLineContent(2));
 		}
+
+	    private string GetLineContent(int lineIndex)
+	    {
+	        return _output[lineIndex].Substring(LengthOfDateTime);
+	    }
+
+	    [TestMethod]
+	    public void WriteLineWritesCurlyBracesIfNoArgsProvided()
+	    {
+	        const string stringWithCurlyBraces = "{{}{}{{}{";
+	        Logger.WriteLine(stringWithCurlyBraces);
+            Assert.AreEqual(stringWithCurlyBraces, GetLineContent(0).TrimStart('\t'));
+	    }
 	}
 }
