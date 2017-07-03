@@ -89,10 +89,10 @@ namespace TestAutomationEssentials.Selenium
 
 				return new BrowserElement(this, @by, elements => elements.FirstOrDefault(BrowserElement.IsAvailable), description);
 			}
-			catch (StaleElementReferenceException)
+			catch (StaleElementReferenceException ex)
 			{
 				throw new StaleElementReferenceException(
-					string.Format("The element '{0}' is no longer available on inside '{1}' using '{2}'", description, Description, @by));
+					string.Format("The element '{0}' is no longer available inside '{1}' using '{2}'", description, Description, @by), ex);
 			}
 		}
 
