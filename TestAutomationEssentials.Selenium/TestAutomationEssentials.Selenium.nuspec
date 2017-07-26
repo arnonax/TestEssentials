@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
         <id>TestAutomationEssentials.Selenium</id>
-        <version>0.9.0.0</version>
+        <version>$version$</version>
         <title>Test Automation Essentials - Selenium</title>
         <authors>Arnon Axelrod</authors>
         <owners>Arnon Axelrod</owners>

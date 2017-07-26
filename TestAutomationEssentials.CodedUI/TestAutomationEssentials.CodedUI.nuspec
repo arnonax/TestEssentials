@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>TestAutomationEssentials.CodedUI</id>
-    <version>1.0.0.1</version>
+    <version>$version$</version>
     <title>Test Automation Essentials - Coded UI</title>
     <owners>Arnon Axelrod</owners>
 	<authors>Arnon Axelrod</authors>
