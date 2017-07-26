@@ -4,6 +4,8 @@ using System.Linq.Expressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestAutomationEssentials.Common;
 using TestAutomationEssentials.MSTest;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace TestAutomationEssentials.UnitTests
 {
@@ -325,6 +327,21 @@ namespace TestAutomationEssentials.UnitTests
 
 			ex = TestUtils.ExpectException<TimeoutException>(() => Wait.Until(() => foo(), item => item != 1, 100.Milliseconds(), "DummyMessage{0}", 3));
 			StringAssert.Contains(ex.Message, "DummyMessage3");
+		}
+
+		[TestMethod]
+		public void WaitUntilLogsStartCompletion()
+		{
+			var lines = new List<string>();
+			Logger.Initialize(line => lines.Add(line));
+
+			var counter = 3;
+			Func<int> decrementCounter = () => counter--;
+			Wait.Until(() => decrementCounter() == 0, 100.Milliseconds());
+
+            Assert.AreEqual(2, lines.Count, "2 lines are expected: one for start wait, and one for end");
+			StringAssert.Contains(lines.First(), "Waiting for ");
+		    StringAssert.Contains(lines.Last(), "Done waiting for ");
 		}
 	}
 }
