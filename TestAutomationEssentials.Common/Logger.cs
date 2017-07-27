@@ -10,7 +10,7 @@ namespace TestAutomationEssentials.Common
 	public static class Logger
 	{
 		/// <summary>
-		/// Provides default implementations for WriteLine that can be used with <see cref="Logger.Initialize"/>
+		/// Provides default implementations for WriteLine that can be used with <see cref="Logger.Initialize(System.Action{string})"/>
 		/// </summary>
 		public static class DefaultImplementations
 		{
@@ -31,10 +31,58 @@ namespace TestAutomationEssentials.Common
 			}
 		}
 
-		private static int _indentation;
-		private static Action<string> _writeLineImpl = DefaultImplementations.Console;
+		private static ICustomLogger _customLogger = new DefaultLogger(DefaultImplementations.Console);
 
-		/// <summary>
+	    private class DefaultLogger : ICustomLogger
+	    {
+	        private readonly Action<string> _writeLineImpl;
+	        private int _indentation;
+
+	        public DefaultLogger(Action<string> writeLineImpl)
+	        {
+	            _writeLineImpl = writeLineImpl;
+	            _indentation = 0;
+	        }
+
+	        public void WriteLine(DateTime timestamp, string message)
+	        {
+	            var indent = _indentation + 1;
+
+	            var sb = new StringBuilder();
+
+	            sb.Append(timestamp.ToString("HH:mm:ss.fff"));
+	            sb.Append('\t', indent);
+	            sb.Append(message);
+	            _writeLineImpl(sb.ToString());
+	        }
+
+	        public void StartSection(DateTime timestamp, string message)
+	        {
+                WriteLine(timestamp, message);
+	            _indentation++;
+	        }
+
+	        public void EndSection(DateTime timestamp)
+	        {
+                DecreaseIndentImpl();
+            }
+
+            public void IncreaseIndentImpl()
+	        {
+	            _indentation++;
+	        }
+
+	        public void DecreaseIndentImpl()
+	        {
+	            if (_indentation == 0)
+	                throw new InvalidOperationException("Indentation is already at its minimum. Can't decrease any further.");
+	            _indentation--;
+            }
+        }
+
+	    public static string LastMethod { get; private set; }
+
+	    /// <summary>
 		/// Initializes the logger to use the specified implementation for writing a line to the log
 		/// </summary>
 		/// <param name="writeLineImpl">A delegate that writes a line to the log. You can use any of the members of 
@@ -47,35 +95,47 @@ namespace TestAutomationEssentials.Common
 		public static void Initialize(Action<string> writeLineImpl)
 		{
 			if (writeLineImpl == null)
-				throw new ArgumentNullException("writeLineImpl");
+				throw new ArgumentNullException(nameof(writeLineImpl));
 
-			_indentation = 0;
-			_writeLineImpl = writeLineImpl;
+		    _customLogger = new DefaultLogger(writeLineImpl);
 		}
 
-		/// <summary>
+	    /// <summary>
+	    /// Initializes the logger to use a custom logger that performs the writes to the log
+	    /// </summary>
+	    /// <param name="customLogger">An object that implements <see cref="ICustomLogger"/>. Provide your own implementation for this interface to
+	    /// handle where and how the log entries are written
+	    /// </param>
+	    /// <exception cref="ArgumentNullException"><paramref name="customLogger"/> is null</exception>
+	    /// <remarks>
+	    /// You should only call this method once in your assembly initialization code (i.e. [AssemblyInitialize] method if you're using MSTest)
+	    /// </remarks>
+	    public static void Initialize(ICustomLogger customLogger)
+	    {
+            if (customLogger == null)
+                throw new ArgumentNullException(nameof(customLogger));
+
+	        _customLogger = customLogger;
+	    }
+
+	    /// <summary>
 		/// Writes a line to the log, in the current indentation level, and the current time
 		/// </summary>
 		/// <param name="format">The format of the line</param>
 		/// <param name="args">The format arguments to embbed in the line</param>
 		public static void WriteLine(string format, params object[] args)
 		{
-			var indent = _indentation + 1;
-
-			var sb = new StringBuilder();
-
-            sb.Append(DateTime.Now.ToString("HH:mm:ss.fff"));
-			sb.Append('\t', indent);
-		    AddFormattedMessage(format, args, sb);
-		    _writeLineImpl(sb.ToString());
+		    _customLogger.WriteLine(DateTime.Now, SafeFormatMessage(format, args));
 		}
 
-	    private static void AddFormattedMessage(string format, object[] args, StringBuilder sb)
+	    private static string SafeFormatMessage(string format, object[] args)
 	    {
+            var sb = new StringBuilder();
+
 	        if (args.Length == 0)
 	        {
 	            sb.Append(format); // ignore format specifiers if no arguments are specified. Similiar to how Console.WriteLine behaves
-	            return;
+	            return format;
 	        }
 
 	        try
@@ -97,6 +157,8 @@ namespace TestAutomationEssentials.Common
 	                }
 	            }
 	        }
+
+	        return sb.ToString();
 	    }
 
 	    /// <summary>
@@ -108,22 +170,24 @@ namespace TestAutomationEssentials.Common
 			WriteLine(obj.ToString());
 		}
 
-		/// <summary>
-		/// Increases the indentation for the upcoming writes
-		/// </summary>
-		public static void IncreaseIndent()
+        /// <summary>
+        /// Increases the indentation for the upcoming writes
+        /// </summary>
+        [Obsolete("Use StartSection instead")]
+        public static void IncreaseIndent()
 		{
-			_indentation++;
+		    var defaultLogger = _customLogger as DefaultLogger;
+		    defaultLogger?.IncreaseIndentImpl();
 		}
 
 		/// <summary>
 		/// Decreases the indentation for the upcoming writes
 		/// </summary>
+		[Obsolete("Call Dispose on the result of StartSection in order to decrease the indentation")]
 		public static void DecreaseIndent()
 		{
-			if (_indentation == 0)
-				throw new InvalidOperationException("Indentation is already at its minimum. Can't decrease any further.");
-			_indentation--;
+		    var defaultLogger = _customLogger as DefaultLogger;
+		    defaultLogger?.DecreaseIndentImpl();
 		}
 
 		/// <summary>
@@ -162,8 +226,7 @@ namespace TestAutomationEssentials.Common
 		/// </example>
 		public static IDisposable StartSection(string format, params object[] args)
 		{
-			WriteLine(format, args);
-			IncreaseIndent();
+		    _customLogger.StartSection(DateTime.Now, SafeFormatMessage(format, args));
 			return new AutoDecreaseIndent();
 		}
 
@@ -171,8 +234,40 @@ namespace TestAutomationEssentials.Common
 		{
 			public void Dispose()
 			{
-				DecreaseIndent();
+				_customLogger.EndSection(DateTime.Now);
 			}
 		}
 	}
+
+    /// <summary>
+    /// Defines methods to be implemented by customer loggers
+    /// </summary>
+    public interface ICustomLogger
+    {
+        /// <summary>
+        /// Writes a single message to the log
+        /// </summary>
+        /// <param name="timestamp">The date and time when the message was written</param>
+        /// <param name="message">The text of the message</param>
+        void WriteLine(DateTime timestamp, string message);
+
+        /// <summary>
+        /// Writes a message that begins a new section. All subsequent message are related to this
+        /// new section, until <see cref="EndSection"/> is called
+        /// </summary>
+        /// <param name="timestamp">The date and time when the message was written</param>
+        /// <param name="message">The text of the message for the section header</param>
+        /// <remarks>
+        /// This method can be called multiple times before <see cref="EndSection"/> is called.
+        /// This should create a nested sections. Each section should be closed with the matching
+        /// <see cref="EndSection"/>.
+        /// </remarks>
+        void StartSection(DateTime timestamp, string message);
+
+        /// <summary>
+        /// Ends the most recently active section.
+        /// </summary>
+        /// <param name="timestamp">The date and time when the section was ended</param>
+        void EndSection(DateTime timestamp);
+    }
 }
