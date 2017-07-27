@@ -80,8 +80,6 @@ namespace TestAutomationEssentials.Common
             }
         }
 
-	    public static string LastMethod { get; private set; }
-
 	    /// <summary>
 		/// Initializes the logger to use the specified implementation for writing a line to the log
 		/// </summary>
