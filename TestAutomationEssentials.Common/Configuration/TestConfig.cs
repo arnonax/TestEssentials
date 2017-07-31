@@ -1,6 +1,6 @@
 using System.Xml.Linq;
 
-namespace TestAutomationEssentials.MSTest.Configuration
+namespace TestAutomationEssentials.Common.Configuration
 {
 	/// <summary>
 	/// Provides utilities for using Test Configuration files
