@@ -29,6 +29,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{267851
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAutomationEssentials.MSTestV2", "TestAutomationEssentials.MSTestV2\TestAutomationEssentials.MSTestV2.csproj", "{E0E88B7C-30DD-4583-8094-31322CA97930}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +61,10 @@ Global
 		{B9588B2F-0845-4F17-A6A4-48B9C1AA8654}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B9588B2F-0845-4F17-A6A4-48B9C1AA8654}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B9588B2F-0845-4F17-A6A4-48B9C1AA8654}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E0E88B7C-30DD-4583-8094-31322CA97930}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0E88B7C-30DD-4583-8094-31322CA97930}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0E88B7C-30DD-4583-8094-31322CA97930}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0E88B7C-30DD-4583-8094-31322CA97930}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
