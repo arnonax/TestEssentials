@@ -9,7 +9,7 @@ using System.Reflection;
 using System.Windows.Forms;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestAutomationEssentials.Common;
-using TestAutomationEssentials.MSTest.ExecutionContext;
+using TestAutomationEssentials.Common.ExecutionContext;
 
 namespace TestAutomationEssentials.MSTest
 {

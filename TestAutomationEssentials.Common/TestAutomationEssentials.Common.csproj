@@ -50,6 +50,8 @@
     <Compile Include="Configuration\ConfigurationBase.cs" />
     <Compile Include="Configuration\TestConfig.cs" />
     <Compile Include="DateTimeExtensions.cs" />
+    <Compile Include="ExecutionContext\IIsolationScope.cs" />
+    <Compile Include="ExecutionContext\TestExecutionScopesManager.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Functions.cs" />
     <Compile Include="ImageExtensions.cs" />

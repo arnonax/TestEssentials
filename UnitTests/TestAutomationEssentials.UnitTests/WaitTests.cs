@@ -298,11 +298,12 @@ namespace TestAutomationEssentials.UnitTests
 
 			var startTime = DateTime.Now;
 			var returnValue = Wait.IfNot(() => false, timeout);
-			Assert.IsFalse(returnValue, "Wait.IfNot should return false if the condition never met");
-			var endTime = DateTime.Now;
+		    var endTime = DateTime.Now;
 
+            Assert.IsFalse(returnValue, "Wait.IfNot should return false if the condition never met");
+			
 			Assert.IsTrue(endTime - startTime >= timeout, "Wait.IfNot didn't wait enough (startTime={0}, endTime={1})", startTime, endTime);
-			Assert.IsTrue(endTime - startTime <= timeout.MutliplyBy(1.1), "Wait.IfNot waited for too long (startTime={0}, endTime={1})", startTime, endTime);
+			Assert.IsTrue(endTime - startTime <= timeout.MutliplyBy(1.1), "Wait.IfNot waited for too long (startTime={0:O}, endTime={1:O}, delta={2}ms)", startTime, endTime, (endTime-startTime).TotalMilliseconds);
 		}
 
 		[TestMethod]

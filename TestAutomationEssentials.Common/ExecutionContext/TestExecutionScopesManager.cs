@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.ExceptionServices;
-using TestAutomationEssentials.Common;
 
-namespace TestAutomationEssentials.MSTest.ExecutionContext
+namespace TestAutomationEssentials.Common.ExecutionContext
 {
 	/// <summary>
 	/// Managed nestable scopes of isolation. Upon exit from each scope, it calls the cleanup actions that were registered to it during its lifetime

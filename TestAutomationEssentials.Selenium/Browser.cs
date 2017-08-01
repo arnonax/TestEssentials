@@ -2,8 +2,8 @@ using System;
 using System.Linq;
 using OpenQA.Selenium;
 using TestAutomationEssentials.Common;
+using TestAutomationEssentials.Common.ExecutionContext;
 using TestAutomationEssentials.MSTest;
-using TestAutomationEssentials.MSTest.ExecutionContext;
 
 namespace TestAutomationEssentials.Selenium
 {
