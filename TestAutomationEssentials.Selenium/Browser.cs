@@ -18,23 +18,52 @@ namespace TestAutomationEssentials.Selenium
 		protected readonly IWebDriver WebDriver;
 		private bool _isDisposed;
 		internal IDOMRoot ActiveDOM;
+	    private readonly TestExecutionScopesManager _testExecutionScopesManager;
 
-		/// <summary>
-		/// Initializes the instance of the object using the specified description and <see cref="IWebDriver"/>
-		/// </summary>
-		/// <param name="description">The description of the browser. This is used for logging</param>
-		/// <param name="webDriver">The WebDriver instance that is used to communicate with the browser</param>
-		/// <exception cref="ArgumentNullException">one of the arguments are null</exception>
-		public Browser(string description, IWebDriver webDriver) : base(description)
+        /// <summary>
+        /// Initializes the instance of the object using the specified description and <see cref="IWebDriver"/>
+        /// </summary>
+        /// <param name="description">The description of the browser. This is used for logging</param>
+        /// <param name="webDriver">The WebDriver instance that is used to communicate with the browser</param>
+        /// <exception cref="ArgumentNullException">one of the arguments are null</exception>
+        /// <remarks>
+        /// This overload is provided only for backward compatibility and it works only with MSTest V1.
+        /// </remarks>
+        [Obsolete("Always use the overload that accepts TestExecutionScopesManager.")]
+        public Browser(string description, IWebDriver webDriver) : 
+            this(description, webDriver, TestBase.TestExecutionScopesManager)
 		{
-			if (webDriver == null)
-				throw new ArgumentNullException("webDriver");
-
-			WebDriver = webDriver;
-			var mainWindowHandle = WebDriver.CurrentWindowHandle;
-			MainWindow = new BrowserWindow(this, mainWindowHandle, "Main window");
-			ActiveDOM = MainWindow;
 		}
+
+        /// <summary>
+        /// Initializes the instance of the object using the specified description and <see cref="IWebDriver"/>
+        /// </summary>
+        /// <param name="description">The description of the browser. This is used for logging</param>
+        /// <param name="webDriver">The WebDriver instance that is used to communicate with the browser</param>
+        /// <param name="testExecutionScopesManager">The test execution scope manager of your tests (See remarks)</param>
+        /// <exception cref="ArgumentNullException">one of the arguments are null</exception>
+        /// <remarks>
+        /// The <paramref name="testExecutionScopesManager"/> is used to automatically close any windows that 
+        /// are opened using <see cref="OpenWindow"/>, at the end of the current test or active scope.
+        /// <br/>
+        /// If you're using TestAutomationEssentials.MSTest or TestAutomationEssentials.MSTestV2, simply pass
+        /// <see cref="TestBase.TestExecutionScopesManager"/>. Otherwise, create an instance of <see cref="TestExecutionScopesManager"/>
+        /// and pass it.
+        /// </remarks>
+        public Browser(string description, IWebDriver webDriver, TestExecutionScopesManager testExecutionScopesManager) 
+            : base(description)
+	    {
+	        if (webDriver == null)
+	            throw new ArgumentNullException("webDriver");
+            if (testExecutionScopesManager == null)
+                throw new ArgumentNullException("testExecutionScopesManager");
+
+	        WebDriver = webDriver;
+	        var mainWindowHandle = WebDriver.CurrentWindowHandle;
+	        MainWindow = new BrowserWindow(this, mainWindowHandle, "Main window");
+	        ActiveDOM = MainWindow;
+	        _testExecutionScopesManager = testExecutionScopesManager;
+	    }
 
         /// <summary>
         /// Returns the browser window that was activew when the browser was opened
@@ -128,7 +157,7 @@ namespace TestAutomationEssentials.Selenium
             Logger.WriteLine("Opened window '{0}' with id={1} ({2})", windowDescription, newWindowHandle.GetHashCode(), newWindowHandle);
 
             var newWindow = new BrowserWindow(this, newWindowHandle, windowDescription);
-            TestBase.AddCleanupAction(() => newWindow.Close());
+            _testExecutionScopesManager.AddCleanupAction(() => newWindow.Close());
 
             return newWindow;
         }
