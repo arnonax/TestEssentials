@@ -85,15 +85,15 @@ namespace TestAutomationEssentials.Selenium
         /// <exception cref="TimeoutException">The element is not found after the specified number of seconds</exception>
         public BrowserElement WaitForElement(By by, string description, int seconds = DefaultWaitTimeout)
         {
-            //Activate();
+            Activate();
 
             var searchContext = GetSearchContext();
-            Wait.Until(() => searchContext.FindElements(by).FirstOrDefault( /*BrowserElement.IsAvailable*/),
+            Wait.Until(() => searchContext.FindElements(by).FirstOrDefault(BrowserElement.IsAvailable),
                 el => el != null,
                 seconds.Seconds(),
                 "Element '{0}' not found inside '{1}' using '{2}' for '{3}' seconds", description, Description, by, seconds);
 
-            return new BrowserElement(this, by, /*elements => elements.FirstOrDefault(BrowserElement.IsAvailable), */description);
+            return new BrowserElement(this, by, elements => elements.FirstOrDefault(BrowserElement.IsAvailable), description);
         }
 
         /// <summary>
