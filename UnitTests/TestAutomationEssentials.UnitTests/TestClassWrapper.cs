@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestAutomationEssentials.Common;
 
@@ -8,30 +9,29 @@ namespace TestAutomationEssentials.UnitTests
 {
     internal class TestClassWrapper : ITestClass
     {
-        private readonly string _fileName;
+        private readonly string _dllName;
         private readonly TestContext _testContext;
 
-        public TestClassWrapper(string fileName, TestContext testContext)
+        public TestClassWrapper(string dllName, TestContext testContext)
         {
-            _fileName = fileName;
+            _dllName = dllName;
             _testContext = testContext;
         }
 
         public TestResults Execute()
         {
-            var vsTestConsole = GetMsTestFullPath();
+            var msTestFullPath = GetVsTestConsoleFullPath();
 
-            var trxFile = Path.GetFullPath(Path.GetRandomFileName()) + ".trx";
+            var parameters = $"{_dllName} /UseVsixExtensions:true /logger:trx /TestAdapterPath:.";
 
-            var parameters = String.Format("/testContainer:\"{0}\" /resultsFile:\"{1}\"", _fileName, trxFile);
-            var startInfo = new ProcessStartInfo(vsTestConsole, parameters)
+            var startInfo = new ProcessStartInfo(msTestFullPath, parameters)
             {
                 UseShellExecute = false,
                 RedirectStandardError = true,
                 RedirectStandardOutput = true,
             };
 
-            Logger.WriteLine("Executing: {0} {1}", vsTestConsole, parameters);
+            Logger.WriteLine("Executing: {0} {1}", msTestFullPath, parameters);
             using (var msTest = Process.Start(startInfo))
             {
                 msTest.WaitForExit();
@@ -43,22 +43,21 @@ namespace TestAutomationEssentials.UnitTests
                 Logger.WriteLine(error);
             }
 
+            const string testResultsFolder = "TestResults";
+            var trxFiles = new DirectoryInfo(testResultsFolder).EnumerateFiles("*.trx").OrderByDescending(file => file.LastWriteTime);
+            var trxFile = trxFiles.First().FullName;
             Logger.WriteLine("TrxFile: \"file://{0}\"", trxFile);
-				
+
             _testContext.AddResultFile(trxFile);
 
             return new TestResults(trxFile);
         }
 
-        private static string GetMsTestFullPath()
+        private static string GetVsTestConsoleFullPath()
         {
-            // Our current process is either QTAgent32*.exe or vstest.console.exe
-            // In either case, MSTest.exe should be nearby, in the IDE folder
             var currentProcessPath = Process.GetCurrentProcess().Modules[0].FileName;
             var currentProcessFolder = Path.GetDirectoryName(currentProcessPath);
-            var mstestFolder = PathUtils.GetAncestorPath(currentProcessFolder, "IDE");
-            var msTestFullPath = Path.Combine(mstestFolder, "MSTest.exe");
-            return msTestFullPath;
+            return Path.Combine(currentProcessFolder, "vstest.console.exe");
         }
     }
 }

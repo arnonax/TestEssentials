@@ -786,48 +786,6 @@ public class TestClass2 : TestBaseWithMethodLogger
 		}
 
 		[TestMethod]
-		public void InstanceClassMemberArePreservedBetweenClassInitializeAndTestMethods()
-		{
-			var testClass = CreateTestClass(
-GetLinePragma() +
-@"using Microsoft.VisualStudio.TestTools.UnitTesting;
-using TestAutomationEssentials.MSTest;
-using System;
-			
-[TestClass]
-public class TestClass1 : TestBase
-{
-	[ClassInitialize]
-	public static void ClassInitialize(TestContext testContext)
-	{
-		ClassInitialize(typeof(TestClass1));
-	}
-
-	[ClassCleanup]
-	public static void ClassCleanup()
-	{
-		ClassCleanup(null);
-	}
-
-	private bool _instanceMemberWasSet = false;
-
-	protected override void ClassInitialize()
-	{
-		_instanceMemberWasSet = true;
-	}
-
-	[TestMethod]
-	public void TestMethod1()
-	{
-		Assert.IsTrue(_instanceMemberWasSet);
-	}
-}
-");
-			var testResults = testClass.Execute();
-			Assert.AreEqual(1, testResults.PassedTests, "Passed");
-		}
-
-		[TestMethod]
 		public void CompilationErrorOccursIfUsingTestInitializedOrTestCleanupAttributesDirectly()
 		{
 			var compileResults = Compile(
@@ -1113,16 +1071,12 @@ public class TestClass1 : TestBase
 			var testResults = testClass.Execute();
 			Assert.AreEqual(1, testResults.FailedTests, "Failed");
 
-			var lastTestResultsFolder =
-				Directory.GetDirectories(Directory.GetCurrentDirectory())
-					.Select(dirName => new DirectoryInfo(dirName))
-					.OrderByDescending(x => x.LastWriteTime)
-					.First();
+		    var resultFiles = testResults.UnitTestResults.Content().ResultFiles;
+		    Assert.AreEqual(1, resultFiles.Count, "Number of result files");
 
-			var outputDirectory =
-				Directory.GetDirectories(lastTestResultsFolder.FullName, "out", SearchOption.AllDirectories).Content();
-
-			Assert.AreEqual(1, Directory.GetFiles(outputDirectory, "*.jpg", SearchOption.AllDirectories).Length, "JPeg files");
+            var resultFile = resultFiles.Content();
+		    Assert.AreEqual("TestClass1.jpg", Path.GetFileName(resultFile), "Result file name");
+		    Assert.IsTrue(File.Exists(resultFile), $"Screenshot file '{resultFile}' does exist");
 		}
 
 		private string GetLinePragma([CallerLineNumber] int lineNumber = 0, [CallerFilePath] string file = "")
@@ -1177,27 +1131,42 @@ public class TestClass1 : TestBase
     public class UnitTestResult
 	{
 		private readonly UnitTestResultType _content;
+	    private readonly TestResults _trx;
 
-		public UnitTestResult(UnitTestResultType content)
-		{
-			_content = content;
-		}
+	    public UnitTestResult(UnitTestResultType content, TestResults trx)
+	    {
+	        _content = content;
+	        _trx = trx;
+	    }
 
-		public string ErrorMessage
-		{
-			get { return ((XmlNode[]) _content.Items.OfType<OutputType>().Content().ErrorInfo.Message).Content().InnerText; }
-		}
+		public string ErrorMessage => ((XmlNode[]) Output().ErrorInfo.Message).Content().InnerText;
 
-		public string StdOut
-		{
-			get { return ((XmlNode[])_content.Items.OfType<OutputType>().Content().StdOut).Content().InnerText; }
-		}
+	    public string StdOut => ((XmlNode[])Output().StdOut).Content().InnerText;
+
+	    private OutputType Output()
+	    {
+	        return _content.Items.OfType<OutputType>().Content();
+	    }
+
+	    public IReadOnlyList<string> ResultFiles
+	    {
+	        get
+	        {
+	            var resultsFileElement = _content.Items.OfType<ResultFilesType>().Content();
+	            var currentFolder = Path.GetDirectoryName(_trx.FullPath);
+	            var resultsFolder = Path.GetFileNameWithoutExtension(_trx.FullPath);
+	            resultsFolder = Path.Combine(currentFolder, resultsFolder);
+	            var executionId = _content.executionId;
+	            var resultExecutionFolder = Path.Combine(resultsFolder, "In", executionId);
+	            return (from file in resultsFileElement.ResultFile
+	                select Path.Combine(resultExecutionFolder, file.path)).ToList();
+	        }
+	    }
 	}
 
     public class TestResults
     {
         private readonly TestRunType _testRunType;
-        private readonly CountersType _counters;
 
         public TestResults(string trxFile)
         {
@@ -1206,34 +1175,33 @@ public class TestClass1 : TestBase
             {
                 _testRunType = (TestRunType)serializer.Deserialize(fileStream);
             }
-            _counters = _testRunType.Items.OfType<TestRunTypeResultSummary>().Content().Items.OfType<CountersType>().Content();
+            _testRunType.Items.OfType<TestRunTypeResultSummary>().Content().Items.OfType<CountersType>().Content();
             FullPath = trxFile;
         }
 
-        public int PassedTests
+        public int PassedTests => CountOutcomes("Passed");
+
+        public int FailedTests => CountOutcomes("Failed");
+
+        public int Inconclusive => CountOutcomes("NotExecuted");
+
+        private int CountOutcomes(string outcome)
         {
-            get { return _counters.passed; }
+            return GetUnitTestResults().Count(x => x.outcome == outcome);
         }
 
-        public int FailedTests
+        private IEnumerable<UnitTestResultType> GetUnitTestResults()
         {
-            get { return _counters.failed; }
+            return _testRunType.Items.OfType<ResultsType>().Content().Items.OfType<UnitTestResultType>();
         }
 
-        public int Inconclusive
-        {
-            get { return _counters.inconclusive; }
-        }
-
-        public string FullPath { get; private set; }
+        public string FullPath { get; }
 
         public IReadOnlyList<UnitTestResult> UnitTestResults
         {
             get
             {
-                return
-                    _testRunType.Items.OfType<ResultsType>().Content().Items.OfType<UnitTestResultType>()
-                        .Select(x => new UnitTestResult(x)).ToList();
+                return GetUnitTestResults().Select(x => new UnitTestResult(x, this)).ToList();
             }
         }
     }
