@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -81,8 +82,9 @@ namespace TestAutomationEssentials.MSTest
 		public TestContext TestContext { get; set; }
 
 		private static bool _classCleanupPending;
+	    private bool _testInitializedCompleted;
 
-		/// <summary>
+	    /// <summary>
 		/// Initializes a new instance of TestBase
 		/// </summary>
 		protected TestBase()
@@ -102,7 +104,8 @@ namespace TestAutomationEssentials.MSTest
 			try
 			{
 				TestExecutionScopesManager.BeginIsolationScope("Test", ctx => TestInitialize());
-			}
+			    _testInitializedCompleted = true;
+            }
 			catch(Exception)
 			{
 				OnTestFailure(TestContext);
@@ -141,7 +144,7 @@ public static void ClassInitialize(TestContext testContext)
 );", classInitializeImplementationClass.Name, actualtype.Name);
 				}
 
-				return;
+			    return;
 			}
 
 			if (!InitializedInstances.ContainsKey(actualtype))
@@ -164,6 +167,9 @@ public static void {1}(TestContext testContext)
 		[Microsoft.VisualStudio.TestTools.UnitTesting.TestCleanup]
 		public void CleanupTest()
 		{
+		    if (!_testInitializedCompleted) // for compatibility with MSTest V1 (see issue https://github.com/Microsoft/testfx/issues/250)
+                return;
+
 			var testFailed = TestContext.CurrentTestOutcome != UnitTestOutcome.Passed;
 		    if (testFailed)
 		    {
@@ -234,7 +240,7 @@ public static void {1}(TestContext testContext)
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// Note that unlike <see cref="ClassInitializeAttribute"/> decorated methods, this class is not static and
+		/// Note that unlike <see cref="ClassInitializeAttribute"/> decorated methods, this method is not static and
 		/// therefore can be reused in a base class of few test classes. However, in order for this method to be 
 		/// called, you must add a <see cref="ClassInitializeAttribute"/> decorated method to the relevant classes
 		/// and call <see cref="ClassInitialize(Type)"/> with <code>typeof(YourClassName)</code> as an argument.
