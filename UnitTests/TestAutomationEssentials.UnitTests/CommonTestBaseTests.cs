@@ -905,37 +905,6 @@ public class TestClass1 : MyTestBase
 			Assert.AreEqual("An error occured in TestMethod1", File.ReadAllText(outputFileName));
 		}
 
-		[TestMethod]
-		public void WhenATestFailsAndAlsoACleanupActionFailsThenTheTestFailureIsReported()
-		{
-			var outputFileName = Path.GetFullPath("Output.txt");
-			File.Delete(outputFileName);
-
-			var testClass = CreateTestClass(
-				GetLinePragma() +
-				@"using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Runtime.CompilerServices;
-using TestAutomationEssentials.MSTest;
-using System;
-using System.IO;
-
-[TestClass]
-public class TestClass1 : TestBase
-{
-	[TestMethod]
-	public void TestMethod1()
-	{
-		AddCleanupAction(() => { throw new Exception(""CleanupAction failure...""); });
-		throw new Exception(""TestMethod failure..."");
-	}
-}
-");
-			var testResults = testClass.Execute();
-			Assert.AreEqual(1, testResults.FailedTests, "Failed");
-
-			StringAssert.Contains(testResults.UnitTestResults[0].ErrorMessage, "TestMethod failure...");
-		}
-
 	    [TestMethod]
 	    public void OnTestFailureIsNotCalledIfTestPasses()
 	    {
@@ -1079,12 +1048,12 @@ public class TestClass1 : TestBase
 		    Assert.IsTrue(File.Exists(resultFile), $"Screenshot file '{resultFile}' does exist");
 		}
 
-		private string GetLinePragma([CallerLineNumber] int lineNumber = 0, [CallerFilePath] string file = "")
+	    protected string GetLinePragma([CallerLineNumber] int lineNumber = 0, [CallerFilePath] string file = "")
 		{
 			return string.Format("#line {0} \"{1}\"\n", lineNumber + 1, file);
 		}
 
-		private ITestClass CreateTestClass(string testClassCode)
+	    protected ITestClass CreateTestClass(string testClassCode)
 		{
 			const string outputName = "mytest.dll";
 			var results = Compile(testClassCode, outputName);
