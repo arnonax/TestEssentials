@@ -270,8 +270,8 @@ namespace TestAutomationEssentials.UnitTests
 			Assert.IsFalse(result, "Wait.If had to return false if the condition is not met");
 			var endTime = DateTime.Now;
 
-			Assert.IsTrue(endTime - startTime >= timeout, "Wait.If didn't wait enough (startTime={0}, endTime={1})", startTime, endTime);
-			Assert.IsTrue(endTime - startTime <= timeout.MutliplyBy(1.1), "Wait.If waited for too long (startTime={0}, endTime={1})", startTime, endTime);
+			Assert.IsTrue(endTime - startTime >= timeout, "Wait.If didn't wait enough (startTime={0:O}, endTime={1:O})", startTime, endTime);
+			Assert.IsTrue(endTime - startTime <= timeout.MutliplyBy(1.1), "Wait.If waited for too long (startTime={0:O}, endTime={1:O})", startTime, endTime);
 		}
 
 		public void WaitIfNotWaitsUntilTheConditionIsMet()
