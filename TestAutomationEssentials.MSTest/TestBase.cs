@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -83,14 +82,6 @@ namespace TestAutomationEssentials.MSTest
 
 		private static bool _classCleanupPending;
 	    private bool _testInitializedCompleted;
-
-	    /// <summary>
-		/// Initializes a new instance of TestBase
-		/// </summary>
-		protected TestBase()
-		{
-			CopyFields();
-		}
 
 		/// <summary>
 		/// This method should only be called by MSTest. Don't call this method directly!
@@ -186,26 +177,7 @@ public static void {1}(TestContext testContext)
             TestExecutionScopesManager.EndIsolationScope();
 		}
 
-		private void CopyFields()
-		{
-			var thisType = GetType();
-
-			TestBase initializedInstance;
-			if (!InitializedInstances.TryGetValue(thisType, out initializedInstance))
-				return;
-
-			var fields = thisType.GetFields(BindingFlags.Instance | BindingFlags.NonPublic);
-			foreach (var fieldInfo in fields)
-			{
-				var valueFromInitializedInstance = fieldInfo.GetValue(initializedInstance);
-				//var valueFromCurrentInstance = fieldInfo.GetValue(this);
-				//var defaultValue = fieldInfo.FieldType.GetDefaultValue();
-				//if (valueFromCurrentInstance.Equals(defaultValue) && !valueFromInitializedInstance.Equals(defaultValue))
-					fieldInfo.SetValue(this, valueFromInitializedInstance);
-			}
-		}
-
-		/// <summary>
+	    /// <summary>
 		/// Override this method in order to perform operations that you want to be executed before each test in the derived class
 		/// </summary>
 		protected virtual void TestInitialize()
