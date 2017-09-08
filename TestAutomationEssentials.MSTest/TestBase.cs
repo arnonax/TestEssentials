@@ -220,16 +220,6 @@ public static void {1}(TestContext testContext)
 		/// <see cref="ClassCleanup"/>. Fortunately, if you'll forget any of these, you'll get an error that tell
 		/// you exactly what is missing :-)
 		/// </para>
-		/// <para>
-		/// IMPORTANT: because this method is not static, you can use instance members in it. While these instance
-		/// members will be preserved when the test methods (or <see cref="TestInitialize"/>) executes, the instance
-		/// of the class is not actually the same. <see cref="TestBase"/> creates an instance of the class before
-		/// calling this method, and copies these members to the instance that MSTest creates for each test.
-		/// This means that you can safely use members that you initialize from this method in test methods, but
-		/// if you change the value of a member inside a test method, it won't preserve to the next test. In
-		/// addition, if you pass a reference to <code>this</code> to some other class, it won't be the same
-		/// instance when the tests run.
-		/// </para>
 		/// </remarks>
 		[ExcludeFromCodeCoverage]
 		protected virtual void ClassInitialize()
