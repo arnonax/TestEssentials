@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestAutomationEssentials.Common;
+using TestAutomationEssentials.Common.ExecutionContext;
 using TestAutomationEssentials.MSTest;
-using TestAutomationEssentials.MSTest.ExecutionContext;
 using TestAutomationEssentials.TrxParser.Generated;
 
 namespace TestAutomationEssentials.UnitTests

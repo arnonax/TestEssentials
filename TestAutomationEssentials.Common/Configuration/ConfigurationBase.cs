@@ -2,9 +2,8 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Xml.Linq;
-using TestAutomationEssentials.Common;
 
-namespace TestAutomationEssentials.MSTest.Configuration
+namespace TestAutomationEssentials.Common.Configuration
 {
 	/// <summary>
 	/// Provides a base class for reading values out of an Xml configuration file

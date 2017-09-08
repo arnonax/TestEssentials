@@ -1,6 +1,6 @@
 using System;
 
-namespace TestAutomationEssentials.MSTest.ExecutionContext
+namespace TestAutomationEssentials.Common.ExecutionContext
 {
 	/// <summary>
 	/// Represents a scope of isolation for tests. Delegates to cleanup actions can be added to the scope at runtime, and they should be called 

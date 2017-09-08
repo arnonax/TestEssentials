@@ -48,12 +48,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssertsAggregator.cs" />
-    <Compile Include="Configuration\ConfigurationBase.cs" />
-    <Compile Include="Configuration\TestConfig.cs" />
-    <Compile Include="ExecutionContext\IIsolationScope.cs" />
     <Compile Include="LoggerAssert.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ExecutionContext\TestExecutionScopesManager.cs" />
     <Compile Include="TestBase.cs" />
     <Compile Include="TestUtils.cs" />
   </ItemGroup>
@@ -63,6 +59,7 @@
       <Name>TestAutomationEssentials.Common</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

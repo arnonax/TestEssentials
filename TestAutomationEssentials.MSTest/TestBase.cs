@@ -9,7 +9,7 @@ using System.Reflection;
 using System.Windows.Forms;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestAutomationEssentials.Common;
-using TestAutomationEssentials.MSTest.ExecutionContext;
+using TestAutomationEssentials.Common.ExecutionContext;
 
 namespace TestAutomationEssentials.MSTest
 {
@@ -81,14 +81,7 @@ namespace TestAutomationEssentials.MSTest
 		public TestContext TestContext { get; set; }
 
 		private static bool _classCleanupPending;
-
-		/// <summary>
-		/// Initializes a new instance of TestBase
-		/// </summary>
-		protected TestBase()
-		{
-			CopyFields();
-		}
+	    private bool _testInitializedCompleted;
 
 		/// <summary>
 		/// This method should only be called by MSTest. Don't call this method directly!
@@ -102,7 +95,8 @@ namespace TestAutomationEssentials.MSTest
 			try
 			{
 				TestExecutionScopesManager.BeginIsolationScope("Test", ctx => TestInitialize());
-			}
+			    _testInitializedCompleted = true;
+            }
 			catch(Exception)
 			{
 				OnTestFailure(TestContext);
@@ -141,7 +135,7 @@ public static void ClassInitialize(TestContext testContext)
 );", classInitializeImplementationClass.Name, actualtype.Name);
 				}
 
-				return;
+			    return;
 			}
 
 			if (!InitializedInstances.ContainsKey(actualtype))
@@ -164,6 +158,9 @@ public static void {1}(TestContext testContext)
 		[Microsoft.VisualStudio.TestTools.UnitTesting.TestCleanup]
 		public void CleanupTest()
 		{
+		    if (!_testInitializedCompleted) // for compatibility with MSTest V1 (see issue https://github.com/Microsoft/testfx/issues/250)
+                return;
+
 			var testFailed = TestContext.CurrentTestOutcome != UnitTestOutcome.Passed;
 		    if (testFailed)
 		    {
@@ -180,26 +177,7 @@ public static void {1}(TestContext testContext)
             TestExecutionScopesManager.EndIsolationScope();
 		}
 
-		private void CopyFields()
-		{
-			var thisType = GetType();
-
-			TestBase initializedInstance;
-			if (!InitializedInstances.TryGetValue(thisType, out initializedInstance))
-				return;
-
-			var fields = thisType.GetFields(BindingFlags.Instance | BindingFlags.NonPublic);
-			foreach (var fieldInfo in fields)
-			{
-				var valueFromInitializedInstance = fieldInfo.GetValue(initializedInstance);
-				//var valueFromCurrentInstance = fieldInfo.GetValue(this);
-				//var defaultValue = fieldInfo.FieldType.GetDefaultValue();
-				//if (valueFromCurrentInstance.Equals(defaultValue) && !valueFromInitializedInstance.Equals(defaultValue))
-					fieldInfo.SetValue(this, valueFromInitializedInstance);
-			}
-		}
-
-		/// <summary>
+	    /// <summary>
 		/// Override this method in order to perform operations that you want to be executed before each test in the derived class
 		/// </summary>
 		protected virtual void TestInitialize()
@@ -234,23 +212,13 @@ public static void {1}(TestContext testContext)
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// Note that unlike <see cref="ClassInitializeAttribute"/> decorated methods, this class is not static and
+		/// Note that unlike <see cref="ClassInitializeAttribute"/> decorated methods, this method is not static and
 		/// therefore can be reused in a base class of few test classes. However, in order for this method to be 
 		/// called, you must add a <see cref="ClassInitializeAttribute"/> decorated method to the relevant classes
 		/// and call <see cref="ClassInitialize(Type)"/> with <code>typeof(YourClassName)</code> as an argument.
 		/// You also must add a <see cref="ClassCleanupAttribute"/> decorated method and inside of it call
 		/// <see cref="ClassCleanup"/>. Fortunately, if you'll forget any of these, you'll get an error that tell
 		/// you exactly what is missing :-)
-		/// </para>
-		/// <para>
-		/// IMPORTANT: because this method is not static, you can use instance members in it. While these instance
-		/// members will be preserved when the test methods (or <see cref="TestInitialize"/>) executes, the instance
-		/// of the class is not actually the same. <see cref="TestBase"/> creates an instance of the class before
-		/// calling this method, and copies these members to the instance that MSTest creates for each test.
-		/// This means that you can safely use members that you initialize from this method in test methods, but
-		/// if you change the value of a member inside a test method, it won't preserve to the next test. In
-		/// addition, if you pass a reference to <code>this</code> to some other class, it won't be the same
-		/// instance when the tests run.
 		/// </para>
 		/// </remarks>
 		[ExcludeFromCodeCoverage]
