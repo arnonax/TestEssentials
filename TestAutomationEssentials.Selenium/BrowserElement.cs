@@ -122,12 +122,7 @@ namespace TestAutomationEssentials.Selenium
             WebElement.Submit();
         }
 
-        /// <summary>Clicks this element.</summary>
-        /// <exception cref="T:OpenQA.Selenium.ElementNotVisibleException">Thrown when the target element is not visible.</exception>
-        /// <exception cref="T:OpenQA.Selenium.StaleElementReferenceException">Thrown when the target element is no longer valid in the document DOM.</exception>
-        /// <remarks>
-        /// See further remarks of <seealso cref="IWebElement.Click"/>
-        /// </remarks>
+        /// <inheritdoc />
         public void Click()
         {
             Logger.WriteLine("Click on '{0}'", Description);
@@ -137,44 +132,15 @@ namespace TestAutomationEssentials.Selenium
             WebElement.Click();
         }
 
-        // Note: XML comments copies from base (using Resharper)
-        /// <summary>
-        /// Gets the value of the specified attribute for this element.
-        /// </summary>
-        /// <param name="attributeName">The name of the attribute.</param>
-        /// <returns>The attribute's current value. Returns a <see langword="null" /> if the
-        /// value is not set.</returns>
-        /// <remarks>The <see cref="M:OpenQA.Selenium.IWebElement.GetAttribute(System.String)" /> method will return the current value
-        /// of the attribute, even if the value has been modified after the page has been
-        /// loaded. Note that the value of the following attributes will be returned even if
-        /// there is no explicit attribute on the element:
-        /// <list type="table">
-        ///     <listheader>
-        ///         <term>Attribute name</term>
-        ///         <term>Value returned if not explicitly specified</term>
-        ///         <term>Valid element types</term>
-        ///     </listheader>
-        ///     <item>
-        ///         <description>checked</description>
-        ///         <description>checked</description>
-        ///         <description>Check Box</description>
-        ///     </item>
-        ///     <item>
-        ///         <description>selected</description>
-        ///         <description>selected</description>
-        ///         <description>Options in Select elements</description>
-        ///     </item>
-        ///     <item>
-        ///         <description>disabled</description>
-        ///         <description>disabled</description>
-        ///         <description>Input and other UI elements</description>
-        ///     </item>
-        /// </list>
-        /// </remarks>
-        /// <exception cref="T:OpenQA.Selenium.StaleElementReferenceException">Thrown when the target element is no longer valid in the document DOM.</exception>
+        /// <inheritdoc />
         public string GetAttribute(string attributeName)
         {
             return WebElement.GetAttribute(attributeName);
+        }
+
+        string IWebElement.GetProperty(string propertyName)
+        {
+            return WebElement.GetProperty(propertyName);
         }
 
         string IWebElement.GetCssValue(string propertyName)
