@@ -24,7 +24,8 @@ namespace TestAutomationEssentials.Selenium
             _windowHandle = windowHandle;
         }
 
-        protected internal override void Activate()
+        /// <inheritdoc />
+        protected internal sealed override void Activate()
         {
             if (_browser.ActiveDOM == this)
                 return;

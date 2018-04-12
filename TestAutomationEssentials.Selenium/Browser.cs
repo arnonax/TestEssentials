@@ -168,7 +168,8 @@ namespace TestAutomationEssentials.Selenium
                 throw new ObjectDisposedException("Browser object has been disposed");
         }
 
-        protected internal sealed override void Activate()
+	    /// <inheritdoc />
+	    protected internal sealed override void Activate()
         {
             MainWindow.Activate();
         }

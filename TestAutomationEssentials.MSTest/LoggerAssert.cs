@@ -9,7 +9,7 @@ using TestAutomationEssentials.Common;
 namespace TestAutomationEssentials.MSTest
 {
     /// <summary>
-    /// Wrapper around the <see cref="Assert"/> methods, which logs the verification even when it passes
+    /// Wrapper around the <see cref="Microsoft.VisualStudio.TestTools.UnitTesting.Assert"/> methods, which logs the verification even when it passes
     /// </summary>
     public class LoggerAssert
     {

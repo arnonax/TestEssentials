@@ -154,7 +154,7 @@ namespace TestAutomationEssentials.Selenium
         }
 
         /// <summary>
-        //  Gets or sets the text of this element
+        ///  Gets or sets the text of this element
         /// </summary>
         /// <exception cref="StaleElementReferenceException">Thrown when the target element is no longer valid in the document DOM</exception>
         /// <remarks>The setter of this property can be used instead of <see cref="IWebElement.SendKeys"/>. However, in addition to <see cref="IWebElement.SendKeys"/>
@@ -170,6 +170,7 @@ namespace TestAutomationEssentials.Selenium
             }
         }
 
+        /// <inheritdoc />
         public bool Enabled
         {
             get
@@ -178,6 +179,7 @@ namespace TestAutomationEssentials.Selenium
             }
         }
 
+        /// <inheritdoc />
         public bool Selected
         {
             get
@@ -186,6 +188,7 @@ namespace TestAutomationEssentials.Selenium
             }
         }
 
+        /// <inheritdoc />
         public Point Location
         {
             get
@@ -194,6 +197,7 @@ namespace TestAutomationEssentials.Selenium
             }
         }
 
+        /// <inheritdoc />
         public Size Size
         {
             get
@@ -202,6 +206,7 @@ namespace TestAutomationEssentials.Selenium
             }
         }
 
+        /// <inheritdoc />
         public bool Displayed
         {
             get
@@ -272,12 +277,14 @@ namespace TestAutomationEssentials.Selenium
             return WebElement.FindElements(by);
         }
 
-        protected internal override ISearchContext GetSearchContext()
+        /// <inheritdoc />
+        protected internal sealed override ISearchContext GetSearchContext()
         {
             return WebElement;
         }
 
-        protected internal override void Activate()
+        /// <inheritdoc />
+        protected internal sealed override void Activate()
         {
             DOMRoot.Activate();
         }

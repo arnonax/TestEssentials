@@ -48,6 +48,12 @@ namespace TestAutomationEssentials.Selenium
             return GetFrame(locator, description);
         }
 
+        /// <summary>
+        /// Ensures that the DOM context of this object is the active one.
+        /// </summary>
+        /// <remarks>
+        /// This method must be called before any operation that uses the object returned by <see cref="GetSearchContext"/>.
+        /// </remarks>
         protected internal abstract void Activate();
 
         /// <summary>
@@ -101,6 +107,10 @@ namespace TestAutomationEssentials.Selenium
         /// </summary>
         public string Description { get; private set; }
 
+        /// <summary>
+        /// Returns the underlying object on which you can find elements using the WebDriver API.
+        /// </summary>
+        /// <returns></returns>
         protected internal virtual ISearchContext GetSearchContext()
         {
             return DOMRoot.Browser.GetWebDriver();
