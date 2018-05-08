@@ -125,7 +125,7 @@ namespace TestAutomationEssentials.Selenium
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="BrowserElement"/> containing the matching elements</returns>
         public IEnumerable<BrowserElement> FindElements(By @by, string description)
         {
-            //Activate();
+            Activate();
 
             return
                 GetSearchContext().FindElements(by)
