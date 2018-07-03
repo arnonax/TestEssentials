@@ -94,11 +94,7 @@ namespace TestAutomationEssentials.Selenium.UnitTests
                 button.Click();
             }
 
-            var expectedLogEntry = $"Click on '{buttonDescription}'";
-            Assert.AreEqual(1, logEntries.FindAll(entry => entry.EndsWith(expectedLogEntry)).Count,
-                "Entry '{0}' should be written once. All entries:\n{1}", 
-                expectedLogEntry,
-                string.Join("\n", logEntries));
+            AssertLogEntry(logEntries, $"Click on '{buttonDescription}'");
         }
 
         [TestMethod]
@@ -155,11 +151,7 @@ namespace TestAutomationEssentials.Selenium.UnitTests
                 button.Text = textToWrite;
             }
 
-            var expectedLogEntry = $"Type '{textToWrite}' in '{inputDescription}'";
-            Assert.AreEqual(1, logEntries.FindAll(entry => entry.EndsWith(expectedLogEntry)).Count,
-                "Entry '{0}' should be written once. All entries:\n{1}",
-                expectedLogEntry,
-                string.Join("\n", logEntries));
+            AssertLogEntry(logEntries, $"Type '{textToWrite}' in '{inputDescription}'");
         }
 
         [TestMethod]
@@ -208,12 +200,184 @@ function disableCheckBox() {
             }
         }
 
+        [TestMethod]
+        public void LocationReturnsTheElementsLocation()
+        {
+            const string pageSource = @"
+<html>
+<body>
+<button style='position:fixed; left:100px; top:20px'>Hello</button>
+</body>
+</html>";
+
+            using (var browser = OpenBrowserWithPage(pageSource))
+            {
+                var button = browser.WaitForElement(By.TagName("button"), "button");
+                var location = button.Location;
+                Assert.AreEqual(100, location.X, "Left");
+                Assert.AreEqual(20, location.Y, "Top");
+            }
+        }
+
+        [TestMethod]
+        public void SizeReturnsTheElementsSize()
+        {
+            const string pageSource = @"
+<html>
+<body>
+<button style='width:50px; height:30px'/>
+</body>
+</html>";
+
+            using (var browser = OpenBrowserWithPage(pageSource))
+            {
+                var button = browser.WaitForElement(By.TagName("button"), "button");
+                var size = button.Size;
+                Assert.AreEqual(50, size.Width, "Width");
+                Assert.AreEqual(30, size.Height, "Height");
+            }
+        }
+
+        [TestMethod]
+        public void DisplayedReturnsTrueOnlyIfTheElementIsDisplayed()
+        {
+            const string pageSource = @"
+<html>
+<body>
+<button id='visibleButton'>I'm visible</button>
+<button id='invisibleButton' style='visibility: hidden'>I'm invisible</button>
+</body>
+</html>";
+
+            using (var browser = OpenBrowserWithPage(pageSource))
+            {
+                var visibleButton = browser.WaitForElement(By.Id("visibleButton"), "Visible button");
+                var invisibleButton = browser.WaitForElement(By.Id("invisibleButton"), "Invisible button");
+                Assert.IsTrue(visibleButton.Displayed, "Visible button");
+                Assert.IsFalse(invisibleButton.Displayed, "Invisible button");
+            }
+        }
+
+        [TestMethod]
+        public void DisplayedReturnsFalseIfTheElementIsRemoved()
+        {
+            const string pageSource = @"
+<html>
+<script>
+function removeButton() {
+	var container = document.getElementById('container');
+    var testButton = document.getElementById('testButton');
+    container.removeChild(testButton);
+}
+
+function createButton() {
+	var container = document.getElementById('container');
+	var testButton = document.createElement('button');
+	testButton.id = 'testButton';
+	testButton.innerText = 'Button';
+	container.appendChild(testButton);
+}
+</script>
+<body>
+	<div id='container'>
+		<button id='remove' onClick='removeButton()' >Remove</button>
+		<button id='create' onClick='createButton()' >Create</button>
+		<button id='testButton'>Button</button>
+	</div>
+</body>
+</html>";
+
+            using (var browser = OpenBrowserWithPage(pageSource))
+            {
+                var removeButton = browser.WaitForElement(By.Id("remove"), "remove button");
+                var createButton = browser.WaitForElement(By.Id("create"), "create button");
+                var testButton = browser.WaitForElement(By.Id("testButton"), "Test button");
+                removeButton.Click();
+                Assert.IsFalse(testButton.Displayed);
+                createButton.Click();
+                Assert.IsTrue(testButton.Displayed);
+            }
+        }
+
+        [TestMethod]
+        public void DoubleClick()
+        {
+            const string pageSource = @"
+<html>
+<body>
+<button ondblclick=""this.innerHTML='OK'"">Doubleclick me</button>
+</body>
+</html>";
+
+            using (var browser = OpenBrowserWithPage(pageSource))
+            {
+                var button = browser.WaitForElement(By.TagName("button"), "button");
+                button.DoubleClick();
+                Assert.AreEqual("OK", button.Text);
+            }
+        }
+
+        [TestMethod]
+        public void DoubleClicksAreWrittenToTheLog()
+        {
+            const string pageSource = @"
+<html>
+<body>
+<button>Double click me!</button>
+</body>
+</html>";
+
+            var logEntries = RedirectLogs();
+
+            var buttonDescription = Guid.NewGuid().ToString();
+            using (var browser = OpenBrowserWithPage(pageSource))
+            {
+                var button = browser.WaitForElement(By.TagName("button"), buttonDescription);
+                button.DoubleClick();
+            }
+
+            AssertLogEntry(logEntries, $"Double click on '{buttonDescription}'");
+        }
+
+        [TestMethod]
+        public void DoubleClickMovesTheCursorToTheElementBeforeDoubleClicking()
+        {
+            const string pageSource = @"
+<html>
+<script>
+function addDoubleClickHandler(e) {
+	e.target.ondblclick = function() {
+    	e.target.innerHTML = 'OK';
+    }
+}
+</script>
+<body>
+<button onmousemove='addDoubleClickHandler(event)'>Double-click me</button>
+</body>
+</html>";
+
+            using (var browser = OpenBrowserWithPage(pageSource))
+            {
+                var button = browser.WaitForElement(By.TagName("button"), "button");
+                button.DoubleClick();
+                Assert.AreEqual("OK", button.Text);
+            }
+        }
+
         private static List<string> RedirectLogs()
         {
             var logEntries = new List<string>();
             Logger.Initialize(entry => logEntries.Add(entry));
             AddCleanupAction(() => Logger.Initialize(Logger.DefaultImplementations.Console));
             return logEntries;
+        }
+
+        private static void AssertLogEntry(List<string> logEntries, string expectedLogEntry)
+        {
+            Assert.AreEqual(1, logEntries.FindAll(entry => entry.EndsWith(expectedLogEntry)).Count,
+                "Entry '{0}' should be written once. All entries:\n{1}",
+                expectedLogEntry,
+                string.Join("\n", logEntries));
         }
     }
 }

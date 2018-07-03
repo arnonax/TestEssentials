@@ -236,8 +236,7 @@ namespace TestAutomationEssentials.Selenium
         {
             get
             {
-                /*return WebElement.Location;*/
-                throw new NotImplementedException();
+                return WebElement.Location;
             }
         }
 
@@ -245,8 +244,7 @@ namespace TestAutomationEssentials.Selenium
         {
             get
             {
-                /*return WebElement.Size;*/
-                throw new NotImplementedException();
+                return WebElement.Size;
             }
         }
 
@@ -254,17 +252,14 @@ namespace TestAutomationEssentials.Selenium
         {
             get
             {
-                //try
-                //{
-                //    var webElement = WebElement;
-                //    // WebElement may return null if the element is not displayed
-                //    return webElement != null && webElement.Displayed;
-                //}
-                //catch (StaleElementReferenceException)
-                //{
-                //    return false; // the element is removed from the DOM and therefore it's not displayed.
-                //}
-                throw new NotImplementedException();
+                try
+                {
+                    return WebElement.Displayed;
+                }
+                catch (StaleElementReferenceException)
+                {
+                    return false; // the element is removed from the DOM and therefore it's not displayed.
+                }
             }
         }
 
@@ -293,23 +288,23 @@ namespace TestAutomationEssentials.Selenium
         //		return result;
         //	}
 
-        //	/// <summary>
-        //	/// Performs a double-click on the element
-        //	/// </summary>
-        //	public void DoubleClick()
-        //	{
-        //		Wait.Until(IsReady, 30.Seconds(), string.Format("{0} is not ready", Description));
+        /// <summary>
+        /// Performs a double-click on the element
+        /// </summary>
+        public void DoubleClick()
+        {
+            //		Wait.Until(IsReady, 30.Seconds(), string.Format("{0} is not ready", Description));
 
-        //		Logger.WriteLine("Double click on '{0}'", Description);
-        //		var actions = CreateActionsSequence();
-        //		var doublClick = actions.MoveToElement(WebElement).DoubleClick(WebElement).Build();
-        //		doublClick.Perform();
-        //	}
+            Logger.WriteLine("Double click on '{0}'", Description);
+            var actions = CreateActionsSequence();
+            var doublClick = actions/*.MoveToElement(WebElement)*/.DoubleClick(WebElement).Build();
+            doublClick.Perform();
+        }
 
-        //	private Actions CreateActionsSequence()
-        //	{
-        //		return new Actions(DOMRoot.Browser.GetWebDriver());
-        //	}
+        private Actions CreateActionsSequence()
+        {
+            return new Actions(DOMRoot.Browser.GetWebDriver());
+        }
 
         IWebElement ISearchContext.FindElement(By by)
         {
