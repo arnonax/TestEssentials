@@ -107,13 +107,13 @@ namespace TestAutomationEssentials.Selenium.UnitTests
             const string pageSource = @"
 <html>
 <body>
-<button id='myButton' style='font-weight: bold'>Click me</button>
+<button id='myButton' style='font-weight: 500'>Click me</button>
 </body>
 </html>";
             using (var browser = OpenBrowserWithPage(pageSource))
             {
                 IWebElement button = browser.WaitForElement(By.Id("myButton"), "my button");
-                Assert.AreEqual("bold", button.GetCssValue("font-weight"), "GetCssValue('font-weight') of button should return 'bold'");
+                Assert.AreEqual("500", button.GetCssValue("font-weight"), "GetCssValue('font-weight') of button should return 'bold'");
             }
         }
 

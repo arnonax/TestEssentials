@@ -174,6 +174,12 @@ namespace TestAutomationEssentials.Selenium
             return WebElement.GetAttribute(attributeName);
         }
 
+        string IWebElement.GetProperty(string propertyName)
+        {
+            //return WebElement.GetProperty(propertyName);
+            throw new NotImplementedException();
+        }
+
         string IWebElement.GetCssValue(string propertyName)
         {
             return WebElement.GetCssValue(propertyName);
