@@ -232,6 +232,7 @@ namespace TestAutomationEssentials.Selenium
             }
         }
 
+        /// <inheritdoc />
         public Point Location
         {
             get
@@ -240,6 +241,7 @@ namespace TestAutomationEssentials.Selenium
             }
         }
 
+        /// <inheritdoc />
         public Size Size
         {
             get
@@ -248,6 +250,7 @@ namespace TestAutomationEssentials.Selenium
             }
         }
 
+        /// <inheritdoc />
         public bool Displayed
         {
             get
@@ -316,6 +319,7 @@ namespace TestAutomationEssentials.Selenium
             return WebElement.FindElements(by);
         }
 
+        /// <inheritdoc />
         protected internal override ISearchContext GetSearchContext()
         {
             return WebElement;
