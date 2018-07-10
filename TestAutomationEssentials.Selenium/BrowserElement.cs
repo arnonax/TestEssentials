@@ -313,14 +313,13 @@ namespace TestAutomationEssentials.Selenium
 
         ReadOnlyCollection<IWebElement> ISearchContext.FindElements(By by)
         {
-            //return WebElement.FindElements(by);
-            throw new NotImplementedException();
+            return WebElement.FindElements(by);
         }
 
-        //	protected internal override ISearchContext GetSearchContext()
-        //	{
-        //		return WebElement;
-        //	}
+        protected internal override ISearchContext GetSearchContext()
+        {
+            return WebElement;
+        }
 
         //	protected internal override void Activate()
         //	{

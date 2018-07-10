@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
 using TestAutomationEssentials.Common;
@@ -382,7 +383,54 @@ function addDoubleClickHandler(e) {
                 Assert.AreEqual("button", button.TagName);
             }
         }
-        
+
+        [TestMethod]
+        public void FindMultipleElementsWithinElement()
+        {
+            const string pageSource = @"
+<html>
+<body>
+<div>
+    <span>Hello</span>
+    <span>World</span>
+</div>
+<span>This shouldn't be returned</span>
+</body>
+</html>";
+
+            using (var browser = OpenBrowserWithPage(pageSource))
+            {
+                var div = browser.WaitForElement(By.TagName("div"), "div");
+                var spans = div.FindElements(By.TagName("span"), "inner spans").ToList();
+                Assert.AreEqual(2, spans.Count);
+                CollectionAssert.AreEqual(new[] {"Hello", "World"}, spans.Select(x => x.Text).ToList());
+            }
+        }
+
+        [TestMethod]
+        public void FindMultipleElementsWithinElementUsingIWebElement()
+        {
+            const string pageSource = @"
+<html>
+<body>
+<div>
+    <span>Hello</span>
+    <span>World</span>
+</div>
+<span>This shouldn't be returned</span>
+</body>
+</html>";
+
+            using (var browser = OpenBrowserWithPage(pageSource))
+            {
+                IWebElement div = browser.WaitForElement(By.TagName("div"), "div");
+                var spans = div.FindElements(By.TagName("span"));
+                Assert.AreEqual(2, spans.Count);
+                CollectionAssert.AreEqual(new[] { "Hello", "World" }, spans.Select(x => x.Text).ToList());
+            }
+        }
+
+
         private static List<string> RedirectLogs()
         {
             var logEntries = new List<string>();
