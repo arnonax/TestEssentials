@@ -364,6 +364,25 @@ function addDoubleClickHandler(e) {
             }
         }
 
+        [TestMethod]
+        public void FindElementWithinElement()
+        {
+            const string pageSource = @"
+<html>
+<body>
+<div>
+    <button>dummy</button>
+</div>
+</body>
+</html>";
+            using (var browser = OpenBrowserWithPage(pageSource))
+            {
+                IWebElement div = browser.WaitForElement(By.TagName("div"), "div");
+                var button = div.FindElement(By.TagName("button"));
+                Assert.AreEqual("button", button.TagName);
+            }
+        }
+        
         private static List<string> RedirectLogs()
         {
             var logEntries = new List<string>();

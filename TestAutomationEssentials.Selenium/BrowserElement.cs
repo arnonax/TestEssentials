@@ -308,8 +308,7 @@ namespace TestAutomationEssentials.Selenium
 
         IWebElement ISearchContext.FindElement(By by)
         {
-            //return WebElement.FindElement(by);
-            throw new NotImplementedException();
+            return WebElement.FindElement(by);
         }
 
         ReadOnlyCollection<IWebElement> ISearchContext.FindElements(By by)
