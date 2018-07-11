@@ -457,6 +457,29 @@ function updateWorld() {
             }
         }
 
+        [TestMethod]
+        public void HoversAreWrittenToTheLog()
+        {
+            const string pageSource = @"
+<html>
+<body>
+<button>Hover over me</button>
+</body>
+</html>";
+
+            var logEntries = RedirectLogs();
+
+            var buttonDescription = Guid.NewGuid().ToString();
+            using (var browser = OpenBrowserWithPage(pageSource))
+            {
+                var button = browser.WaitForElement(By.TagName("button"), buttonDescription);
+                button.Hover();
+            }
+
+            AssertLogEntry(logEntries, $"Move to '{buttonDescription}'");
+        }
+
+
         private static List<string> RedirectLogs()
         {
             var logEntries = new List<string>();

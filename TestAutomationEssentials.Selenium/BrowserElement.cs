@@ -348,7 +348,7 @@ namespace TestAutomationEssentials.Selenium
         /// </summary>
         public void Hover()
         {
-            //           Logger.WriteLine("Move to '{0}'", Description);
+            Logger.WriteLine("Move to '{0}'", Description);
             var action = CreateActionsSequence();
             var moveToElement = action.MoveToElement(WebElement).Build();
             moveToElement.Perform();
