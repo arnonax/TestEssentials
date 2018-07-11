@@ -430,6 +430,32 @@ function addDoubleClickHandler(e) {
             }
         }
 
+        [TestMethod]
+        public void HoverOverAnElementTriggersItsMouseOverEvent()
+        {
+            const string pageSource = @"
+<html>
+<script>
+function updateWorld() {
+    var el = document.getElementById('world');
+    el.innerHTML = 'World';
+}
+</script>
+<body>
+<span id='hello' onmousemove='updateWorld()'>Hello</span>
+<span id='world' />
+</body>
+</html>";
+
+            using (var browser = OpenBrowserWithPage(pageSource))
+            {
+                var hello = browser.WaitForElement(By.Id("hello"), "hello");
+                var world = browser.WaitForElement(By.Id("world"), "world");
+                Assert.AreEqual(string.Empty, world.Text);
+                hello.Hover();
+                Assert.AreEqual("World", world.Text);
+            }
+        }
 
         private static List<string> RedirectLogs()
         {

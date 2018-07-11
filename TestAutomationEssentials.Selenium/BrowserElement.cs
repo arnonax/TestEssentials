@@ -343,16 +343,16 @@ namespace TestAutomationEssentials.Selenium
         //        }
         //    }
 
-        //    /// <summary>
-        //    /// Hovers the mouse over the element
-        //    /// </summary>
-        //    public void Hover()
-        //    {
-        //           Logger.WriteLine("Move to '{0}'", Description);
-        //	    var action = CreateActionsSequence();
-        //        var moveToElement = action.MoveToElement(WebElement).Build();
-        //           moveToElement.Perform();
-        //    }
+        /// <summary>
+        /// Hovers the mouse over the element
+        /// </summary>
+        public void Hover()
+        {
+            //           Logger.WriteLine("Move to '{0}'", Description);
+            var action = CreateActionsSequence();
+            var moveToElement = action.MoveToElement(WebElement).Build();
+            moveToElement.Perform();
+        }
 
         //    /// <summary>
         //    /// Returns the immediate parent element containing the current element
