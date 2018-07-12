@@ -73,9 +73,11 @@ namespace TestAutomationEssentials.Selenium.UnitTests
         [TestMethod]
         public void NavigateToUrlNavigatesToTheSpecifiedUrl()
         {
-            var dummyPageUrl = GetUrlForFile("dummyPage.html");
-            var driver = new ChromeDriver();
-            WriteChromeVersion(driver);
+            var filename = "dummyPage.html";
+            File.WriteAllText(filename, "<html><body>Dummy page</body></html>");
+            var dummyPageUrl = GetUrlForFile(filename);
+            var driver = CreateDriver();
+            WriteBrowserVersion(driver);
             using (var browser = new Browser("", driver))
             {
                 browser.NavigateToUrl(dummyPageUrl);
@@ -84,7 +86,7 @@ namespace TestAutomationEssentials.Selenium.UnitTests
         }
 
         // For diagnosing differences bewteen local run and appVeyor:
-        private void WriteChromeVersion(ChromeDriver driver)
+        private static void WriteBrowserVersion(IWebDriver driver)
         {
             Logger.WriteLine($"user agent={driver.ExecuteJavaScript<string>("return navigator.userAgent;")}");
             Logger.WriteLine($"app version={driver.ExecuteJavaScript<string>("return navigator.appVersion;")}");
