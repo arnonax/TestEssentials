@@ -16,7 +16,7 @@ namespace TestAutomationEssentials.Selenium.UnitTests
         protected Browser OpenBrowserWithPage(string pageSource)
         {
             var filename = Path.GetTempFileName();
-            File.Move(filename, filename += ".html");
+            File.Move(filename, filename);
             File.WriteAllText(filename, pageSource);
             TestContext.AddResultFile(filename);
             var driver = CreateDriver();

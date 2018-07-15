@@ -15,7 +15,7 @@ namespace TestAutomationEssentials.Selenium
     /// <remarks>
     /// This class wraps Selenium's <see cref="IWebElement"/> to provide additional capabilities for logging, automatic waiting and more.
     /// </remarks>
-    public class BrowserElement : ElementsContainer, IWebElement//, IWrapsElement
+    public class BrowserElement : ElementsContainer, IWebElement, IWrapsElement
     {
         private readonly IDOMRoot _domRoot;
 
@@ -401,13 +401,13 @@ namespace TestAutomationEssentials.Selenium
         //           Wait.While(() => Displayed, seconds.Seconds(), "Element '{0}' still appears after '{1}' seconds", Description, seconds);
         //       }
 
-        //	#region IWrapsElement Members
+        #region IWrapsElement Members
 
-        //	IWebElement IWrapsElement.WrappedElement
-        //	{
-        //		get { return WebElement; }
-        //	}
+        IWebElement IWrapsElement.WrappedElement
+        {
+            get { return WebElement; }
+        }
 
-        //	#endregion
+        #endregion
     }
 }

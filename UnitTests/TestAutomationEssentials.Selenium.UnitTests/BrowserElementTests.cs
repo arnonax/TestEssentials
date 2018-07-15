@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Internal;
 using TestAutomationEssentials.Common;
 
 namespace TestAutomationEssentials.Selenium.UnitTests
@@ -513,6 +514,25 @@ function updateWorld() {
                 var child = browser.WaitForElement(By.Id("child"), "child");
                 IWebElement parent = child.GetParent("parent");
                 Assert.AreEqual("div", parent.TagName);
+            }
+        }
+
+        [TestMethod]
+        public void BrowserElementImplementsIWrapsElement()
+        {
+            const string pageSource = @"
+<html>
+<body>
+<span>Hello</span>
+</body>
+</html>";
+
+            using (var browser = OpenBrowserWithPage(pageSource))
+            {
+                IWrapsElement span = browser.WaitForElement(By.TagName("span"), "span");
+                var expectedType = browser.GetWebDriver().FindElement(By.TagName("span")).GetType();
+                Assert.IsInstanceOfType(span.WrappedElement, expectedType);
+                Assert.AreEqual("Hello", span.WrappedElement.Text);
             }
         }
 
