@@ -99,6 +99,23 @@ namespace TestAutomationEssentials.Selenium.UnitTests
         }
 
         [TestMethod]
+        public void GetPropertyReturnsTheValueOfAProperty()
+        {
+            const string pageSource = @"
+<html>
+<body>
+<span>Dummy text</span>
+</body>
+</html>";
+
+            using (var browser = OpenBrowserWithPage(pageSource))
+            {
+                IWebElement span = browser.WaitForElement(By.TagName("span"), "span");
+                Assert.AreEqual("Dummy text", span.GetProperty("innerText"));
+            }
+        }
+
+        [TestMethod]
         public void GetCssValueReturnsTheCssValueOfTheElement()
         {
             const string pageSource = @"
@@ -479,6 +496,25 @@ function updateWorld() {
             AssertLogEntry(logEntries, $"Move to '{buttonDescription}'");
         }
 
+        [TestMethod]
+        public void GetParentReturnsTheParentElement()
+        {
+            const string pageSource = @"
+<html>
+<body>
+<div id='parent'>
+<span id='child'>Dummy</span>
+</div>
+</body>
+</html>";
+
+            using (var browser = OpenBrowserWithPage(pageSource))
+            {
+                var child = browser.WaitForElement(By.Id("child"), "child");
+                IWebElement parent = child.GetParent("parent");
+                Assert.AreEqual("div", parent.TagName);
+            }
+        }
 
         private static List<string> RedirectLogs()
         {

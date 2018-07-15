@@ -176,8 +176,7 @@ namespace TestAutomationEssentials.Selenium
 
         string IWebElement.GetProperty(string propertyName)
         {
-            //return WebElement.GetProperty(propertyName);
-            throw new NotImplementedException();
+            return WebElement.GetProperty(propertyName);
         }
 
         string IWebElement.GetCssValue(string propertyName)
@@ -354,20 +353,20 @@ namespace TestAutomationEssentials.Selenium
             moveToElement.Perform();
         }
 
-        //    /// <summary>
-        //    /// Returns the immediate parent element containing the current element
-        //    /// </summary>
-        //    /// <param name="description">The description to give to the parent element</param>
-        //    /// <returns>A <see cref="BrowserElement"/> that represents the parent element</returns>
-        //    public BrowserElement GetParent(string description)
-        //    {
-        //		return new BrowserElement(this, GetParentLocator(), description);
-        //    }
+        /// <summary>
+        /// Returns the immediate parent element containing the current element
+        /// </summary>
+        /// <param name="description">The description to give to the parent element</param>
+        /// <returns>A <see cref="BrowserElement"/> that represents the parent element</returns>
+        public BrowserElement GetParent(string description)
+        {
+            return new BrowserElement(this, By.XPath(".."), description);
+        }
 
         //	internal static By GetParentLocator()
         //	{
         //		return By.XPath("..");
-        //    }
+        //  }
 
         //	// TODO: check if this method can be removed?
         //	internal IWebElement GetWebElement()
