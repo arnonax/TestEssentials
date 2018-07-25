@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
+//using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Firefox;
 using TestAutomationEssentials.MSTest;
 
@@ -33,7 +33,9 @@ namespace TestAutomationEssentials.Selenium.UnitTests
             var driverService = FirefoxDriverService.CreateDefaultService();
             driverService.FirefoxBinaryPath = @"C:\Program Files (x86)\Mozilla Firefox\firefox.exe";
 
-            return new FirefoxDriver(driverService);
+            var options = new FirefoxOptions();
+            options.AddArgument("--headless");
+            return new FirefoxDriver(driverService, options);
         }
     }
 }
