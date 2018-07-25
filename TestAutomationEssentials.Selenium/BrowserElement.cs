@@ -374,22 +374,24 @@ namespace TestAutomationEssentials.Selenium
         //        return WebElement;
         //    }
 
-        //       /// <summary>
-        //       /// Drags the current element onto the target element
-        //       /// </summary>
-        //       /// <param name="target">The target element to drop the current element onto</param>
-        //       /// <exception cref="ArgumentNullException"><paramref name="target"/> is null</exception>
-        //       public void DragAndDrop(BrowserElement target)
-        //       {
-        //		if (target == null)
-        //			throw new ArgumentNullException("target");
+        /// <summary>
+        /// Drags the current element onto the target element
+        /// </summary>
+        /// <param name="target">The target element to drop the current element onto</param>
+        /// <exception cref="ArgumentNullException"><paramref name="target"/> is null</exception>
+        [Obsolete("This method doesn't work with GeckoDriver right now. If this will be implemented by that driver" +
+            "in the future, this Obsolete warning should be removed")]
+        public void DragAndDrop(BrowserElement target)
+        {
+            //		if (target == null)
+            //			throw new ArgumentNullException("target");
 
-        //           Logger.WriteLine("Drag element '{0}' to '{1}'", Description, target.Description);
-        //           var targetWebElement = target.WebElement;
-        //        var action = CreateActionsSequence();
-        //           var dragAndDrop = action.MoveToElement(WebElement).DragAndDrop(WebElement, targetWebElement).Build();
-        //           dragAndDrop.Perform();
-        //       }
+            //           Logger.WriteLine("Drag element '{0}' to '{1}'", Description, target.Description);
+                       var targetWebElement = target.WebElement;
+            var action = CreateActionsSequence();
+            var dragAndDrop = action./*MoveToElement(WebElement).*/DragAndDrop(WebElement, target).Build();
+            dragAndDrop.Perform();
+        }
 
         //       /// <summary>
         //       /// Waits for the current element to disappear. That is, either become invisible or completely removed from the DOM

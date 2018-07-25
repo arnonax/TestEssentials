@@ -8,6 +8,7 @@ using TestAutomationEssentials.Common;
 
 namespace TestAutomationEssentials.Selenium.UnitTests
 {
+    // TODO: change the more trivial tests to unit tests using mocks.
     [TestClass]
     public class BrowserElementTests : SeleniumTestBase
     {
@@ -517,6 +518,50 @@ function updateWorld() {
             }
         }
 
+        [Ignore] // This is not supported yet at GeckoDriver. See: https://stackoverflow.com/questions/42197200/selenium-actions-movetoelement-org-openqa-selenium-unsupportedcommandexception
+        [TestMethod]
+        public void DragAndDrop()
+        {
+            const string pageSource = @"
+<!DOCTYPE HTML>
+<html>
+<head>
+<script>
+function allowDrop(ev) {
+    ev.preventDefault();
+}
+
+function drag(ev) {
+    ev.dataTransfer.setData('dummy', null);
+}
+
+function drop(ev) {
+    ev.preventDefault();
+    ev.target.innerText = 'Success!';
+}
+</script>
+</head>
+<body>
+
+<span id='draggable' draggable='true' ondragstart='drag(event)'>Drag me</span>
+<span id='droppable' ondrop='drop(event)' ondragover='allowDrop(event)'>Drop on me</span>
+
+</body>
+</html>";
+
+            using (var browser = OpenBrowserWithPage(pageSource))
+            {
+                var draggable = browser.WaitForElement(By.Id("draggable"), "draggable");
+                var droppable = browser.WaitForElement(By.Id("droppable"), "droppable");
+
+#pragma warning disable 618 // Obsolete
+                draggable.DragAndDrop(droppable);
+#pragma warning restore 618
+
+                Assert.AreEqual("Success!", droppable.Text);
+            }
+        }
+        
         [TestMethod]
         public void BrowserElementImplementsIWrapsElement()
         {
