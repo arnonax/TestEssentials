@@ -263,7 +263,7 @@ namespace TestAutomationEssentials.UnitTests
 		[TestMethod]
 		public void WaitIfReturnsFalseIfConditionIsMetDuringTheEntireDesignatedPeriod()
 		{
-			var timeout = 100.Milliseconds();
+			var timeout = 200.Milliseconds();
 
 			var startTime = DateTime.Now;
 			var result = Wait.If(() => true, timeout);
@@ -271,7 +271,7 @@ namespace TestAutomationEssentials.UnitTests
 			var endTime = DateTime.Now;
 
 			Assert.IsTrue(endTime - startTime >= timeout, "Wait.If didn't wait enough (startTime={0:O}, endTime={1:O})", startTime, endTime);
-			Assert.IsTrue(endTime - startTime <= timeout.MutliplyBy(1.1), "Wait.If waited for too long (startTime={0:O}, endTime={1:O})", startTime, endTime);
+			Assert.IsTrue(endTime - startTime <= timeout.MutliplyBy(1.2), "Wait.If waited for too long (startTime={0:O}, endTime={1:O})", startTime, endTime);
 		}
 
 		public void WaitIfNotWaitsUntilTheConditionIsMet()
