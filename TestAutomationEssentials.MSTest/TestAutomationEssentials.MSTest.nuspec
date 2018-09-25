@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>TestAutomationEssentials.MSTest</id>
-    <version>1.0.0.1</version>
+    <version>$version$</version>
     <title>Test Automation Essentials - MSTest</title>
     <owners>Arnon Axelrod</owners>
 	<authors>Arnon Axelrod</authors>
