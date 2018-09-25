@@ -14,5 +14,7 @@
             <dependency id="TestAutomationEssentials.Common" version="1.0.0.1" />
         </dependencies>
     </metadata>
-    <files />
+  <files>
+    <file src="bin\Debug\*.pdb" target="lib" />	
+  </files>
 </package>

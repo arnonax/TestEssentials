@@ -11,4 +11,7 @@
     <description>Provide useful utility methods and classes that can be used by MSTest V2 based tests</description>
     <tags>Test-Automation;MSTestV2</tags>
   </metadata>
+  <files>
+    <file src="bin\Debug\*.pdb" target="lib" />	
+  </files>
 </package>
