@@ -12,6 +12,6 @@
     <tags>Test-Automation;MSTest</tags>
   </metadata>
   <files>
-    <file src="bin\Debug\*.pdb" target="lib" />	
+    <file src="bin\Debug\*.pdb" target="lib\net45" />	
   </files>
 </package>
