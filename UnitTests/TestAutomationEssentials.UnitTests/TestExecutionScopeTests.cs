@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestAutomationEssentials.Common;
 using TestAutomationEssentials.Common.ExecutionContext;
 using TestAutomationEssentials.MSTest;
-using TestAutomationEssentials.TrxParser.Generated;
 
 namespace TestAutomationEssentials.UnitTests
 {
@@ -172,9 +172,29 @@ namespace TestAutomationEssentials.UnitTests
 			StringAssert.Contains(ex.StackTrace, "MethodThatThrowsException");
 		}
 
-		private static void MethodThatThrowsException()
-		{
-			throw new Exception("dummy exception");
-		}
+	    private static void MethodThatThrowsException()
+	    {
+	        throw new Exception("dummy exception");
+	    }
+
+        [TestMethod]
+        public void ExceptionInInitializeFollowedByAnExceptionInCleanupShouldBeThrownAsAggregateExceptions()
+        {
+            const string exceptionInCleanup = "Exception in cleanup";
+            const string originalException = "Original exception";
+            Action<IIsolationScope> initialize = scope =>
+            {
+                scope.AddCleanupAction(() =>
+                {
+                    throw new Exception(exceptionInCleanup);
+                });
+
+                throw new Exception(originalException);
+            };
+            var ex = TestUtils.ExpectException<AggregateException>(() => new TestExecutionScopesManager("dummy", initialize));
+            CollectionAssert.AreEquivalent(
+                ex.InnerExceptions.Select(innerEx => innerEx.Message).ToList(),
+                new[] { exceptionInCleanup, originalException });
+        }
 	}
 }

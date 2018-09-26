@@ -116,10 +116,17 @@ namespace TestAutomationEssentials.Common.ExecutionContext
 				initialize(this);
 				Logger.WriteLine("***************************** Initializing " + isolationScopeName + " Completed succesfully *****************************");
 			}
-			catch
+			catch(Exception ex)
 			{
-				_currentIsolationLevel.Cleanup();
-				_currentIsolationLevel = lastIsolationLevel;
+			    try
+			    {
+			        _currentIsolationLevel.Cleanup();
+			    }
+			    catch (Exception cleanupException)
+			    {
+			        throw new AggregateException(ex, cleanupException);
+			    }
+			    _currentIsolationLevel = lastIsolationLevel;
 				throw;
 			}
 
