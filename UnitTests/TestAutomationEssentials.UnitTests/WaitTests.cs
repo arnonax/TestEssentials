@@ -13,7 +13,9 @@ namespace TestAutomationEssentials.UnitTests
 	[ExcludeFromCodeCoverage]
 	public class WaitTests
 	{
-		[TestMethod]
+	    private readonly TimeSpan _defaultWaitTimeoutForUnitTests = 200.Milliseconds();
+
+	    [TestMethod]
 		public void WaitUntilThrowsExceptionWhenConditionIsNull()
 		{
 			Action action = () => Wait.Until(null, 1.Seconds());
@@ -48,21 +50,20 @@ namespace TestAutomationEssentials.UnitTests
 		[TestMethod]
 		public void WaitUntilThrowsTimeoutExceptionIfConditionIsNotMetDuringTheDesignatedPeriod()
 		{
-			var timeout = 200.Milliseconds();
+			var timeout = _defaultWaitTimeoutForUnitTests;
 
 			var startTime = DateTime.Now;
 			Action action = () => Wait.Until(() => false, timeout);
 			TestUtils.ExpectException<TimeoutException>(action);
 			var endTime = DateTime.Now;
 
-			Assert.IsTrue(endTime - startTime >= timeout, "Wait.Until didn't wait enough (startTime={0}, endTime={1})", startTime, endTime);
-			Assert.IsTrue(endTime - startTime <= timeout.MutliplyBy(1.1), "Wait.Until waited for too long (startTime={0}, endTime={1})", startTime, endTime);
+            AssertTimeoutWithinThreashold(startTime, endTime, timeout, "Wait.Until");
 		}
 
 		[TestMethod]
 		public void WaitUntilThrowsTimeoutExceptionWithFormatterMessage()
 		{
-			var timeout = 200.Milliseconds();
+			var timeout = _defaultWaitTimeoutForUnitTests;
 
 			Action action = () => Wait.Until(() => false, timeout);
 			const string messageFormat = "This is a message with parameters: '{0}', '{1}'";
@@ -231,15 +232,14 @@ namespace TestAutomationEssentials.UnitTests
 		[TestMethod]
 		public void WaitWhileThrowsTimeoutExceptionIfConditionIsMetDuringTheEntireDesignatedPeriod()
 		{
-			var timeout = 100.Milliseconds();
+		    var timeout = _defaultWaitTimeoutForUnitTests;
 
 			var startTime = DateTime.Now;
 			Action action = () => Wait.While(() => true, timeout);
 			TestUtils.ExpectException<TimeoutException>(action);
 			var endTime = DateTime.Now;
 
-			Assert.IsTrue(endTime - startTime >= timeout, "Wait.While didn't wait enough (startTime={0}, endTime={1})", startTime, endTime);
-			Assert.IsTrue(endTime - startTime <= timeout.MutliplyBy(1.1), "Wait.While waited for too long (startTime={0}, endTime={1})", startTime, endTime);
+            AssertTimeoutWithinThreashold(startTime, endTime, timeout, "Wait.While");
 		}
 
 		[TestMethod]
@@ -263,18 +263,25 @@ namespace TestAutomationEssentials.UnitTests
 		[TestMethod]
 		public void WaitIfReturnsFalseIfConditionIsMetDuringTheEntireDesignatedPeriod()
 		{
-			var timeout = 200.Milliseconds();
+			var timeout = _defaultWaitTimeoutForUnitTests;
 
 			var startTime = DateTime.Now;
 			var result = Wait.If(() => true, timeout);
 			Assert.IsFalse(result, "Wait.If had to return false if the condition is not met");
 			var endTime = DateTime.Now;
 
-			Assert.IsTrue(endTime - startTime >= timeout, "Wait.If didn't wait enough (startTime={0:O}, endTime={1:O})", startTime, endTime);
-			Assert.IsTrue(endTime - startTime <= timeout.MutliplyBy(1.2), "Wait.If waited for too long (startTime={0:O}, endTime={1:O})", startTime, endTime);
+			AssertTimeoutWithinThreashold(startTime, endTime, timeout, "Wait.If");
 		}
 
-		public void WaitIfNotWaitsUntilTheConditionIsMet()
+	    private static void AssertTimeoutWithinThreashold(DateTime startTime, DateTime endTime, TimeSpan timeout, string methodName)
+	    {
+	        Assert.IsTrue(endTime - startTime >= timeout, methodName + " didn't wait enough (startTime={0:O}, endTime={1:O})",
+	            startTime, endTime);
+	        Assert.IsTrue(endTime - startTime <= timeout.MutliplyBy(1.2),
+	            methodName + " waited for too long (startTime={0:O}, endTime={1:O})", startTime, endTime);
+	    }
+
+	    public void WaitIfNotWaitsUntilTheConditionIsMet()
 		{
 			var values = new[] { false, false, true, false };
 			var i = 0;
@@ -294,7 +301,7 @@ namespace TestAutomationEssentials.UnitTests
 		[TestMethod]
 		public void WaitIfNotReturnsFalseIfConditionIsNotMetDuringTheDesignatedPeriod()
 		{
-			var timeout = 100.Milliseconds();
+		    var timeout = _defaultWaitTimeoutForUnitTests;
 
 			var startTime = DateTime.Now;
 			var returnValue = Wait.IfNot(() => false, timeout);
@@ -302,8 +309,7 @@ namespace TestAutomationEssentials.UnitTests
 
             Assert.IsFalse(returnValue, "Wait.IfNot should return false if the condition never met");
 			
-			Assert.IsTrue(endTime - startTime >= timeout, "Wait.IfNot didn't wait enough (startTime={0}, endTime={1})", startTime, endTime);
-			Assert.IsTrue(endTime - startTime <= timeout.MutliplyBy(1.1), "Wait.IfNot waited for too long (startTime={0:O}, endTime={1:O}, delta={2}ms)", startTime, endTime, (endTime-startTime).TotalMilliseconds);
+            AssertTimeoutWithinThreashold(startTime, endTime, timeout, "Wait.IfNot");
 		}
 
 		[TestMethod]
