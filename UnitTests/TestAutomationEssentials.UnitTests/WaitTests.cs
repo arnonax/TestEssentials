@@ -57,7 +57,7 @@ namespace TestAutomationEssentials.UnitTests
 			Assert.IsTrue(endTime - startTime <= timeout.MutliplyBy(1.1), "Wait.Until waited for too long (startTime={0}, endTime={1})", startTime, endTime);
 		}
 
-		[TestMethod]
+        [TestMethod]
 		public void WaitUntilThrowsTimeoutExceptionWithFormatterMessage()
 		{
 			var timeout = 200.Milliseconds();
@@ -72,7 +72,36 @@ namespace TestAutomationEssentials.UnitTests
 			Assert.AreNotEqual(expectedMessage, ex.Message, "Wait.Until should throw the exception with the specified formatted message");
 		}
 
-		[TestMethod]
+	    [TestMethod]
+	    public void WaitUntilVerifiesTheFormattedMessageBeforeStart()
+	    {
+	        // TODO: change to default timeout after merge with master
+	        var timeout = 200.Milliseconds();
+
+	        Func<bool> aMethodThatShouldntBeCalled = () => { throw new NotImplementedException(); };
+	        Action action = () => Wait.Until(aMethodThatShouldntBeCalled, timeout,
+	            "This is a badly formatted message {0{");
+	        TestUtils.ExpectException<FormatException>(action);
+	    }
+
+	    [TestMethod]
+	    public void WaitWhileThrowsTimeoutExceptionWithFormattedMessage()
+	    {
+	        // TODO: change to default timeout after merge with master
+	        var timeout = 200.Milliseconds();
+
+	        const string messageFormat = "This is a message with parameters: '{0}', '{1}'";
+	        const string arg1 = "Something";
+	        const double arg2 = 3.5;
+	        Action action = () => Wait.While(() => true, timeout, messageFormat, arg1, arg2);
+	        var ex = TestUtils.ExpectException<TimeoutException>(action);
+
+	        var expectedMessage = string.Format(messageFormat, arg1, arg2);
+	        Assert.AreEqual(expectedMessage, ex.Message,
+	            "Wait.While should throw the exception with the specified formatted message");
+	    }
+
+	    [TestMethod]
 		public void WaitUntilValidatesItsArguments()
 		{
 			{

@@ -15,8 +15,15 @@ namespace TestAutomationEssentials.Selenium.UnitTests
     {
         protected Browser OpenBrowserWithPage(string pageSource)
         {
-            var filename = Path.GetTempFileName();
-            File.Move(filename, filename);
+            var tempFileName = Path.GetTempFileName();
+            var filename = tempFileName + ".html"; // The extension is required in order for Chrome to open it as HTML and not as text
+            File.Copy(tempFileName, filename, true); // Do not delete the original file so GetTempFileName won't give it to someone else
+            AddCleanupAction(() =>
+            {
+                // Order may matter if run in parallel
+                File.Delete(filename);
+                File.Delete(tempFileName);
+            });
             File.WriteAllText(filename, pageSource);
             TestContext.AddResultFile(filename);
             var driver = CreateDriver();
@@ -27,7 +34,7 @@ namespace TestAutomationEssentials.Selenium.UnitTests
 
         protected IWebDriver CreateDriver()
         {
-            //return new ChromeDriver();
+            //return new OpenQA.Selenium.Chrome.ChromeDriver();
 
             // This path is the default, and is always what's available on AppVeyor (https://www.appveyor.com/docs/how-to/selenium-testing/)
             var driverService = FirefoxDriverService.CreateDefaultService();

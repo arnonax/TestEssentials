@@ -73,7 +73,7 @@ namespace TestAutomationEssentials.Common
             ValidateNullArgument(args, "args");
             ValidateTimeout(timeout);
 
-            Until(() => !condition(), timeout, timeoutMessage);
+            Until(() => !condition(), timeout, timeoutMessage, args);
 	    }
 
 		/// <summary>
@@ -98,10 +98,11 @@ namespace TestAutomationEssentials.Common
 			ValidateNullArgument(timeoutMessage, "timeoutMessage");
 			ValidateNullArgument(args, "args");
 			ValidateTimeout(timeout);
+		  var formattedMessage = string.Format(timeoutMessage, args);
 
 			var conditionMet = IfNot(condition, timeout);
 			if (!conditionMet)
-				throw new TimeoutException(string.Format(timeoutMessage, args));
+				throw new TimeoutException(formattedMessage);
 		}
 
 		/// <summary>

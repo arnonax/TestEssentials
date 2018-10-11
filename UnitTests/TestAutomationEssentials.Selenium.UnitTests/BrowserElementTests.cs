@@ -561,7 +561,45 @@ function drop(ev) {
                 Assert.AreEqual("Success!", droppable.Text);
             }
         }
-        
+
+        [TestMethod]
+        public void WaitToDisappearWaitsForTheElementToDisappear()
+        {
+            // It seems that Firefox times are very inaccurate, so we expect 400ms+/-200ms (See: https://stackoverflow.com/a/16753220)
+            var expectedTimeout = 400.Milliseconds();
+            var pageSource = @"
+<html>
+<script>
+function hideSoon() {
+    var el = document.getElementById('myBtn');
+    window.setTimeout(function() {
+        el.style.display = 'none';
+    }, " + expectedTimeout.TotalMilliseconds + @");
+}
+</script>
+<body>
+<button id='myBtn' onclick='hideSoon()'>Hide me</button>
+</body>
+</html>";
+
+            using (var browser = OpenBrowserWithPage(pageSource))
+            {
+                var btn = browser.WaitForElement(By.Id("myBtn"), "button");
+
+                btn.Click();
+                var startTime = DateTime.Now;
+                btn.WaitToDisappear(1.Seconds());
+                var endTime = DateTime.Now;
+
+                var actualDuration = endTime - startTime;
+                Assert.IsFalse(btn.Displayed, "Button should have disappeared");
+                var threshold = 200.Milliseconds();
+                // TODO: change to IsBetween method after merge with master
+                Assert.IsTrue((actualDuration - expectedTimeout).Absolute() < threshold,
+                    $"Actual duration was {actualDuration}, while the expected duration was {expectedTimeout.TotalMilliseconds} +/- {threshold.TotalMilliseconds} milliseconds");
+            }
+        }
+
         [TestMethod]
         public void BrowserElementImplementsIWrapsElement()
         {

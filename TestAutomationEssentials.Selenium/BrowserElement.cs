@@ -393,15 +393,25 @@ namespace TestAutomationEssentials.Selenium
             dragAndDrop.Perform();
         }
 
-        //       /// <summary>
-        //       /// Waits for the current element to disappear. That is, either become invisible or completely removed from the DOM
-        //       /// </summary>
-        //       /// <param name="seconds">Timeout in seconds to wait for the element to disappear</param>
-        //       /// <exception cref="TimeoutException">The current element hasn't been disappeared for the specified period</exception>
-        //       public void WaitToDisappear(int seconds = DefaultWaitTimeout)
-        //       {
-        //           Wait.While(() => Displayed, seconds.Seconds(), "Element '{0}' still appears after '{1}' seconds", Description, seconds);
-        //       }
+        /// <summary>
+        /// Waits for the current element to disappear. That is, either become invisible or completely removed from the DOM
+        /// </summary>
+        /// <param name="seconds">Timeout in seconds to wait for the element to disappear</param>
+        /// <exception cref="TimeoutException">The current element hasn't been disappeared for the specified period</exception>
+        public void WaitToDisappear(int seconds = DefaultWaitTimeout)
+        {
+            WaitToDisappear(seconds.Seconds());
+        }
+
+        /// <summary>
+        /// Waits for the current element to disappear. That is, either become invisible or completely removed from the DOM
+        /// </summary>
+        /// <param name="timeout">Timeout to wait for the element to disappear</param>
+        /// <exception cref="TimeoutException">The current element hasn't been disappeared for the specified period</exception>
+        public void WaitToDisappear(TimeSpan timeout)
+        {
+            Wait.While(() => Displayed, timeout, "Element '{0}' still appears after '{1}'", Description, timeout.ToSpokenString());
+        }
 
         #region IWrapsElement Members
 
