@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using FakeItEasy;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium.Support.Extensions;
 using TestAutomationEssentials.Common;
 using TestAutomationEssentials.MSTest;
@@ -256,7 +257,7 @@ function removeSpan() {
         [TestMethod]
         public void ElementAppearsReturnsTrueOnlyIfElementIsVisible()
         {
-            const string pageSource = @"
+	        const string pageSource = @"
 <html>
 <body>
 <button id=""visible-element"">Visible</button>
@@ -270,6 +271,62 @@ function removeSpan() {
                 Assert.IsFalse(browser.ElementAppears(By.Id("non-existent")), "Non existent element should not appear");
                 Assert.IsFalse(browser.ElementAppears(By.Id("invisible-element")), "Hidden element should not appear");
                 Assert.IsTrue(browser.ElementAppears(By.Id("visible-element")), "Visible element should appear");
+            }
+        }
+
+        /// <summary>
+        /// This test demonstrates GeckoDriver's strange behavior of changing the WindowHandle on the first URL navigation.
+        /// A workaround for this strange behavior is implemented in <see cref="BrowserWindow.NavigateToUrl"/>
+        /// </summary>
+        [TestMethod]
+        public void GeckoDriverChangesWindowHandleAfterSettingUrlForTheFirstTime()
+        {
+            var driver = new FirefoxDriver();
+            AddCleanupAction(() => driver.Quit());
+
+            var firstHandle = driver.CurrentWindowHandle;
+            Console.WriteLine("firstHandle= " + firstHandle);
+
+            driver.Url = $"file:///{CreatePage("<html>Hello</html>")}";
+            var updatedHandle = driver.CurrentWindowHandle;
+            Console.WriteLine("UpdatedHanlde=" + updatedHandle);
+
+            Assert.AreNotEqual(updatedHandle, firstHandle);
+
+            driver.Url = driver.Url = $"file:///{CreatePage("<html>World</html>")}";
+            var updatedHandle2 = driver.CurrentWindowHandle;
+            Console.WriteLine("UpdatedHanlde2=" + updatedHandle2);
+
+            Assert.AreEqual(updatedHandle2, updatedHandle);
+        }
+
+        [TestMethod]
+        public void OpenWindowReturnsTheNewlyOpenedWindow()
+        {
+	        const string otherPageSource = @"
+<html>
+<head><title>New Window</title></head>
+</html>";
+
+	        var otherPageUrl = CreatePage(otherPageSource);
+	        var pageSource = @"
+<html>
+<head><title>First Window</title></head>
+<body>
+<a id='myLink' target='_blank' href='file://" + otherPageUrl + @"'>Click here to open new window</a>
+</body>
+</html>
+";
+
+	        using (var browser = OpenBrowserWithPage(pageSource))
+	        {
+	            var mainWindow = browser.MainWindow;
+
+                var link = browser.WaitForElement(By.Id("myLink"), "Link to other window");
+		        var newWindow = browser.OpenWindow(() => link.Click(), "Other window");
+
+                Assert.AreEqual("New Window", newWindow.Title);
+	            Assert.AreEqual("First Window", mainWindow.Title);
             }
         }
 

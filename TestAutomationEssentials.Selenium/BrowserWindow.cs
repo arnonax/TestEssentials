@@ -1,3 +1,4 @@
+using System;
 using OpenQA.Selenium;
 using TestAutomationEssentials.Common;
 
@@ -9,7 +10,7 @@ namespace TestAutomationEssentials.Selenium
     public class BrowserWindow //: ElementsContainer, IDOMRoot
     {
         private readonly Browser _browser;
-        //	private readonly string _windowHandle;
+        private string _windowHandle;
 
         /// <summary>
         /// Initializes the <see cref="BrowserWindow"/> given the specified browser, window handle, and a description
@@ -17,22 +18,23 @@ namespace TestAutomationEssentials.Selenium
         /// <param name="browser">The browser object that this window belongs to</param>
         /// <param name="windowHandle">The handle of the browser window as returned from <see cref="IWebDriver.WindowHandles"/> or <see cref="IWebDriver.CurrentWindowHandle"/></param>
         /// <param name="description">The description of the window, as you want to appear in the log</param>
-        internal BrowserWindow(Browser browser/*, string windowHandle, string description*/)
+        internal BrowserWindow(Browser browser, string windowHandle/*, string description*/)
 //            : base(description)
         {
             _browser = browser;
-            //_windowHandle = windowHandle;
+            _windowHandle = windowHandle;
         }
 
-        //	protected internal override void Activate()
-        //	{
-        //		if (_browser.ActiveDOM == this)
-        //			return;
+        protected internal /*override*/ void Activate()
+        {
+            //if (_browser.ActiveDOM == this)
+            //    return;
 
-        //		Logger.WriteLine("Switching to window '{0}'", Description);
-        //		_browser.GetWebDriver().SwitchTo().Window(_windowHandle);
-        //		_browser.ActiveDOM = this;
-        //	}
+            // Logger.WriteLine("Switching to window '{0}'", Description);
+            Logger.WriteLine("Switching to window {0}", _windowHandle);
+            _browser.GetWebDriver().SwitchTo().Window(_windowHandle);
+            //_browser.ActiveDOM = this;
+        }
 
         //	/// <summary>
         //	/// Always returns itself
@@ -50,17 +52,18 @@ namespace TestAutomationEssentials.Selenium
         //		get { return _browser; }
         //	}
 
-        //	/// <summary>
-        //	/// Returns the current title of the window
-        //	/// </summary>
-        //	public string Title
-        //	{
-        //		get
-        //		{
-        //			Activate();
+        /// <summary>
+        /// Returns the current title of the window
+        /// </summary>
+        public string Title
+        	{
+        		get
+        		{
+        			Activate();
         //			return Browser.GetWebDriver().Title;
-        //		}
-        //	}
+		            return _browser.GetWebDriver().Title;
+		        }
+			}
 
         //	/// <summary>
         //	/// Gets or sets the current URL of the browser window
@@ -118,7 +121,9 @@ namespace TestAutomationEssentials.Selenium
         {
             //Logger.WriteLine("Navigating to '{0}' on '{1}' window", url, Description);
             //Activate();
-            _browser.GetWebDriver().Navigate().GoToUrl(url);
+            var driver = _browser.GetWebDriver();
+            driver.Url = url;
+            _windowHandle = driver.CurrentWindowHandle; // Workaround for GeckoDriver. See test: GeckoDriverChangesWindowHandleAfterSettingUrlForTheFirstTime
         }
     }
 }
