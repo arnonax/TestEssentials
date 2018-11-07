@@ -330,6 +330,36 @@ function removeSpan() {
             }
         }
 
+        [TestMethod]
+        public void OpenWindowThrowsTimeoutExceptionIfAWindowIsntOpenedAfterSpecifiedTimeout()
+        {
+            const string pageSource = @"
+<html>
+<body>
+<button id='dummyButton'>Click me</button>
+</body>
+</html>";
+            using (var browser = OpenBrowserWithPage(pageSource))
+            {
+                var button = browser.WaitForElement(By.Id("dummyButton"), "Dummy button");
+                var startTime = DateTime.MinValue;
+                var expectedTimeout = 1.Seconds();
+                TestUtils.ExpectException<TimeoutException>(() =>
+                    browser.OpenWindow(() =>
+                    {
+                        startTime = DateTime.Now;
+                        button.Click();
+
+                    }, "non existent window", expectedTimeout)); // TODO: use WaitTests's constant after merge with master
+                var endTime = DateTime.Now;
+                // TODO: use WaitTests assertion for that
+                var actualTimeout = (endTime - startTime).Absolute();
+                Assert.IsTrue((actualTimeout - expectedTimeout).Absolute() < 300.Milliseconds(),
+                    "The exception wasn't thrown at the right time. It was thrown after {0} while expecting {1}",
+                    actualTimeout, expectedTimeout);
+            }
+        }
+
         private static string GetUrlForFile(string filename)
         {
             return $"file:///{Directory.GetCurrentDirectory()}/{filename}";

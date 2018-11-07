@@ -1,9 +1,8 @@
 using System;
-using System.Linq;
+using JetBrains.Annotations;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using TestAutomationEssentials.Common;
-using TestAutomationEssentials.MSTest;
 using TestAutomationEssentials.MSTest.ExecutionContext;
 
 namespace TestAutomationEssentials.Selenium
@@ -91,27 +90,50 @@ namespace TestAutomationEssentials.Selenium
             //_isDisposed = true;
         }
 
-        /// <summary>
-        /// Invokes a delegate that causes a new window to open, and return an object representing the new window
-        /// </summary>
-        /// <param name="action">The delegate that should cause a new window to open</param>
-        /// <param name="windowDescription">A description that will identify the window in the log</param>
-        /// <returns>The <see cref="BrowserWindow"/> object that represent the newly opened window</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> or <paramref name="windowDescription"/> are null</exception>
-        /// <exception cref="TimeoutException">A new window wasn't opened for 60 seconds after the delegate completed</exception>
-        /// <remarks>
-        /// When the current <see cref="IIsolationScope"/> ends, the window is automatically closed
-        /// </remarks>
-        /// <example>
-        /// <code>
-        /// var openNewWindowButton = myBrowser.WaitForElement(By.Id("openNewWindowButtonId"), "Open new window button");
-        /// var newWindow = myBrowser.OpenWindow(() => openNewButton.Click(), "New window");
-        /// Assert.AreEqual("New window Title", newWindow.Title);
-        /// </code>
-        /// </example>
-        public BrowserWindow OpenWindow(Action action, string windowDescription)
-        {
+	    /// <summary>
+	    /// Invokes a delegate that causes a new window to open, and return an object representing the new window
+	    /// </summary>
+	    /// <param name="action">The delegate that should cause a new window to open</param>
+	    /// <param name="windowDescription">A description that will identify the window in the log</param>
+	    /// <returns>The <see cref="BrowserWindow"/> object that represent the newly opened window</returns>
+	    /// <exception cref="ArgumentNullException"><paramref name="action"/> or <paramref name="windowDescription"/> are null</exception>
+	    /// <exception cref="TimeoutException">A new window wasn't opened for 60 seconds after the delegate completed</exception>
+	    /// <remarks>
+	    /// When the current <see cref="IIsolationScope"/> ends, the window is automatically closed
+	    /// </remarks>
+	    /// <example>
+	    /// <code>
+	    /// var openNewWindowButton = myBrowser.WaitForElement(By.Id("openNewWindowButtonId"), "Open new window button");
+	    /// var newWindow = myBrowser.OpenWindow(() => openNewButton.Click(), "New window");
+	    /// Assert.AreEqual("New window Title", newWindow.Title);
+	    /// </code>
+	    /// </example>
+	    public BrowserWindow OpenWindow(Action action, string windowDescription)
+	    {
+	        return OpenWindow(action, windowDescription, 1.Minutes());
+	    }
 
+	    /// <summary>
+	    /// Invokes a delegate that causes a new window to open, and return an object representing the new window
+	    /// </summary>
+	    /// <param name="action">The delegate that should cause a new window to open</param>
+	    /// <param name="windowDescription">A description that will identify the window in the log</param>
+	    /// <param name="timeout">The maximal time to wait for the window to open</param>
+	    /// <returns>The <see cref="BrowserWindow"/> object that represent the newly opened window</returns>
+	    /// <exception cref="ArgumentNullException"><paramref name="action"/> or <paramref name="windowDescription"/> are null</exception>
+	    /// <exception cref="TimeoutException">A new window wasn't opened for the specified timeout after the delegate completed</exception>
+	    /// <remarks>
+	    /// When the current <see cref="IIsolationScope"/> ends, the window is automatically closed
+	    /// </remarks>
+	    /// <example>
+	    /// <code>
+	    /// var openNewWindowButton = myBrowser.WaitForElement(By.Id("openNewWindowButtonId"), "Open new window button");
+	    /// var newWindow = myBrowser.OpenWindow(() => openNewButton.Click(), "New window");
+	    /// Assert.AreEqual("New window Title", newWindow.Title);
+	    /// </code>
+	    /// </example>
+	    public BrowserWindow OpenWindow([InstantHandle]Action action, string windowDescription, TimeSpan timeout)
+        {
             //	CheckDisposed();
             //	if (action == null)
             //		throw new ArgumentNullException("action");
@@ -129,9 +151,16 @@ namespace TestAutomationEssentials.Selenium
 
             //	Logger.WriteLine("Opened window '{0}' with id={1} ({2})", windowDescription, newWindowHandle.GetHashCode(), newWindowHandle);
 
-            // TODO: this should probably be replaced by the above code
-            Logger.WriteLine("Current window handle={0}", WebDriver.CurrentWindowHandle);
-            var newWindowHandle = new PopupWindowFinder(WebDriver).Invoke(action);
+            string newWindowHandle;
+            try
+            {
+                newWindowHandle = new PopupWindowFinder(WebDriver, timeout).Invoke(action);
+            }
+            catch (WebDriverTimeoutException)
+            {
+                // For backward compatibility
+                throw new TimeoutException();
+            }
             // END TODO
 
             var newWindow = new BrowserWindow(this, newWindowHandle/*, windowDescription*/);
@@ -156,5 +185,5 @@ namespace TestAutomationEssentials.Selenium
             //CheckDisposed();
             //Activate();
         }
-    }
+	}
 }
