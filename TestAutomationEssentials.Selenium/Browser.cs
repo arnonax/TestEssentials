@@ -151,6 +151,7 @@ namespace TestAutomationEssentials.Selenium
 
             //	Logger.WriteLine("Opened window '{0}' with id={1} ({2})", windowDescription, newWindowHandle.GetHashCode(), newWindowHandle);
 
+            // TODO: consider this implementation vs. the one above.
             string newWindowHandle;
             try
             {

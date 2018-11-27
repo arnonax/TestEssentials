@@ -84,26 +84,26 @@ namespace TestAutomationEssentials.Selenium
         //		}
         //	}
 
-        //	/// <summary>
-        //	/// Closes the current window
-        //	/// </summary>
-        //	public void Close()
-        //	{
-        //		var webDriver = _browser.GetWebDriver();
+        /// <summary>
+        /// Closes the current window
+        /// </summary>
+        public void Close()
+        {
+            var webDriver = _browser.GetWebDriver();
 
-        //		using (Logger.StartSection("Closing '{0}' Window, with id={1} ({2})", Description, _windowHandle.GetHashCode(), _windowHandle))
-        //		{
-        //			if (!webDriver.WindowHandles.Contains(_windowHandle))
-        //			{
-        //				Logger.WriteLine("Window '{0}' is already closed", Description);
-        //				return;
-        //			}
+            //		using (Logger.StartSection("Closing '{0}' Window, with id={1} ({2})", Description, _windowHandle.GetHashCode(), _windowHandle))
+            //		{
+            //			if (!webDriver.WindowHandles.Contains(_windowHandle))
+            //			{
+            //				Logger.WriteLine("Window '{0}' is already closed", Description);
+            //				return;
+            //			}
 
-        //			Activate();
-        //			webDriver.Close();
-        //			Logger.WriteLine("Window '{0}' closed", Description);
-        //		}
-        //	}
+            //			Activate();
+            webDriver.Close();
+            //			Logger.WriteLine("Window '{0}' closed", Description);
+            //		}
+        }
 
         //	void IDOMRoot.Activate()
         //	{
