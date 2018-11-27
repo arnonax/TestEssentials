@@ -388,41 +388,38 @@ function removeSpan() {
                 newWindow.Close();
                 Assert.AreEqual(1, driver.WindowHandles.Count, "1 Window should be open after disposing the IsolationScope");
             }
-
         }
 
-        //        [TestMethod]
-        //        public void WindowIsClosedOnCleanup()
-        //        {
-        //            const string otherPageSource = @"
-        //<html>
-        //<head><title>New Window</title></head>
-        //</html>";
+        [TestMethod]
+        public void WindowIsClosedOnCleanup()
+        {
+            const string otherPageSource = @"
+<html>
+<head><title>New Window</title></head>
+</html>";
 
-        //            var otherPageUrl = CreatePage(otherPageSource);
-        //            var pageSource = @"
-        //<html>
-        //<head><title>First Window</title></head>
-        //<body>
-        //<a id='myLink' target='_blank' href='file://" + otherPageUrl + @"'>Click here to open new window</a>
-        //</body>
-        //</html>
-        //";
+            var otherPageUrl = CreatePage(otherPageSource);
+            var pageSource = @"
+<html>
+<head><title>First Window</title></head>
+<body>
+<a id='myLink' target='_blank' href='file://" + otherPageUrl + @"'>Click here to open new window</a>
+</body>
+</html>";
 
-        //            using (var browser = OpenBrowserWithPage(pageSource))
-        //            {
-        //                var driver = browser.GetWebDriver();
-        //                using (TestExecutionScopesManager.BeginIsolationScope("Window scope"))
-        //                {
+            using (var browser = OpenBrowserWithPage(pageSource))
+            {
+                var driver = browser.GetWebDriver();
+                using (TestExecutionScopesManager.BeginIsolationScope("Window scope"))
+                {
 
-        //                    var link = browser.WaitForElement(By.Id("myLink"), "Link to other window");
-        //                    browser.OpenWindow(() => link.Click(), "Other window");
-        //                    Assert.AreEqual(2, driver.WindowHandles.Count, "2 Windows should be open after OpenWindow was called");
-        //                }
-        //                Assert.AreEqual(1, driver.WindowHandles.Count, "1 Window should be open after disposing the IsolationScope");
-        //                Assert.AreEqual("First Window", driver.Title);
-        //            }
-        //        }
+                    var link = browser.WaitForElement(By.Id("myLink"), "Link to other window");
+                    browser.OpenWindow(() => link.Click(), "Other window");
+                    Assert.AreEqual(2, driver.WindowHandles.Count, "2 Windows should be open after OpenWindow was called");
+                }
+                Assert.AreEqual(1, driver.WindowHandles.Count, "1 Window should be open after disposing the IsolationScope");
+            }
+        }
 
         private static string GetUrlForFile(string filename)
         {

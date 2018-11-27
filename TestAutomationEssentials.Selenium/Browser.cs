@@ -3,6 +3,7 @@ using JetBrains.Annotations;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using TestAutomationEssentials.Common;
+using TestAutomationEssentials.MSTest;
 using TestAutomationEssentials.MSTest.ExecutionContext;
 
 namespace TestAutomationEssentials.Selenium
@@ -165,9 +166,9 @@ namespace TestAutomationEssentials.Selenium
             // END TODO
 
             var newWindow = new BrowserWindow(this, newWindowHandle/*, windowDescription*/);
-        //	TestBase.AddCleanupAction(() => newWindow.Close());
+            TestBase.AddCleanupAction(() => newWindow.Close());
 
-        	return newWindow;
+            return newWindow;
 		}
 
         //private void CheckDisposed()
