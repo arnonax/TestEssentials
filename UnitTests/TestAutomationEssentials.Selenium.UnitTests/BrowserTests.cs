@@ -281,7 +281,9 @@ function removeSpan() {
         [TestMethod]
         public void GeckoDriverChangesWindowHandleAfterSettingUrlForTheFirstTime()
         {
-            var driver = new FirefoxDriver();
+            var options = new FirefoxOptions();
+            options.AddArgument("--headless");
+            var driver = new FirefoxDriver(options);
             AddCleanupAction(() => driver.Quit());
 
             var firstHandle = driver.CurrentWindowHandle;
