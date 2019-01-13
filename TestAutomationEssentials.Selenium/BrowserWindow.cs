@@ -1,3 +1,4 @@
+using System;
 using OpenQA.Selenium;
 using TestAutomationEssentials.Common;
 
@@ -9,7 +10,7 @@ namespace TestAutomationEssentials.Selenium
     public class BrowserWindow : ElementsContainer, IDOMRoot
     {
         private readonly Browser _browser;
-        private readonly string _windowHandle;
+        private string _windowHandle;
 
         /// <summary>
         /// Initializes the <see cref="BrowserWindow"/> given the specified browser, window handle, and a description
@@ -119,7 +120,9 @@ namespace TestAutomationEssentials.Selenium
         {
             Logger.WriteLine("Navigating to '{0}' on '{1}' window", url, Description);
             Activate();
-            _browser.GetWebDriver().Navigate().GoToUrl(url);
+            var driver = _browser.GetWebDriver();
+            driver.Url = url;
+            _windowHandle = driver.CurrentWindowHandle; // Workaround for GeckoDriver. See test: GeckoDriverChangesWindowHandleAfterSettingUrlForTheFirstTime
         }
     }
 }

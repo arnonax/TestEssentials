@@ -1,11 +1,14 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text.RegularExpressions;
 using FakeItEasy;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Firefox;
+using OpenQA.Selenium.Support.Extensions;
 using TestAutomationEssentials.Common;
 using TestAutomationEssentials.MSTest;
 
@@ -14,6 +17,11 @@ namespace TestAutomationEssentials.Selenium.UnitTests
     [TestClass]
     public class BrowserTests : SeleniumTestBase
     {
+        /// <summary>
+        /// Used to designate tests that describe and verify Selenium specific behaviors
+        /// </summary>
+        private const string SeleniumIntegrationCategory = "SeleniumIntegration";
+
         [TestMethod]
         public void ConstructorThrowsArgumentNullExceptionsIfNullsArePassed()
         {
@@ -72,13 +80,24 @@ namespace TestAutomationEssentials.Selenium.UnitTests
         [TestMethod]
         public void NavigateToUrlNavigatesToTheSpecifiedUrl()
         {
-            var dummyPageUrl = GetUrlForFile("dummyPage.html");
-            var driver = new ChromeDriver();
+            var filename = "dummyPage.html";
+            File.WriteAllText(filename, "<html><body>Dummy page</body></html>");
+            var dummyPageUrl = GetUrlForFile(filename);
+            var driver = CreateDriver();
+            WriteBrowserVersion(driver);
             using (var browser = new Browser("", driver))
             {
                 browser.NavigateToUrl(dummyPageUrl);
                 Assert.AreEqual(new Uri(dummyPageUrl).AbsoluteUri, new Uri(driver.Url).AbsoluteUri);
             }
+        }
+
+        // For diagnosing differences bewteen local run and appVeyor:
+        private static void WriteBrowserVersion(IWebDriver driver)
+        {
+            Logger.WriteLine($"user agent={driver.ExecuteJavaScript<string>("return navigator.userAgent;")}");
+            Logger.WriteLine($"app version={driver.ExecuteJavaScript<string>("return navigator.appVersion;")}");
+            Logger.WriteLine($"app name={driver.ExecuteJavaScript<string>("return navigator.appName;")}");
         }
 
         [TestMethod]
@@ -245,7 +264,7 @@ function removeSpan() {
         [TestMethod]
         public void ElementAppearsReturnsTrueOnlyIfElementIsVisible()
         {
-            const string pageSource = @"
+	        const string pageSource = @"
 <html>
 <body>
 <button id=""visible-element"">Visible</button>
@@ -259,6 +278,168 @@ function removeSpan() {
                 Assert.IsFalse(browser.ElementAppears(By.Id("non-existent")), "Non existent element should not appear");
                 Assert.IsFalse(browser.ElementAppears(By.Id("invisible-element")), "Hidden element should not appear");
                 Assert.IsTrue(browser.ElementAppears(By.Id("visible-element")), "Visible element should appear");
+            }
+        }
+
+        /// <summary>
+        /// This test demonstrates GeckoDriver's strange behavior of changing the WindowHandle on the first URL navigation.
+        /// A workaround for this strange behavior is implemented in <see cref="BrowserWindow.NavigateToUrl"/>
+        /// </summary>
+        [TestMethod]
+        [TestCategory(SeleniumIntegrationCategory)]
+        public void GeckoDriverChangesWindowHandleAfterSettingUrlForTheFirstTime()
+        {
+            var driver = new FirefoxDriver();
+            AddCleanupAction(() => driver.Quit());
+
+            var firstHandle = driver.CurrentWindowHandle;
+            Console.WriteLine("firstHandle= " + firstHandle);
+
+            driver.Url = $"file:///{CreatePage("<html>Hello</html>")}";
+            var updatedHandle = driver.CurrentWindowHandle;
+            Console.WriteLine("UpdatedHanlde=" + updatedHandle);
+
+            Assert.AreNotEqual(updatedHandle, firstHandle);
+
+            driver.Url = driver.Url = $"file:///{CreatePage("<html>World</html>")}";
+            var updatedHandle2 = driver.CurrentWindowHandle;
+            Console.WriteLine("UpdatedHanlde2=" + updatedHandle2);
+
+            Assert.AreEqual(updatedHandle2, updatedHandle);
+        }
+
+        [TestMethod, TestCategory(SeleniumIntegrationCategory)]
+        public void CallingMethodsOnDisposedDriverThrowsWebDriverExceptionRatherThanObjectDisposedException()
+        {
+            var driver = new ChromeDriver();
+            driver.Dispose();
+            string x;
+            // This is why I would expect:
+            //TestUtils.ExpectException<ObjectDisposedException>(() => x = driver.Title);
+
+            // But this what really happens:
+            var ex = TestUtils.ExpectException<WebDriverException>(() => x = driver.Title);
+            Assert.IsInstanceOfType(ex.InnerException, typeof(WebException));
+        }
+
+        [TestMethod]
+        public void OpenWindowReturnsTheNewlyOpenedWindow()
+        {
+	        const string otherPageSource = @"
+<html>
+<head><title>New Window</title></head>
+</html>";
+
+	        var otherPageUrl = CreatePage(otherPageSource);
+	        var pageSource = @"
+<html>
+<head><title>First Window</title></head>
+<body>
+<a id='myLink' target='_blank' href='file://" + otherPageUrl + @"'>Click here to open new window</a>
+</body>
+</html>
+";
+
+	        using (var browser = OpenBrowserWithPage(pageSource))
+	        {
+	            var mainWindow = browser.MainWindow;
+
+                var link = browser.WaitForElement(By.Id("myLink"), "Link to other window");
+		        var newWindow = browser.OpenWindow(() => link.Click(), "Other window");
+
+                Assert.AreEqual("New Window", newWindow.Title);
+	            Assert.AreEqual("First Window", mainWindow.Title);
+            }
+        }
+
+        [TestMethod]
+        public void OpenWindowThrowsTimeoutExceptionIfAWindowIsntOpenedAfterSpecifiedTimeout()
+        {
+            const string pageSource = @"
+<html>
+<body>
+<button id='dummyButton'>Click me</button>
+</body>
+</html>";
+            using (var browser = OpenBrowserWithPage(pageSource))
+            {
+                var button = browser.WaitForElement(By.Id("dummyButton"), "Dummy button");
+                var startTime = DateTime.MinValue;
+                var expectedTimeout = 1.Seconds();
+                TestUtils.ExpectException<TimeoutException>(() =>
+                    browser.OpenWindow(() =>
+                    {
+                        startTime = DateTime.Now;
+                        button.Click();
+
+                    }, "non existent window", expectedTimeout)); // TODO: use WaitTests's constant after merge with master
+                var endTime = DateTime.Now;
+                // TODO: use WaitTests assertion for that
+                var actualTimeout = (endTime - startTime).Absolute();
+                Assert.IsTrue((actualTimeout - expectedTimeout).Absolute() < 300.Milliseconds(),
+                    "The exception wasn't thrown at the right time. It was thrown after {0} while expecting {1}",
+                    actualTimeout, expectedTimeout);
+            }
+        }
+
+        [TestMethod]
+        public void CloseWindow()
+        {
+            const string otherPageSource = @"
+<html>
+<head><title>New Window</title></head>
+</html>";
+
+            var otherPageUrl = CreatePage(otherPageSource);
+            var pageSource = @"
+<html>
+<head><title>First Window</title></head>
+<body>
+<a id='myLink' target='_blank' href='file://" + otherPageUrl + @"'>Click here to open new window</a>
+</body>
+</html>";
+
+            using (var browser = OpenBrowserWithPage(pageSource))
+            {
+                var driver = browser.GetWebDriver();
+                var link = browser.WaitForElement(By.Id("myLink"), "Link to other window");
+                var newWindow = browser.OpenWindow(() => link.Click(), "Other window");
+
+                Assert.AreEqual(2, driver.WindowHandles.Count, "2 Windows should be open after OpenWindow was called");
+
+                newWindow.Close();
+                Assert.AreEqual(1, driver.WindowHandles.Count, "1 Window should be open after disposing the IsolationScope");
+            }
+        }
+
+        [TestMethod]
+        public void WindowIsClosedOnCleanup()
+        {
+            const string otherPageSource = @"
+<html>
+<head><title>New Window</title></head>
+</html>";
+
+            var otherPageUrl = CreatePage(otherPageSource);
+            var pageSource = @"
+<html>
+<head><title>First Window</title></head>
+<body>
+<a id='myLink' target='_blank' href='file://" + otherPageUrl + @"'>Click here to open new window</a>
+</body>
+</html>";
+
+            using (var browser = OpenBrowserWithPage(pageSource))
+            {
+                var driver = browser.GetWebDriver();
+                using (TestExecutionScopesManager.BeginIsolationScope("Window scope"))
+                {
+
+                    var link = browser.WaitForElement(By.Id("myLink"), "Link to other window");
+                    browser.OpenWindow(() => link.Click(), "Other window");
+                    Assert.AreEqual(2, driver.WindowHandles.Count, "2 Windows should be open after OpenWindow was called");
+                }
+                Assert.AreEqual(1, driver.WindowHandles.Count, "1 Window should be open after disposing the IsolationScope");
             }
         }
 

@@ -1,4 +1,5 @@
 using System;
+using JetBrains.Annotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace TestAutomationEssentials.MSTest
@@ -18,7 +19,7 @@ namespace TestAutomationEssentials.MSTest
 		/// <exception cref="ArgumentNullException"><paramref name="action"/> is null</exception>
 		/// <exception cref="AssertFailedException">No exception of type <typeparamref name="TException"/> was 
 		/// thrown by <paramref name="action"/></exception>
-		public static TException ExpectException<TException>(Action action)
+		public static TException ExpectException<TException>([InstantHandle]Action action)
 			where TException : Exception
 		{
 			const string message = "Expected an exception of type {0} but it wasn't thrown";

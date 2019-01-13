@@ -126,9 +126,6 @@ namespace TestAutomationEssentials.Selenium
         public void Click()
         {
             Logger.WriteLine("Click on '{0}'", Description);
-            //Actions action = new Actions(_domRoot.Browser.GetWebDriver());
-            //action.MoveToElement(WebElement, 0, 0).Perform();
-            //action.Click(WebElement).Perform();
             WebElement.Click();
         }
 
@@ -339,10 +336,10 @@ namespace TestAutomationEssentials.Selenium
         /// </summary>
         /// <param name="target">The target element to drop the current element onto</param>
         /// <exception cref="ArgumentNullException"><paramref name="target"/> is null</exception>
+        [Obsolete("This method doesn't work with GeckoDriver right now. If this will be implemented by that driver" +
+            "in the future, this Obsolete warning should be removed")]
         public void DragAndDrop(BrowserElement target)
         {
-            if (target == null)
-                throw new ArgumentNullException("target");
 
             Logger.WriteLine("Drag element '{0}' to '{1}'", Description, target.Description);
             var targetWebElement = target.WebElement;
@@ -358,7 +355,17 @@ namespace TestAutomationEssentials.Selenium
         /// <exception cref="TimeoutException">The current element hasn't been disappeared for the specified period</exception>
         public void WaitToDisappear(int seconds = DefaultWaitTimeout)
         {
-            Wait.While(() => Displayed, seconds.Seconds(), "Element '{0}' still appears after '{1}' seconds", Description, seconds);
+            WaitToDisappear(seconds.Seconds());
+        }
+
+        /// <summary>
+        /// Waits for the current element to disappear. That is, either become invisible or completely removed from the DOM
+        /// </summary>
+        /// <param name="timeout">Timeout to wait for the element to disappear</param>
+        /// <exception cref="TimeoutException">The current element hasn't been disappeared for the specified period</exception>
+        public void WaitToDisappear(TimeSpan timeout)
+        {
+            Wait.While(() => Displayed, timeout, "Element '{0}' still appears after '{1}'", Description, timeout.ToSpokenString());
         }
 
         #region IWrapsElement Members
