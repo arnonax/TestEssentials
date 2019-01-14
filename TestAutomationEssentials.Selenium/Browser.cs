@@ -1,9 +1,10 @@
 using System;
+using System.Linq;
 using JetBrains.Annotations;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Support.UI;
 using TestAutomationEssentials.Common;
 using TestAutomationEssentials.Common.ExecutionContext;
+using TestAutomationEssentials.MSTest;
 
 namespace TestAutomationEssentials.Selenium
 {
@@ -16,8 +17,8 @@ namespace TestAutomationEssentials.Selenium
 		/// Provides access to the underlying <see cref="IWebDriver"/>
 		/// </summary>
 		protected readonly IWebDriver WebDriver;
-		private bool _isDisposed;
-		internal IDOMRoot ActiveDOM;
+
+	    internal IDOMRoot ActiveDOM;
 	    private readonly TestExecutionScopesManager _testExecutionScopesManager;
 
         /// <summary>
@@ -44,10 +45,10 @@ namespace TestAutomationEssentials.Selenium
         /// <exception cref="ArgumentNullException">one of the arguments are null</exception>
         /// <remarks>
         /// The <paramref name="testExecutionScopesManager"/> is used to automatically close any windows that 
-        /// are opened using <see cref="OpenWindow"/>, at the end of the current test or active scope.
+        /// are opened using <see cref="OpenWindow(System.Action,string)"/>, at the end of the current test or active scope.
         /// <br/>
         /// If you're using TestAutomationEssentials.MSTest or TestAutomationEssentials.MSTestV2, simply pass
-        /// <see cref="TestBase.TestExecutionScopesManager"/>. Otherwise, create an instance of <see cref="TestExecutionScopesManager"/>
+        /// <see cref="TestExecutionScopesManager"/>. Otherwise, create an instance of <see cref="TestExecutionScopesManager"/>
         /// and pass it.
         /// </remarks>
         public Browser(string description, IWebDriver webDriver, TestExecutionScopesManager testExecutionScopesManager) 
@@ -87,7 +88,9 @@ namespace TestAutomationEssentials.Selenium
             get { return this; }
         }
 
-        /// <summary>
+	    internal bool IsDisposed { get; private set; }
+
+	    /// <summary>
         /// Navigates the main window to the specified url
         /// </summary>
         /// <param name="url">The url to navigate to</param>
@@ -113,10 +116,10 @@ namespace TestAutomationEssentials.Selenium
         /// </summary>
         public void Dispose()
         {
-            if (!_isDisposed)
+            if (!IsDisposed)
                 WebDriver.Quit();
 
-            _isDisposed = true;
+            IsDisposed = true;
         }
 
 	    /// <summary>
@@ -175,7 +178,7 @@ namespace TestAutomationEssentials.Selenium
 
             var newWindowHandle = Wait.Until(() => webDriver.WindowHandles.Except(existingHandles).SingleOrDefault(),
                 handle => handle != null,
-                60.Seconds(), "Window '{0}' wasn't opened for 60 seconds", windowDescription);
+                timeout, "Window '{0}' wasn't opened for 60 seconds", windowDescription);
 
             Logger.WriteLine("Opened window '{0}' with id={1} ({2})", windowDescription, newWindowHandle.GetHashCode(), newWindowHandle);
 
@@ -187,7 +190,7 @@ namespace TestAutomationEssentials.Selenium
 
         private void CheckDisposed()
         {
-            if (_isDisposed)
+            if (IsDisposed)
                 throw new ObjectDisposedException("Browser object has been disposed");
         }
 

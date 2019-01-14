@@ -88,6 +88,9 @@ namespace TestAutomationEssentials.Selenium
         /// </summary>
         public void Close()
         {
+            if (_browser.IsDisposed)
+                return;
+
             var webDriver = _browser.GetWebDriver();
 
             using (Logger.StartSection("Closing '{0}' Window, with id={1} ({2})", Description, _windowHandle.GetHashCode(), _windowHandle))

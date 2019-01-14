@@ -13,7 +13,7 @@ namespace TestAutomationEssentials.UnitTests
 	[ExcludeFromCodeCoverage]
 	public class WaitTests
 	{
-	    private readonly TimeSpan _defaultWaitTimeoutForUnitTests = 200.Milliseconds();
+	    public static readonly TimeSpan DefaultWaitTimeoutForUnitTests = 200.Milliseconds();
 
 	    [TestMethod]
 		public void WaitUntilThrowsExceptionWhenConditionIsNull()
@@ -50,7 +50,7 @@ namespace TestAutomationEssentials.UnitTests
 		[TestMethod]
 		public void WaitUntilThrowsTimeoutExceptionIfConditionIsNotMetDuringTheDesignatedPeriod()
 		{
-			var timeout = _defaultWaitTimeoutForUnitTests;
+			var timeout = DefaultWaitTimeoutForUnitTests;
 
 			var startTime = DateTime.Now;
 			Action action = () => Wait.Until(() => false, timeout);
@@ -63,7 +63,7 @@ namespace TestAutomationEssentials.UnitTests
         [TestMethod]
 		public void WaitUntilThrowsTimeoutExceptionWithFormatterMessage()
 		{
-			var timeout = _defaultWaitTimeoutForUnitTests;
+			var timeout = DefaultWaitTimeoutForUnitTests;
 
 			Action action = () => Wait.Until(() => false, timeout);
 			const string messageFormat = "This is a message with parameters: '{0}', '{1}'";
@@ -78,11 +78,8 @@ namespace TestAutomationEssentials.UnitTests
 	    [TestMethod]
 	    public void WaitUntilVerifiesTheFormattedMessageBeforeStart()
 	    {
-	        // TODO: change to default timeout after merge with master
-	        var timeout = 200.Milliseconds();
-
 	        Func<bool> aMethodThatShouldntBeCalled = () => { throw new NotImplementedException(); };
-	        Action action = () => Wait.Until(aMethodThatShouldntBeCalled, timeout,
+	        Action action = () => Wait.Until(aMethodThatShouldntBeCalled, DefaultWaitTimeoutForUnitTests,
 	            "This is a badly formatted message {0{");
 	        TestUtils.ExpectException<FormatException>(action);
 	    }
@@ -90,13 +87,10 @@ namespace TestAutomationEssentials.UnitTests
 	    [TestMethod]
 	    public void WaitWhileThrowsTimeoutExceptionWithFormattedMessage()
 	    {
-	        // TODO: change to default timeout after merge with master
-	        var timeout = 200.Milliseconds();
-
 	        const string messageFormat = "This is a message with parameters: '{0}', '{1}'";
 	        const string arg1 = "Something";
 	        const double arg2 = 3.5;
-	        Action action = () => Wait.While(() => true, timeout, messageFormat, arg1, arg2);
+	        Action action = () => Wait.While(() => true, DefaultWaitTimeoutForUnitTests, messageFormat, arg1, arg2);
 	        var ex = TestUtils.ExpectException<TimeoutException>(action);
 
 	        var expectedMessage = string.Format(messageFormat, arg1, arg2);
@@ -261,7 +255,7 @@ namespace TestAutomationEssentials.UnitTests
 		[TestMethod]
 		public void WaitWhileThrowsTimeoutExceptionIfConditionIsMetDuringTheEntireDesignatedPeriod()
 		{
-		    var timeout = _defaultWaitTimeoutForUnitTests;
+		    var timeout = DefaultWaitTimeoutForUnitTests;
 
 			var startTime = DateTime.Now;
 			Action action = () => Wait.While(() => true, timeout);
@@ -292,7 +286,7 @@ namespace TestAutomationEssentials.UnitTests
 		[TestMethod]
 		public void WaitIfReturnsFalseIfConditionIsMetDuringTheEntireDesignatedPeriod()
 		{
-			var timeout = _defaultWaitTimeoutForUnitTests;
+			var timeout = DefaultWaitTimeoutForUnitTests;
 
 			var startTime = DateTime.Now;
 			var result = Wait.If(() => true, timeout);
@@ -302,12 +296,13 @@ namespace TestAutomationEssentials.UnitTests
 			AssertTimeoutWithinThreashold(startTime, endTime, timeout, "Wait.If");
 		}
 
-	    private static void AssertTimeoutWithinThreashold(DateTime startTime, DateTime endTime, TimeSpan timeout, string methodName)
+	    // ReSharper disable once UnusedParameter.Local - "messageName is used only for precondition checks"
+	    public static void AssertTimeoutWithinThreashold(DateTime startTime, DateTime endTime, TimeSpan timeout, string methodName)
 	    {
 	        Assert.IsTrue(endTime - startTime >= timeout, methodName + " didn't wait enough (startTime={0:O}, endTime={1:O})",
 	            startTime, endTime);
-	        Assert.IsTrue(endTime - startTime <= timeout.MutliplyBy(1.2),
-	            methodName + " waited for too long (startTime={0:O}, endTime={1:O})", startTime, endTime);
+	        Assert.IsTrue(endTime - startTime <= timeout + DefaultWaitTimeoutForUnitTests,
+	            methodName + " waited for too long: {0} instead of {1} (startTime={2:O}, endTime={3:O})", endTime-startTime, timeout, startTime, endTime);
 	    }
 
 	    public void WaitIfNotWaitsUntilTheConditionIsMet()
@@ -330,7 +325,7 @@ namespace TestAutomationEssentials.UnitTests
 		[TestMethod]
 		public void WaitIfNotReturnsFalseIfConditionIsNotMetDuringTheDesignatedPeriod()
 		{
-		    var timeout = _defaultWaitTimeoutForUnitTests;
+		    var timeout = DefaultWaitTimeoutForUnitTests;
 
 			var startTime = DateTime.Now;
 			var returnValue = Wait.IfNot(() => false, timeout);

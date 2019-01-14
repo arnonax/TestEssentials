@@ -10,7 +10,9 @@ using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium.Support.Extensions;
 using TestAutomationEssentials.Common;
+using TestAutomationEssentials.Common.ExecutionContext;
 using TestAutomationEssentials.MSTest;
+using TestAutomationEssentials.UnitTests;
 
 namespace TestAutomationEssentials.Selenium.UnitTests
 {
@@ -365,7 +367,7 @@ function removeSpan() {
             {
                 var button = browser.WaitForElement(By.Id("dummyButton"), "Dummy button");
                 var startTime = DateTime.MinValue;
-                var expectedTimeout = 1.Seconds();
+                var expectedTimeout = WaitTests.DefaultWaitTimeoutForUnitTests;
                 TestUtils.ExpectException<TimeoutException>(() =>
                     browser.OpenWindow(() =>
                     {
@@ -374,11 +376,7 @@ function removeSpan() {
 
                     }, "non existent window", expectedTimeout)); // TODO: use WaitTests's constant after merge with master
                 var endTime = DateTime.Now;
-                // TODO: use WaitTests assertion for that
-                var actualTimeout = (endTime - startTime).Absolute();
-                Assert.IsTrue((actualTimeout - expectedTimeout).Absolute() < 300.Milliseconds(),
-                    "The exception wasn't thrown at the right time. It was thrown after {0} while expecting {1}",
-                    actualTimeout, expectedTimeout);
+                WaitTests.AssertTimeoutWithinThreashold(startTime, endTime, expectedTimeout + WaitTests.DefaultWaitTimeoutForUnitTests, "OpenWindow");
             }
         }
 
@@ -440,6 +438,34 @@ function removeSpan() {
                     Assert.AreEqual(2, driver.WindowHandles.Count, "2 Windows should be open after OpenWindow was called");
                 }
                 Assert.AreEqual(1, driver.WindowHandles.Count, "1 Window should be open after disposing the IsolationScope");
+            }
+        }
+
+        [TestMethod]
+        public void NoExceptionIsThrownOnCleanupIfBrowserIsDisposedWhenTheresAnOpenWindow()
+        {
+            // TODO: remove duplication of the HTML creation for OpenWindow
+            const string otherPageSource = @"
+<html>
+<head><title>New Window</title></head>
+</html>";
+
+            var otherPageUrl = CreatePage(otherPageSource);
+            var pageSource = @"
+<html>
+<head><title>First Window</title></head>
+<body>
+<a id='myLink' target='_blank' href='file://" + otherPageUrl + @"'>Click here to open new window</a>
+</body>
+</html>";
+
+            using (TestExecutionScopesManager.BeginIsolationScope("Window scope"))
+            {
+                using (var browser = OpenBrowserWithPage(pageSource))
+                {
+                    var link = browser.WaitForElement(By.Id("myLink"), "Link to other window");
+                    browser.OpenWindow(() => link.Click(), "Other window");
+                }
             }
         }
 
