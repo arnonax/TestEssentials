@@ -59,24 +59,30 @@ namespace TestAutomationEssentials.Selenium.UnitTests
         {
             const string pageSource = @"
 <html>
-<body>
+<head>
+<script>
+function writeQueryString() {
+	document.getElementById('result').innerHTML = window.location.search;
+}
+</script>
+</head>
+<body onload='writeQueryString()'>
 <form>
 <input name='myInput'/>
 <button action='submit' >Submit</button>
 </form>
+<span id='result'/>
 </body>
 </html>";
 
             using (var browser = OpenBrowserWithPage(pageSource))
             {
-                var webDriver = browser.GetWebDriver();
-                var initialUrl = webDriver.Url;
-
                 IWebElement input = browser.WaitForElement(By.Name("myInput"), "my input");
                 input.SendKeys("dummyValue");
                 input.Submit();
+                var result = browser.WaitForElement(By.Id("result"), "Result");
 
-                Assert.AreEqual($"{initialUrl}?myInput=dummyValue", webDriver.Url);
+                Assert.AreEqual("?myInput=dummyValue", result.Text);
             }
         }
 
