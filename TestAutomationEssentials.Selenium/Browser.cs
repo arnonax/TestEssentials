@@ -173,10 +173,10 @@ namespace TestAutomationEssentials.Selenium
 	    public BrowserWindow OpenWindow([InstantHandle]Action action, string windowDescription, TimeSpan timeout)
         {
             CheckDisposed();
-            //	if (action == null)
-            //		throw new ArgumentNullException("action");
-            //	if (windowDescription == null)
-            //		throw new ArgumentNullException("windowDescription");
+            if (action == null)
+                throw new ArgumentNullException("action");
+            if (windowDescription == null)
+                throw new ArgumentNullException("windowDescription");
 
             //          Activate();
             //	var webDriver = GetWebDriver();

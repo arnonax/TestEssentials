@@ -396,6 +396,21 @@ function removeSpan() {
         }
 
         [TestMethod]
+        public void OpenWindowChecksForNullArguments()
+        {
+            var driver = A.Fake<IWebDriver>();
+            var browser = new Browser("dummy description", driver, TestExecutionScopesManager);
+            ArgumentNullException ex;
+            ex = TestUtils.ExpectException<ArgumentNullException>(
+                () => browser.OpenWindow(null, null, TimeSpan.Zero));
+            Assert.AreEqual("action", ex.ParamName);
+
+            ex = TestUtils.ExpectException<ArgumentNullException>(
+                () => browser.OpenWindow(() => { }, null, TimeSpan.Zero));
+            Assert.AreEqual("windowDescription", ex.ParamName);
+        }
+
+        [TestMethod]
         public void CloseWindow()
         {
             const string otherPageSource = @"
