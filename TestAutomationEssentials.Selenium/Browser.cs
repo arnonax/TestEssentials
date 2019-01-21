@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using JetBrains.Annotations;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
@@ -125,9 +124,7 @@ namespace TestAutomationEssentials.Selenium
         /// </summary>
         public void Dispose()
         {
-            //if (!_isDisposed)
-                WebDriver.Quit();
-
+            WebDriver.Quit(); // Note: it's OK to called this twice. No need to check if we're already disposed.
             IsDisposed = true;
         }
 

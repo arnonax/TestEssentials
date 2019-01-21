@@ -496,7 +496,7 @@ function removeSpan() {
                 b => b.OpenWindow(Functions.EmptyAction(), "dummy Description", 1.Seconds()),
                 b => b.ElementAppears(By.Id("dummy")),
                 b => b.FindElements(By.Id("dummy id"), "dummy description"),
-                b => b.WaitForElement(By.Id("dummy Id"), "dumy description", 2.SecondsAsMilliseconds())
+                b => b.WaitForElement(By.Id("dummy Id"), "dumy description", 2.SecondsAsMilliseconds()),
             };
             var otherMethodsAndPropertyGetters = new Expression<Func<Browser, object>>[]
             {
@@ -518,6 +518,15 @@ function removeSpan() {
                 var action = expression.Compile();
                 TestUtils.ExpectException<ObjectDisposedException>(() => action(browser), expression.ToString());
             }
+        }
+
+        [TestMethod]
+        public void DisposingBrowserTwiceDoesNotThrowException()
+        {
+            var driver = A.Fake<IWebDriver>();
+            var browser = new Browser("dummyDescription", driver, TestExecutionScopesManager);
+            browser.Dispose();
+            browser.Dispose();
         }
 
         private static string GetUrlForFile(string filename)
