@@ -238,39 +238,6 @@ namespace TestAutomationEssentials.Common
 		}
 
 		/// <summary>
-		/// This method intentionally hides <see cref="Enumerable.Single{TSource}(System.Collections.Generic.IEnumerable{TSource})"/> in order to force you to use
-		/// <see cref="Content{T}"/> instead.
-		/// </summary>
-		/// <typeparam name="T">The type of the elements in the sequence</typeparam>
-		/// <param name="source">A sequence</param>
-		/// <returns>Nothing</returns>
-		/// <exception cref="NotImplementedException">Always</exception>
-		/// <remarks>This method intentionally creates a compilation error if used! Use <see cref="Content{T}"/> instead to get better error messages on failures</remarks>
-		[Obsolete("Use Content instead to get better better error messages")]
-		[ExcludeFromCodeCoverage]
-		public static T Single<T>(this IEnumerable<T> source)
-		{
-			throw new NotImplementedException("This method is intentially not implemented! You should use Content instead.");
-		}
-
-		/// <summary>
-		/// This method intentionally hides <see cref="Enumerable.Single{TSource}(System.Collections.Generic.IEnumerable{TSource}, System.Func{TSource, bool})"/> in order to force you to use
-		/// <see cref="Find{T1,T2}"/> or <see cref="Find{T1}"/> instead.
-		/// </summary>
-		/// <typeparam name="T">The type of the elements in the sequence</typeparam>
-		/// <param name="source">A sequence</param>
-		/// <param name="predicate">A condition that the element to look for should match</param>
-		/// <returns>Nothing</returns>
-		/// <exception cref="NotImplementedException">Always</exception>
-		/// <remarks>This method intentionally creates a compilation error if used! Use <see cref="Find{T1,T2}"/> or <see cref="Find{T1}"/> instead to get better error messages on failures</remarks>
-		[Obsolete("Use Find instead to get better better error messages")]
-		[ExcludeFromCodeCoverage]
-		public static T Single<T>(this IEnumerable<T> source, Func<T, bool> predicate)
-		{
-			throw new NotImplementedException("This method is intentially not implemented! You should use Find instead.");
-		}
-
-		/// <summary>
 		/// Appends a a formatted line to a StringBuilder
 		/// </summary>
 		/// <param name="sb">The <see cref="StringBuilder"/> to which to append the formatted line</param>

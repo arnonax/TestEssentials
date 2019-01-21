@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>TestAutomationEssentials.MSTest</id>
-    <version>1.0.0.1</version>
+    <version>$version$</version>
     <title>Test Automation Essentials - MSTest</title>
     <owners>Arnon Axelrod</owners>
 	<authors>Arnon Axelrod</authors>
@@ -11,4 +11,7 @@
     <description>Provide useful utility methods and classes that can be used by MSTest based tests</description>
     <tags>Test-Automation;MSTest</tags>
   </metadata>
+  <files>
+    <file src="bin\Debug\*.pdb" target="lib\net45" />	
+  </files>
 </package>

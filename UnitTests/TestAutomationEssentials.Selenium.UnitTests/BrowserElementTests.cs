@@ -4,7 +4,9 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Internal;
+using OpenQA.Selenium.Support.Extensions;
 using TestAutomationEssentials.Common;
+using TestAutomationEssentials.UnitTests;
 
 namespace TestAutomationEssentials.Selenium.UnitTests
 {
@@ -57,24 +59,30 @@ namespace TestAutomationEssentials.Selenium.UnitTests
         {
             const string pageSource = @"
 <html>
-<body>
+<head>
+<script>
+function writeQueryString() {
+	document.getElementById('result').innerHTML = window.location.search;
+}
+</script>
+</head>
+<body onload='writeQueryString()'>
 <form>
 <input name='myInput'/>
 <button action='submit' >Submit</button>
 </form>
+<span id='result'/>
 </body>
 </html>";
 
             using (var browser = OpenBrowserWithPage(pageSource))
             {
-                var webDriver = browser.GetWebDriver();
-                var initialUrl = webDriver.Url;
-
                 IWebElement input = browser.WaitForElement(By.Name("myInput"), "my input");
                 input.SendKeys("dummyValue");
                 input.Submit();
+                var result = browser.WaitForElement(By.Id("result"), "Result");
 
-                Assert.AreEqual($"{initialUrl}?myInput=dummyValue", webDriver.Url);
+                Assert.AreEqual("?myInput=dummyValue", result.Text);
             }
         }
 
@@ -265,7 +273,7 @@ function disableCheckBox() {
 <html>
 <body>
 <button id='visibleButton'>I'm visible</button>
-<button id='invisibleButton' style='visibility: hidden'>I'm invisible</button>
+<button id='invisibleButton'>I'm invisible</button>
 </body>
 </html>";
 
@@ -273,6 +281,8 @@ function disableCheckBox() {
             {
                 var visibleButton = browser.WaitForElement(By.Id("visibleButton"), "Visible button");
                 var invisibleButton = browser.WaitForElement(By.Id("invisibleButton"), "Invisible button");
+                browser.GetWebDriver()
+                    .ExecuteJavaScript("document.getElementById('invisibleButton').style.visibility = 'hidden'");
                 Assert.IsTrue(visibleButton.Displayed, "Visible button");
                 Assert.IsFalse(invisibleButton.Displayed, "Invisible button");
             }
@@ -591,12 +601,9 @@ function hideSoon() {
                 btn.WaitToDisappear(1.Seconds());
                 var endTime = DateTime.Now;
 
-                var actualDuration = endTime - startTime;
                 Assert.IsFalse(btn.Displayed, "Button should have disappeared");
                 var threshold = 200.Milliseconds();
-                // TODO: change to IsBetween method after merge with master
-                Assert.IsTrue((actualDuration - expectedTimeout).Absolute() < threshold,
-                    $"Actual duration was {actualDuration}, while the expected duration was {expectedTimeout.TotalMilliseconds} +/- {threshold.TotalMilliseconds} milliseconds");
+                WaitTests.AssertTimeoutWithinThreashold(startTime, endTime, threshold, "WaitForDisappear");
             }
         }
 

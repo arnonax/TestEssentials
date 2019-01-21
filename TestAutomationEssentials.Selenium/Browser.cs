@@ -1,10 +1,11 @@
 using System;
+using System.Linq;
 using JetBrains.Annotations;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using TestAutomationEssentials.Common;
+using TestAutomationEssentials.Common.ExecutionContext;
 using TestAutomationEssentials.MSTest;
-using TestAutomationEssentials.MSTest.ExecutionContext;
 
 namespace TestAutomationEssentials.Selenium
 {
@@ -17,25 +18,53 @@ namespace TestAutomationEssentials.Selenium
 		/// Provides access to the underlying <see cref="IWebDriver"/>
 		/// </summary>
 		protected readonly IWebDriver WebDriver;
-		//private bool _isDisposed;
 		//internal IDOMRoot ActiveDOM;
+	    //private readonly TestExecutionScopesManager _testExecutionScopesManager;
 
-		/// <summary>
-		/// Initializes the instance of the object using the specified description and <see cref="IWebDriver"/>
-		/// </summary>
-		/// <param name="description">The description of the browser. This is used for logging</param>
-		/// <param name="webDriver">The WebDriver instance that is used to communicate with the browser</param>
-		/// <exception cref="ArgumentNullException">one of the arguments are null</exception>
-		public Browser(string description, IWebDriver webDriver) : base(description)
+        /// <summary>
+        /// Initializes the instance of the object using the specified description and <see cref="IWebDriver"/>
+        /// </summary>
+        /// <param name="description">The description of the browser. This is used for logging</param>
+        /// <param name="webDriver">The WebDriver instance that is used to communicate with the browser</param>
+        /// <exception cref="ArgumentNullException">one of the arguments are null</exception>
+        /// <remarks>
+        /// This overload is provided only for backward compatibility and it works only with MSTest V1.
+        /// </remarks>
+        [Obsolete("Always use the overload that accepts TestExecutionScopesManager.")]
+        public Browser(string description, IWebDriver webDriver) : 
+            this(description, webDriver, TestBase.TestExecutionScopesManager)
 		{
-			if (webDriver == null)
-				throw new ArgumentNullException("webDriver");
+		}
+
+        /// <summary>
+        /// Initializes the instance of the object using the specified description and <see cref="IWebDriver"/>
+        /// </summary>
+        /// <param name="description">The description of the browser. This is used for logging</param>
+        /// <param name="webDriver">The WebDriver instance that is used to communicate with the browser</param>
+        /// <param name="testExecutionScopesManager">The test execution scope manager of your tests (See remarks)</param>
+        /// <exception cref="ArgumentNullException">one of the arguments are null</exception>
+        /// <remarks>
+        /// The <paramref name="testExecutionScopesManager"/> is used to automatically close any windows that 
+        /// are opened using <see cref="OpenWindow(System.Action,string)"/>, at the end of the current test or active scope.
+        /// <br/>
+        /// If you're using TestAutomationEssentials.MSTest or TestAutomationEssentials.MSTestV2, simply pass
+        /// <see cref="TestExecutionScopesManager"/>. Otherwise, create an instance of <see cref="TestExecutionScopesManager"/>
+        /// and pass it.
+        /// </remarks>
+        public Browser(string description, IWebDriver webDriver, TestExecutionScopesManager testExecutionScopesManager) 
+            : base(description)
+	    {
+	        if (webDriver == null)
+	            throw new ArgumentNullException("webDriver");
+            //if (testExecutionScopesManager == null)
+                //throw new ArgumentNullException("testExecutionScopesManager");
 
 			WebDriver = webDriver;
 			var mainWindowHandle = WebDriver.CurrentWindowHandle;
 			MainWindow = new BrowserWindow(this, mainWindowHandle/*, "Main window"*/);
 			//ActiveDOM = MainWindow;
-		}
+	        //_testExecutionScopesManager = testExecutionScopesManager;
+	    }
 
         /// <summary>
         /// Returns the browser window that was activew when the browser was opened
@@ -59,7 +88,9 @@ namespace TestAutomationEssentials.Selenium
             get { return this; }
         }
 
-        /// <summary>
+	    internal bool IsDisposed { get; private set; }
+
+	    /// <summary>
         /// Navigates the main window to the specified url
         /// </summary>
         /// <param name="url">The url to navigate to</param>
@@ -88,7 +119,7 @@ namespace TestAutomationEssentials.Selenium
             //if (!_isDisposed)
                 WebDriver.Quit();
 
-            //_isDisposed = true;
+            IsDisposed = true;
         }
 
 	    /// <summary>
@@ -149,7 +180,6 @@ namespace TestAutomationEssentials.Selenium
             //	var newWindowHandle = Wait.Until(() => webDriver.WindowHandles.Except(existingHandles).SingleOrDefault(),
             //		handle => handle != null,
             //		60.Seconds(), "Window '{0}' wasn't opened for 60 seconds", windowDescription);
-
             //	Logger.WriteLine("Opened window '{0}' with id={1} ({2})", windowDescription, newWindowHandle.GetHashCode(), newWindowHandle);
 
             // TODO: consider this implementation vs. the one above.

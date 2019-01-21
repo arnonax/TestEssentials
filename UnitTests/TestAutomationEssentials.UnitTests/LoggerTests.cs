@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
+using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestAutomationEssentials.Common;
 using TestAutomationEssentials.MSTest;
@@ -22,10 +22,16 @@ namespace TestAutomationEssentials.UnitTests
 		}
 
 		[TestMethod]
+		[SuppressMessage("ReSharper", "ExpressionIsAlwaysNull")]
 		public void InitializeValidateItsArgument()
 		{
-			var ex = TestUtils.ExpectException<ArgumentNullException>(() => Logger.Initialize(null));
+		    Action<string> nullAction = null;
+            var ex = TestUtils.ExpectException<ArgumentNullException>(() => Logger.Initialize(nullAction));
 			Assert.AreEqual("writeLineImpl", ex.ParamName);
+
+		    ICustomLogger nullCustomLogger = null;
+		    ex = TestUtils.ExpectException<ArgumentNullException>(() => Logger.Initialize(nullCustomLogger));
+            Assert.AreEqual("customLogger", ex.ParamName);
 		}
 
 		[TestMethod]
@@ -45,7 +51,8 @@ namespace TestAutomationEssentials.UnitTests
 			Assert.AreEqual(text, loggedText, "text");
 		}
 
-		[TestMethod]
+#pragma warning disable 618 // Logger.IncreaseIndent is obsolete
+        [TestMethod]
 		public void IncreaseIndentIncreasesTheIndentationOfTheText()
 		{
 			Logger.WriteLine("first line");
@@ -58,8 +65,10 @@ namespace TestAutomationEssentials.UnitTests
 			Assert.AreEqual("\t\tsecond line", GetLineContentWithIndents(1));
 			Assert.AreEqual("\t\t\tthird line", GetLineContentWithIndents(2));
 		}
+#pragma warning restore 618
 
-		[TestMethod]
+#pragma warning disable 618 // Logger.IncreaseIndent and Logger.DecreaseIndent are obsolete
+        [TestMethod]
 		public void DecreaseIndentDecreasesTheIndentationOfTheText()
 		{
 			Logger.WriteLine("first line");
@@ -72,16 +81,19 @@ namespace TestAutomationEssentials.UnitTests
 			Assert.AreEqual("\t\tsecond line", GetLineContentWithIndents(1));
 			Assert.AreEqual("\tthird line", GetLineContentWithIndents(2));
 		}
+#pragma warning restore 618
 
-		[TestMethod]
+#pragma warning disable 618 // Logger.IncreaseIndent and Logger.DecreaseIndent are obsolete
+        [TestMethod]
 		public void DecreaseIndentThrowsExpceptionIfIndentIsZero()
 		{
 			Logger.IncreaseIndent();
 			Logger.DecreaseIndent();
 			TestUtils.ExpectException<InvalidOperationException>(Logger.DecreaseIndent);
 		}
+#pragma warning restore 618
 
-		[TestMethod]
+        [TestMethod]
 		public void StartSectionAutomaticallyIncreasesTheIndentationForTheSection()
 		{
 			using (Logger.StartSection("start of section"))
@@ -95,7 +107,74 @@ namespace TestAutomationEssentials.UnitTests
 			Assert.AreEqual("\tlast line", GetLineContentWithIndents(2));
 		}
 
+	    private class MyCustomLogger : ICustomLogger
+	    {
+	        public DateTime Timestamp;
+	        public string Text;
+	        public string LastMethodCalled { get; private set; }
+
+	        public void WriteLine(DateTime  timestamp, string text)
+	        {
+	            Timestamp = timestamp;
+	            Text = text;
+
+	            LastMethodCalled = nameof(WriteLine);
+	        }
+
+	        public void StartSection(DateTime timestamp, string message)
+	        {
+	            LastMethodCalled = nameof(StartSection);
+	        }
+
+	        public void EndSection(DateTime timestamp)
+	        {
+	            LastMethodCalled = nameof(EndSection);
+	        }
+	    }
+
 	    [TestMethod]
+	    public void CustomLoggerGetsTimestampAndMessage()
+	    {
+            var customLogger = new MyCustomLogger();
+            Logger.Initialize(customLogger);
+
+	        var timeBeforeWrite = DateTime.Now;
+            Logger.WriteLine("Hello");
+	        var timeAfterWrite = DateTime.Now;
+            Assert.IsTrue(timeBeforeWrite <= customLogger.Timestamp && customLogger.Timestamp <= timeAfterWrite, $"timestamp={customLogger.Timestamp} should be between {timeBeforeWrite} and {timeAfterWrite}");
+            Assert.AreEqual("Hello", customLogger.Text);
+
+            Thread.Sleep(100);
+            timeBeforeWrite = DateTime.Now;
+            Logger.WriteLine("World");
+            timeAfterWrite = DateTime.Now;
+	        Assert.IsTrue(timeBeforeWrite <= customLogger.Timestamp && customLogger.Timestamp <= timeAfterWrite);
+	        Assert.AreEqual("World", customLogger.Text);
+        }
+
+	    [TestMethod]
+	    public void CustomLoggerIsNotifiedForStartSectionAndEndSection()
+	    {
+	        var customLogger = new MyCustomLogger();
+	        Logger.Initialize(customLogger);
+
+	        using (Logger.StartSection("Section1"))
+	        {
+	            Assert.AreEqual(nameof(customLogger.StartSection), customLogger.LastMethodCalled);
+
+                Logger.WriteLine("Something");
+                Assert.AreEqual(nameof(customLogger.WriteLine), customLogger.LastMethodCalled);
+
+	            using (Logger.StartSection("Nested section"))
+	            {
+	                Assert.AreEqual(nameof(customLogger.StartSection), customLogger.LastMethodCalled);
+	            }
+                Assert.AreEqual(nameof(customLogger.EndSection), customLogger.LastMethodCalled);
+	        }
+	        Assert.AreEqual(nameof(customLogger.EndSection), customLogger.LastMethodCalled);
+        }
+
+        [TestMethod]
 	    public void UsesFormatSpecifiers()
 	    {
 	        Logger.WriteLine("{0}, {1}!", "Hello", "World");

@@ -2,16 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.ExceptionServices;
-using TestAutomationEssentials.Common;
 
-namespace TestAutomationEssentials.MSTest.ExecutionContext
+namespace TestAutomationEssentials.Common.ExecutionContext
 {
-	/// <summary>
-	/// Managed nestable scopes of isolation. Upon exit from each scope, it calls the cleanup actions that were registered to it during its lifetime
-	/// </summary>
-	/// <remarks>
-	/// If you're using MSTest, you should probably use <see cref="TestBase"/> instead of using this class directly.
-	/// </remarks>
+#pragma warning disable CS1574 // XML comment has cref attribute that could not be resolved
+    /// <summary>
+    /// Managed nestable scopes of isolation. Upon exit from each scope, it calls the cleanup actions that were registered to it during its lifetime
+    /// </summary>
+    /// <remarks>
+    /// If you're using MSTest, you should probably use <see cref="TestBase"/> instead of using this class directly.
+    /// </remarks>
+#pragma warning restore CS1574 // XML comment has cref attribute that could not be resolved
     public class TestExecutionScopesManager : IIsolationScope
     {
 	    private class IsolationLevel : IIsolationScope
@@ -115,10 +116,17 @@ namespace TestAutomationEssentials.MSTest.ExecutionContext
 				initialize(this);
 				Logger.WriteLine("***************************** Initializing " + isolationScopeName + " Completed succesfully *****************************");
 			}
-			catch
+			catch(Exception ex)
 			{
-				_currentIsolationLevel.Cleanup();
-				_currentIsolationLevel = lastIsolationLevel;
+			    try
+			    {
+			        _currentIsolationLevel.Cleanup();
+			    }
+			    catch (Exception cleanupException)
+			    {
+			        throw new AggregateException(ex, cleanupException);
+			    }
+			    _currentIsolationLevel = lastIsolationLevel;
 				throw;
 			}
 

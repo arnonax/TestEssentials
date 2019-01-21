@@ -83,6 +83,10 @@
       <Project>{B9588B2F-0845-4F17-A6A4-48B9C1AA8654}</Project>
       <Name>TestAutomationEssentials.Selenium</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TestAutomationEssentials.UnitTests\TestAutomationEssentials.UnitTests.csproj">
+      <Project>{B47CC7CB-F177-4F1C-800C-0E8D54B60C5E}</Project>
+      <Name>TestAutomationEssentials.UnitTests</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config">

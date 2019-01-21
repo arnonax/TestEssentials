@@ -1,3 +1,5 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/brd81k0atqsnr1q4/branch/master?svg=true)](https://ci.appveyor.com/project/arnonax/testessentials/branch/master)
+
 # Test Automation Essentials
 
 Test Automation Essentials is a set of tools that are handy for any test automation project. It contains all the code that I want to take with me from one project to another. I hope you'll find it useful for your projects too :-)

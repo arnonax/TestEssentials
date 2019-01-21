@@ -26,7 +26,11 @@ namespace TestAutomationEssentials.Common
 
 			var timeoutMessage = "The condition '" + conditionExpr + "' has not been met for " + timeout.ToSpokenString();
 
-			Until(conditionExpr.Compile(), timeout, timeoutMessage);
+		    using (Logger.StartSection($"Waiting for '{conditionExpr}'"))
+		    {
+		        Until(conditionExpr.Compile(), timeout, timeoutMessage);
+		    }
+            Logger.WriteLine($"Done waiting for '{conditionExpr}'");
 		}
 
 		/// <summary>

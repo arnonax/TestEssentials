@@ -4,6 +4,9 @@ using TestAutomationEssentials.Common;
 
 namespace TestAutomationEssentials.Selenium
 {
+    // TODO: remove the following line when merging to master
+#pragma warning disable CS1591, CS1572 // Missing XML comment for publicly visible type or member
+
     /// <summary>
     /// Represents a browser window
     /// </summary>
@@ -89,6 +92,9 @@ namespace TestAutomationEssentials.Selenium
         /// </summary>
         public void Close()
         {
+            if (_browser.IsDisposed)
+                return;
+
             var webDriver = _browser.GetWebDriver();
 
             //		using (Logger.StartSection("Closing '{0}' Window, with id={1} ({2})", Description, _windowHandle.GetHashCode(), _windowHandle))

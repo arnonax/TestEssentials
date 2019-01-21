@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using TestAutomationEssentials.MSTest.Configuration;
+using TestAutomationEssentials.Common.Configuration;
 
 namespace TestAutomationEssentials.UnitTests
 {

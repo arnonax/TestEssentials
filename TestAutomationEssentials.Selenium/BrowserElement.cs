@@ -80,10 +80,10 @@ namespace TestAutomationEssentials.Selenium
         /// <summary>
         /// Initialized a new instance of <see cref="BrowserElement"/> given its container, a specific 'By' filter and description
         /// </summary>
-        /// <param name="container">The container that contains the relevant element. Typically this is a <see cref="Browser"/>, <see cref="BrowserWindow"/>, <see cref="Frame"/> or a containing <see cref="BrowserElement"/></param>
-        /// <param name="by">A filter mechanism used to find the element. If multiple elements match the filter, the first one is used</param>
-        /// <param name="description">The description of the new element</param>
-        /// <exception cref="ArgumentNullException">Any of the arguments is null</exception>
+        ///// <param name="container">The container that contains the relevant element. Typically this is a <see cref="Browser"/>, <see cref="BrowserWindow"/>, <see cref="Frame"/> or a containing <see cref="BrowserElement"/></param>
+        ///// <param name="by">A filter mechanism used to find the element. If multiple elements match the filter, the first one is used</param>
+        ///// <param name="description">The description of the new element</param>
+        ///// <exception cref="ArgumentNullException">Any of the arguments is null</exception>
         public BrowserElement(ElementsContainer container, By by, string description)
             : this(SafeGetDOMRoot(container/*, "container"*/), () => container.GetSearchContext().FindElement(by), description)
         {
@@ -190,7 +190,7 @@ namespace TestAutomationEssentials.Selenium
         }
 
         /// <summary>
-        //  Gets or sets the text of this element
+        ///  Gets or sets the text of this element
         /// </summary>
         /// <exception cref="StaleElementReferenceException">Thrown when the target element is no longer valid in the document DOM</exception>
         /// <remarks>The setter of this property can be used instead of <see cref="IWebElement.SendKeys"/>. However, in addition to <see cref="IWebElement.SendKeys"/>
