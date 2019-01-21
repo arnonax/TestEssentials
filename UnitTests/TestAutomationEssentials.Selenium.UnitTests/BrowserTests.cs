@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net;
 using System.Text.RegularExpressions;
 using FakeItEasy;
@@ -48,7 +49,7 @@ namespace TestAutomationEssentials.Selenium.UnitTests
         class BrowserDerived : Browser
         {
             public BrowserDerived(IWebDriver webDriver) 
-                : base("dummy description", webDriver)
+                : base("dummy description", webDriver, TestExecutionScopesManager)
             {
                 var webDriverFromBase = WebDriver;
                 Assert.AreSame(webDriverFromBase, webDriver);
@@ -66,7 +67,7 @@ namespace TestAutomationEssentials.Selenium.UnitTests
         public void OtherClassesCanAccessUnderlyingWebDriver()
         {
             var driver = A.Fake<IWebDriver>();
-            var browser = new Browser("dummy description", driver);
+            var browser = new Browser("dummy description", driver, TestExecutionScopesManager);
             Assert.AreSame(driver, browser.GetWebDriver());
         }
 
@@ -75,7 +76,7 @@ namespace TestAutomationEssentials.Selenium.UnitTests
         {
             var driver = A.Fake<IWebDriver>();
             var description = "dummy description";
-            var browser = new Browser(description, driver);
+            var browser = new Browser(description, driver, TestExecutionScopesManager);
             Assert.AreEqual(description, browser.Description);
         }
 
@@ -84,7 +85,7 @@ namespace TestAutomationEssentials.Selenium.UnitTests
         {
             var driverMock = new Fake<IWebDriver>();
             var driver = driverMock.FakedObject;
-            using (new Browser("dummy description", driver))
+            using (new Browser("dummy description", driver, TestExecutionScopesManager))
             {
             }
             driverMock.CallsTo(x => x.Quit()).MustHaveHappened(Repeated.Exactly.Once);
@@ -98,7 +99,7 @@ namespace TestAutomationEssentials.Selenium.UnitTests
             var dummyPageUrl = GetUrlForFile(filename);
             var driver = CreateDriver();
             WriteBrowserVersion(driver);
-            using (var browser = new Browser("", driver))
+            using (var browser = new Browser("", driver, TestExecutionScopesManager))
             {
                 browser.NavigateToUrl(dummyPageUrl);
                 Assert.AreEqual(new Uri(dummyPageUrl).AbsoluteUri, new Uri(driver.Url).AbsoluteUri);
@@ -328,6 +329,7 @@ function removeSpan() {
         {
             var driver = new ChromeDriver();
             driver.Dispose();
+            // ReSharper disable once NotAccessedVariable
             string x;
             // This is why I would expect:
             //TestUtils.ExpectException<ObjectDisposedException>(() => x = driver.Title);
@@ -480,6 +482,41 @@ function removeSpan() {
                     var link = browser.WaitForElement(By.Id("myLink"), "Link to other window");
                     browser.OpenWindow(() => link.Click(), "Other window");
                 }
+            }
+        }
+
+        [TestMethod]
+        public void AllMethodsAndPropertiesThrowsObjectDisposedExceptionAfterBrowserIsDisposed()
+        {
+            var voidMethods = new Expression<Action<Browser>>[]
+            {
+                b => b.NavigateToUrl("dummy URL"),
+                b => b.GetWebDriver(),
+                b => b.OpenWindow(Functions.EmptyAction(), "dummy Description"),
+                b => b.OpenWindow(Functions.EmptyAction(), "dummy Description", 1.Seconds()),
+                b => b.ElementAppears(By.Id("dummy")),
+                b => b.FindElements(By.Id("dummy id"), "dummy description"),
+                b => b.WaitForElement(By.Id("dummy Id"), "dumy description", 2.SecondsAsMilliseconds())
+            };
+            var otherMethodsAndPropertyGetters = new Expression<Func<Browser, object>>[]
+            {
+                b => b.DOMRoot,
+                b => b.MainWindow
+            };
+
+            var browser = new Browser("Disposed browser", A.Fake<IWebDriver>(), TestExecutionScopesManager);
+            browser.Dispose();
+
+            foreach (var expression in voidMethods)
+            {
+                var action = expression.Compile();
+                TestUtils.ExpectException<ObjectDisposedException>(() => action(browser), expression.ToString());
+            }
+
+            foreach (var expression in otherMethodsAndPropertyGetters)
+            {
+                var action = expression.Compile();
+                TestUtils.ExpectException<ObjectDisposedException>(() => action(browser), expression.ToString());
             }
         }
 
