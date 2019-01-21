@@ -19,7 +19,7 @@ namespace TestAutomationEssentials.Selenium
 		/// </summary>
 		protected readonly IWebDriver WebDriver;
 		//internal IDOMRoot ActiveDOM;
-	    //private readonly TestExecutionScopesManager _testExecutionScopesManager;
+	    private readonly TestExecutionScopesManager _testExecutionScopesManager;
 
         /// <summary>
         /// Initializes the instance of the object using the specified description and <see cref="IWebDriver"/>
@@ -56,14 +56,14 @@ namespace TestAutomationEssentials.Selenium
 	    {
 	        if (webDriver == null)
 	            throw new ArgumentNullException("webDriver");
-            //if (testExecutionScopesManager == null)
-                //throw new ArgumentNullException("testExecutionScopesManager");
+            if (testExecutionScopesManager == null)
+                throw new ArgumentNullException("testExecutionScopesManager");
 
 			WebDriver = webDriver;
 			var mainWindowHandle = WebDriver.CurrentWindowHandle;
 			MainWindow = new BrowserWindow(this, mainWindowHandle/*, "Main window"*/);
 			//ActiveDOM = MainWindow;
-	        //_testExecutionScopesManager = testExecutionScopesManager;
+	        _testExecutionScopesManager = testExecutionScopesManager;
 	    }
 
         /// <summary>
@@ -196,7 +196,7 @@ namespace TestAutomationEssentials.Selenium
             // END TODO
 
             var newWindow = new BrowserWindow(this, newWindowHandle/*, windowDescription*/);
-            TestBase.AddCleanupAction(() => newWindow.Close());
+            _testExecutionScopesManager.AddCleanupAction(() => newWindow.Close());
 
             return newWindow;
 		}

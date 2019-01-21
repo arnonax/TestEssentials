@@ -27,11 +27,22 @@ namespace TestAutomationEssentials.Selenium.UnitTests
         [TestMethod]
         public void ConstructorThrowsArgumentNullExceptionsIfNullsArePassed()
         {
+#pragma warning disable 618 //Obsolete
             var ex = TestUtils.ExpectException<ArgumentNullException>(() => new Browser(null, null));
             Assert.AreEqual("description", ex.ParamName);
 
             ex = TestUtils.ExpectException<ArgumentNullException>(() => new Browser("dummy", null));
             Assert.AreEqual("webDriver", ex.ParamName);
+#pragma warning restore 618
+
+            ex = TestUtils.ExpectException<ArgumentNullException>(() => new Browser(null, null, null));
+            Assert.AreEqual("description", ex.ParamName);
+
+            ex = TestUtils.ExpectException<ArgumentNullException>(() => new Browser("dummy", null, null));
+            Assert.AreEqual("webDriver", ex.ParamName);
+
+            ex = TestUtils.ExpectException<ArgumentNullException>(() => new Browser("dummy", A.Fake<IWebDriver>(), null));
+            Assert.AreEqual("testExecutionScopesManager", ex.ParamName);
         }
 
         class BrowserDerived : Browser
@@ -429,10 +440,11 @@ function removeSpan() {
 </body>
 </html>";
 
-            using (var browser = OpenBrowserWithPage(pageSource))
+            var scopesManager = new TestExecutionScopesManager("Dummy test scope", Functions.EmptyAction<IIsolationScope>());
+            using (var browser = OpenBrowserWithPage(pageSource, scopesManager))
             {
                 var driver = browser.GetWebDriver();
-                using (TestExecutionScopesManager.BeginIsolationScope("Window scope"))
+                using (scopesManager.BeginIsolationScope("Window scope"))
                 {
 
                     var link = browser.WaitForElement(By.Id("myLink"), "Link to other window");

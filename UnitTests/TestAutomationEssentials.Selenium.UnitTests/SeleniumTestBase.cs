@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
 //using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Firefox;
+using TestAutomationEssentials.Common.ExecutionContext;
 using TestAutomationEssentials.MSTest;
 
 namespace TestAutomationEssentials.Selenium.UnitTests
@@ -15,14 +16,19 @@ namespace TestAutomationEssentials.Selenium.UnitTests
     {
         protected Browser OpenBrowserWithPage(string pageSource)
         {
+            return OpenBrowserWithPage(pageSource, TestExecutionScopesManager);
+        }
+
+        protected Browser OpenBrowserWithPage(string pageSource, TestExecutionScopesManager executionScopesManager)
+        {
             var filename = CreatePage(pageSource);
-	        var driver = CreateDriver();
-            var browser = new Browser("test browser", driver);
+            var driver = CreateDriver();
+            var browser = new Browser("test browser", driver, executionScopesManager);
             browser.NavigateToUrl(new Uri(filename).AbsoluteUri);
             return browser;
         }
 
-	    protected string CreatePage(string pageSource)
+        protected string CreatePage(string pageSource)
 	    {
 		    var tempFileName = Path.GetTempFileName();
 		    var filename =
