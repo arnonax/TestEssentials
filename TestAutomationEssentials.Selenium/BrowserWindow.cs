@@ -46,13 +46,13 @@ namespace TestAutomationEssentials.Selenium
         //		get { return this; }
         //	}
 
-        //	/// <summary>
-        //	/// Returns the owning browser
-        //	/// </summary>
-        //	public Browser Browser
-        //	{
-        //		get { return _browser; }
-        //	}
+        /// <summary>
+        /// Returns the owning browser
+        /// </summary>
+        public Browser Browser
+        {
+            get { return _browser; }
+        }
 
         /// <summary>
         /// Returns the current title of the window

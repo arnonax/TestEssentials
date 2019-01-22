@@ -12,32 +12,19 @@ namespace TestAutomationEssentials.Selenium.UnitTests
     [TestClass]
     public class BrowserWindowTests : SeleniumTestBase
     {
+        private const string NewWindowTitle = "New Window";
+        private const string FirstWindowTitle = @"First Window";
+
         [TestMethod]
         public void OpenWindowReturnsTheNewlyOpenedWindow()
         {
-            const string otherPageSource = @"
-<html>
-<head><title>New Window</title></head>
-</html>";
-
-            var otherPageUrl = CreatePage(otherPageSource);
-            var pageSource = @"
-<html>
-<head><title>First Window</title></head>
-<body>
-<a id='myLink' target='_blank' href='file://" + otherPageUrl + @"'>Click here to open new window</a>
-</body>
-</html>
-";
-
-            using (var browser = OpenBrowserWithPage(pageSource))
+            using (var browser = OpenBrowserWithLinkToNewWindow())
             {
                 var mainWindow = browser.MainWindow;
 
-                var link = browser.WaitForElement(By.Id("myLink"), "Link to other window");
-                var newWindow = browser.OpenWindow(() => link.Click(), "Other window");
+                var newWindow = ClickOpenWindow(browser);
 
-                Assert.AreEqual("New Window", newWindow.Title);
+                Assert.AreEqual(NewWindowTitle, newWindow.Title);
                 Assert.AreEqual("First Window", mainWindow.Title);
             }
         }
@@ -86,25 +73,10 @@ namespace TestAutomationEssentials.Selenium.UnitTests
         [TestMethod]
         public void CloseWindow()
         {
-            const string otherPageSource = @"
-<html>
-<head><title>New Window</title></head>
-</html>";
-
-            var otherPageUrl = CreatePage(otherPageSource);
-            var pageSource = @"
-<html>
-<head><title>First Window</title></head>
-<body>
-<a id='myLink' target='_blank' href='file://" + otherPageUrl + @"'>Click here to open new window</a>
-</body>
-</html>";
-
-            using (var browser = OpenBrowserWithPage(pageSource))
+            using (var browser = OpenBrowserWithLinkToNewWindow())
             {
                 var driver = browser.GetWebDriver();
-                var link = browser.WaitForElement(By.Id("myLink"), "Link to other window");
-                var newWindow = browser.OpenWindow(() => link.Click(), "Other window");
+                var newWindow = ClickOpenWindow(browser);
 
                 Assert.AreEqual(2, driver.WindowHandles.Count, "2 Windows should be open after OpenWindow was called");
 
@@ -116,22 +88,8 @@ namespace TestAutomationEssentials.Selenium.UnitTests
         [TestMethod]
         public void WindowIsClosedOnCleanup()
         {
-            const string otherPageSource = @"
-<html>
-<head><title>New Window</title></head>
-</html>";
-
-            var otherPageUrl = CreatePage(otherPageSource);
-            var pageSource = @"
-<html>
-<head><title>First Window</title></head>
-<body>
-<a id='myLink' target='_blank' href='file://" + otherPageUrl + @"'>Click here to open new window</a>
-</body>
-</html>";
-
             var scopesManager = new TestExecutionScopesManager("Dummy test scope", Functions.EmptyAction<IIsolationScope>());
-            using (var browser = OpenBrowserWithPage(pageSource, scopesManager))
+            using (var browser = OpenBrowserWithLinkToNewWindow(scopesManager))
             {
                 var driver = browser.GetWebDriver();
                 using (scopesManager.BeginIsolationScope("Window scope"))
@@ -148,24 +106,9 @@ namespace TestAutomationEssentials.Selenium.UnitTests
         [TestMethod]
         public void NoExceptionIsThrownOnCleanupIfBrowserIsDisposedWhenTheresAnOpenWindow()
         {
-            // TODO: remove duplication of the HTML creation for OpenWindow
-            const string otherPageSource = @"
-<html>
-<head><title>New Window</title></head>
-</html>";
-
-            var otherPageUrl = CreatePage(otherPageSource);
-            var pageSource = @"
-<html>
-<head><title>First Window</title></head>
-<body>
-<a id='myLink' target='_blank' href='file://" + otherPageUrl + @"'>Click here to open new window</a>
-</body>
-</html>";
-
             using (TestExecutionScopesManager.BeginIsolationScope("Window scope"))
             {
-                using (var browser = OpenBrowserWithPage(pageSource))
+                using (var browser = OpenBrowserWithLinkToNewWindow())
                 {
                     var link = browser.WaitForElement(By.Id("myLink"), "Link to other window");
                     browser.OpenWindow(() => link.Click(), "Other window");
@@ -173,5 +116,47 @@ namespace TestAutomationEssentials.Selenium.UnitTests
             }
         }
 
+        [TestMethod]
+        public void BrowserPropertyReturnsTheInstaneOfTheBrowserUsedToOpenTheWindow()
+        {
+            using (var browser = OpenBrowserWithLinkToNewWindow())
+            {
+                var newWindow = ClickOpenWindow(browser);
+                Assert.AreSame(browser, newWindow.Browser);
+            }
+        }
+
+        private static BrowserWindow ClickOpenWindow(Browser browser)
+        {
+            var link = browser.WaitForElement(By.Id("myLink"), "Link to other window");
+            var newWindow = browser.OpenWindow(() => link.Click(), "Other window");
+            return newWindow;
+        }
+
+        private Browser OpenBrowserWithLinkToNewWindow()
+        {
+            return OpenBrowserWithLinkToNewWindow(TestExecutionScopesManager);
+        }
+
+        private Browser OpenBrowserWithLinkToNewWindow(TestExecutionScopesManager scopeManager)
+        {
+            const string otherPageSource = @"
+<html>
+<head><title>" + NewWindowTitle + @"</title></head>
+</html>";
+
+            var otherPageUrl = CreatePage(otherPageSource);
+            var pageSource = @"
+<html>
+<head><title>" + FirstWindowTitle + @"</title></head>
+<body>
+<a id='myLink' target='_blank' href='file://" + otherPageUrl + @"'>Click here to open new window</a>
+</body>
+</html>
+";
+
+            var browser = OpenBrowserWithPage(pageSource, scopeManager);
+            return browser;
+        }
     }
 }
