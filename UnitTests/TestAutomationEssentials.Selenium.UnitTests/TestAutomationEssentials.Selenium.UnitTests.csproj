@@ -66,6 +66,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="BrowserTests.cs" />
+    <Compile Include="BrowserWindowTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SeleniumTestBase.cs" />
     <Compile Include="BrowserElementTests.cs" />
