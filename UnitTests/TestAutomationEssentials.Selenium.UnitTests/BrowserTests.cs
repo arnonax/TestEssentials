@@ -11,9 +11,7 @@ using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium.Support.Extensions;
 using TestAutomationEssentials.Common;
-using TestAutomationEssentials.Common.ExecutionContext;
 using TestAutomationEssentials.MSTest;
-using TestAutomationEssentials.UnitTests;
 
 namespace TestAutomationEssentials.Selenium.UnitTests
 {
@@ -102,7 +100,7 @@ namespace TestAutomationEssentials.Selenium.UnitTests
             using (var browser = new Browser("", driver, TestExecutionScopesManager))
             {
                 browser.NavigateToUrl(dummyPageUrl);
-                Assert.AreEqual(new Uri(dummyPageUrl).AbsoluteUri, new Uri(driver.Url).AbsoluteUri);
+                Assert.AreEqual(new Uri(dummyPageUrl), new Uri(driver.Url));
             }
         }
 
@@ -311,13 +309,13 @@ function removeSpan() {
             var firstHandle = driver.CurrentWindowHandle;
             Console.WriteLine("firstHandle= " + firstHandle);
 
-            driver.Url = $"file:///{CreatePage("<html>Hello</html>")}";
+            driver.Url = CreatePage("<html>Hello</html>").AbsoluteUri;
             var updatedHandle = driver.CurrentWindowHandle;
             Console.WriteLine("UpdatedHanlde=" + updatedHandle);
 
             Assert.AreNotEqual(updatedHandle, firstHandle);
 
-            driver.Url = driver.Url = $"file:///{CreatePage("<html>World</html>")}";
+            driver.Url = CreatePage("<html>World</html>").AbsoluteUri;
             var updatedHandle2 = driver.CurrentWindowHandle;
             Console.WriteLine("UpdatedHanlde2=" + updatedHandle2);
 

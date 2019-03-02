@@ -126,6 +126,20 @@ namespace TestAutomationEssentials.Selenium.UnitTests
             }
         }
 
+        [TestMethod]
+        public void SettingUrlNavigatesToAppropriatePage()
+        {
+            var title = "Another web site";
+            var anotherSite = CreatePageWithTitle(title);
+            using (var browser = OpenBrowserWithLinkToNewWindow())
+            {
+                var newWindow = ClickOpenWindow(browser);
+                newWindow.NavigateToUrl(anotherSite.AbsoluteUri);
+
+                Assert.AreEqual(title, newWindow.Title);
+            }
+        }
+
         private static BrowserWindow ClickOpenWindow(Browser browser)
         {
             var link = browser.WaitForElement(By.Id("myLink"), "Link to other window");
@@ -140,23 +154,29 @@ namespace TestAutomationEssentials.Selenium.UnitTests
 
         private Browser OpenBrowserWithLinkToNewWindow(TestExecutionScopesManager scopeManager)
         {
-            const string otherPageSource = @"
-<html>
-<head><title>" + NewWindowTitle + @"</title></head>
-</html>";
+            var otherPageUrl = CreatePageWithTitle(NewWindowTitle);
 
-            var otherPageUrl = CreatePage(otherPageSource);
             var pageSource = @"
 <html>
 <head><title>" + FirstWindowTitle + @"</title></head>
 <body>
-<a id='myLink' target='_blank' href='file://" + otherPageUrl + @"'>Click here to open new window</a>
+<a id='myLink' target='_blank' href='" + otherPageUrl + @"'>Click here to open new window</a>
 </body>
 </html>
 ";
 
             var browser = OpenBrowserWithPage(pageSource, scopeManager);
             return browser;
+        }
+
+        private Uri CreatePageWithTitle(string windowTitle)
+        {
+            var otherPageSource = @"
+<html>
+<head><title>" + windowTitle + @"</title></head>
+</html>";
+
+            return CreatePage(otherPageSource);
         }
     }
 }

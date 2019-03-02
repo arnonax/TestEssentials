@@ -21,28 +21,28 @@ namespace TestAutomationEssentials.Selenium.UnitTests
 
         protected Browser OpenBrowserWithPage(string pageSource, TestExecutionScopesManager executionScopesManager)
         {
-            var filename = CreatePage(pageSource);
+            var uri = CreatePage(pageSource);
             var driver = CreateDriver();
             var browser = new Browser("test browser", driver, executionScopesManager);
-            browser.NavigateToUrl(new Uri(filename).AbsoluteUri);
+            browser.NavigateToUrl(uri.ToString());
             return browser;
         }
 
-        protected string CreatePage(string pageSource)
-	    {
-		    var tempFileName = Path.GetTempFileName();
-		    var filename =
-			    tempFileName + ".html"; // The extension is required in order for Chrome to open it as HTML and not as text
-		    File.Copy(tempFileName, filename, true); // Do not delete the original file so GetTempFileName won't give it to someone else
+        protected Uri CreatePage(string pageSource)
+        {
+            var tempFileName = Path.GetTempFileName();
+            var filename =
+                tempFileName + ".html"; // The extension is required in order for Chrome to open it as HTML and not as text
+            File.Copy(tempFileName, filename, true); // Do not delete the original file so GetTempFileName won't give it to someone else
                                                      
             // Note: We don't delete the files on cleanup, so that we'll have them for failure investigation
 
             File.WriteAllText(filename, pageSource);
-		    TestContext.AddResultFile(filename);
-		    return filename;
-	    }
+            TestContext.AddResultFile(filename);
+            return new Uri(filename);
+        }
 
-	    protected IWebDriver CreateDriver()
+        protected IWebDriver CreateDriver()
         {
             //return new OpenQA.Selenium.Chrome.ChromeDriver();
 

@@ -62,7 +62,6 @@ namespace TestAutomationEssentials.Selenium
         		get
         		{
         			Activate();
-        //			return Browser.GetWebDriver().Title;
 		            return _browser.GetWebDriver().Title;
 		        }
 			}
