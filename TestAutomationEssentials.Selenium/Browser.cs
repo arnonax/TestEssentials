@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using JetBrains.Annotations;
 using OpenQA.Selenium;
 using TestAutomationEssentials.Common;
