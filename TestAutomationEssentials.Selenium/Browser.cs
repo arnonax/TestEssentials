@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using JetBrains.Annotations;
 using OpenQA.Selenium;
 using TestAutomationEssentials.Common;
@@ -21,7 +20,9 @@ namespace TestAutomationEssentials.Selenium
 	    internal IDOMRoot ActiveDOM;
 	    private readonly TestExecutionScopesManager _testExecutionScopesManager;
 
-        /// <summary>
+	    private readonly BrowserWindow _mainWindow;
+
+	    /// <summary>
         /// Initializes the instance of the object using the specified description and <see cref="IWebDriver"/>
         /// </summary>
         /// <param name="description">The description of the browser. This is used for logging</param>
@@ -61,20 +62,27 @@ namespace TestAutomationEssentials.Selenium
 
 	        WebDriver = webDriver;
 	        var mainWindowHandle = WebDriver.CurrentWindowHandle;
-	        MainWindow = new BrowserWindow(this, mainWindowHandle, "Main window");
+			_mainWindow = new BrowserWindow(this, mainWindowHandle, "Main window");
 	        ActiveDOM = MainWindow;
 	        _testExecutionScopesManager = testExecutionScopesManager;
 	    }
 
-        /// <summary>
-        /// Returns the browser window that was activew when the browser was opened
-        /// </summary>
-        public BrowserWindow MainWindow { get; private set; }
+	    /// <summary>
+	    /// Returns the browser window that was activew when the browser was opened
+	    /// </summary>
+	    public BrowserWindow MainWindow
+	    {
+	        get
+	        {
+                CheckDisposed();
+	            return _mainWindow;
+	        }
+	    }
 
-        /// <summary>
-        /// Always returns itself
-        /// </summary>
-        public override IDOMRoot DOMRoot
+	    /// <summary>
+	    /// Always returns itself
+	    /// </summary>
+	    public override IDOMRoot DOMRoot
         {
             get
             {
@@ -116,9 +124,7 @@ namespace TestAutomationEssentials.Selenium
         /// </summary>
         public void Dispose()
         {
-            if (!IsDisposed)
-                WebDriver.Quit();
-
+            WebDriver.Quit(); // Note: it's OK to called this twice. No need to check if we're already disposed.
             IsDisposed = true;
         }
 

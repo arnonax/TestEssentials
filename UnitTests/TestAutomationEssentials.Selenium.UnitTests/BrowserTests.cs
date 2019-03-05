@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net;
 using System.Text.RegularExpressions;
 using FakeItEasy;
@@ -10,9 +11,7 @@ using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium.Support.Extensions;
 using TestAutomationEssentials.Common;
-using TestAutomationEssentials.Common.ExecutionContext;
 using TestAutomationEssentials.MSTest;
-using TestAutomationEssentials.UnitTests;
 
 namespace TestAutomationEssentials.Selenium.UnitTests
 {
@@ -27,17 +26,28 @@ namespace TestAutomationEssentials.Selenium.UnitTests
         [TestMethod]
         public void ConstructorThrowsArgumentNullExceptionsIfNullsArePassed()
         {
+#pragma warning disable 618 //Obsolete
             var ex = TestUtils.ExpectException<ArgumentNullException>(() => new Browser(null, null));
             Assert.AreEqual("description", ex.ParamName);
 
             ex = TestUtils.ExpectException<ArgumentNullException>(() => new Browser("dummy", null));
             Assert.AreEqual("webDriver", ex.ParamName);
+#pragma warning restore 618
+
+            ex = TestUtils.ExpectException<ArgumentNullException>(() => new Browser(null, null, null));
+            Assert.AreEqual("description", ex.ParamName);
+
+            ex = TestUtils.ExpectException<ArgumentNullException>(() => new Browser("dummy", null, null));
+            Assert.AreEqual("webDriver", ex.ParamName);
+
+            ex = TestUtils.ExpectException<ArgumentNullException>(() => new Browser("dummy", A.Fake<IWebDriver>(), null));
+            Assert.AreEqual("testExecutionScopesManager", ex.ParamName);
         }
 
         class BrowserDerived : Browser
         {
             public BrowserDerived(IWebDriver webDriver) 
-                : base("dummy description", webDriver)
+                : base("dummy description", webDriver, TestExecutionScopesManager)
             {
                 var webDriverFromBase = WebDriver;
                 Assert.AreSame(webDriverFromBase, webDriver);
@@ -55,7 +65,7 @@ namespace TestAutomationEssentials.Selenium.UnitTests
         public void OtherClassesCanAccessUnderlyingWebDriver()
         {
             var driver = A.Fake<IWebDriver>();
-            var browser = new Browser("dummy description", driver);
+            var browser = new Browser("dummy description", driver, TestExecutionScopesManager);
             Assert.AreSame(driver, browser.GetWebDriver());
         }
 
@@ -64,7 +74,7 @@ namespace TestAutomationEssentials.Selenium.UnitTests
         {
             var driver = A.Fake<IWebDriver>();
             var description = "dummy description";
-            var browser = new Browser(description, driver);
+            var browser = new Browser(description, driver, TestExecutionScopesManager);
             Assert.AreEqual(description, browser.Description);
         }
 
@@ -73,7 +83,7 @@ namespace TestAutomationEssentials.Selenium.UnitTests
         {
             var driverMock = new Fake<IWebDriver>();
             var driver = driverMock.FakedObject;
-            using (new Browser("dummy description", driver))
+            using (new Browser("dummy description", driver, TestExecutionScopesManager))
             {
             }
             driverMock.CallsTo(x => x.Quit()).MustHaveHappened(Repeated.Exactly.Once);
@@ -87,10 +97,10 @@ namespace TestAutomationEssentials.Selenium.UnitTests
             var dummyPageUrl = GetUrlForFile(filename);
             var driver = CreateDriver();
             WriteBrowserVersion(driver);
-            using (var browser = new Browser("", driver))
+            using (var browser = new Browser("", driver, TestExecutionScopesManager))
             {
                 browser.NavigateToUrl(dummyPageUrl);
-                Assert.AreEqual(new Uri(dummyPageUrl).AbsoluteUri, new Uri(driver.Url).AbsoluteUri);
+                Assert.AreEqual(new Uri(dummyPageUrl), new Uri(driver.Url));
             }
         }
 
@@ -297,13 +307,13 @@ function removeSpan() {
             var firstHandle = driver.CurrentWindowHandle;
             Console.WriteLine("firstHandle= " + firstHandle);
 
-            driver.Url = $"file:///{CreatePage("<html>Hello</html>")}";
+            driver.Url = CreatePage("<html>Hello</html>").AbsoluteUri;
             var updatedHandle = driver.CurrentWindowHandle;
             Console.WriteLine("UpdatedHanlde=" + updatedHandle);
 
             Assert.AreNotEqual(updatedHandle, firstHandle);
 
-            driver.Url = driver.Url = $"file:///{CreatePage("<html>World</html>")}";
+            driver.Url = CreatePage("<html>World</html>").AbsoluteUri;
             var updatedHandle2 = driver.CurrentWindowHandle;
             Console.WriteLine("UpdatedHanlde2=" + updatedHandle2);
 
@@ -315,6 +325,7 @@ function removeSpan() {
         {
             var driver = new ChromeDriver();
             driver.Dispose();
+            // ReSharper disable once NotAccessedVariable
             string x;
             // This is why I would expect:
             //TestUtils.ExpectException<ObjectDisposedException>(() => x = driver.Title);
@@ -325,148 +336,47 @@ function removeSpan() {
         }
 
         [TestMethod]
-        public void OpenWindowReturnsTheNewlyOpenedWindow()
+        public void AllMethodsAndPropertiesThrowsObjectDisposedExceptionAfterBrowserIsDisposed()
         {
-	        const string otherPageSource = @"
-<html>
-<head><title>New Window</title></head>
-</html>";
+            var voidMethods = new Expression<Action<Browser>>[]
+            {
+                b => b.NavigateToUrl("dummy URL"),
+                b => b.GetWebDriver(),
+                b => b.OpenWindow(Functions.EmptyAction(), "dummy Description"),
+                b => b.OpenWindow(Functions.EmptyAction(), "dummy Description", 1.Seconds()),
+                b => b.ElementAppears(By.Id("dummy")),
+                b => b.FindElements(By.Id("dummy id"), "dummy description"),
+                b => b.WaitForElement(By.Id("dummy Id"), "dumy description", 2.SecondsAsMilliseconds()),
+            };
+            var otherMethodsAndPropertyGetters = new Expression<Func<Browser, object>>[]
+            {
+                b => b.DOMRoot,
+                b => b.MainWindow
+            };
 
-	        var otherPageUrl = CreatePage(otherPageSource);
-	        var pageSource = @"
-<html>
-<head><title>First Window</title></head>
-<body>
-<a id='myLink' target='_blank' href='file://" + otherPageUrl + @"'>Click here to open new window</a>
-</body>
-</html>
-";
+            var browser = new Browser("Disposed browser", A.Fake<IWebDriver>(), TestExecutionScopesManager);
+            browser.Dispose();
 
-	        using (var browser = OpenBrowserWithPage(pageSource))
-	        {
-	            var mainWindow = browser.MainWindow;
+            foreach (var expression in voidMethods)
+            {
+                var action = expression.Compile();
+                TestUtils.ExpectException<ObjectDisposedException>(() => action(browser), expression.ToString());
+            }
 
-                var link = browser.WaitForElement(By.Id("myLink"), "Link to other window");
-		        var newWindow = browser.OpenWindow(() => link.Click(), "Other window");
-
-                Assert.AreEqual("New Window", newWindow.Title);
-	            Assert.AreEqual("First Window", mainWindow.Title);
+            foreach (var expression in otherMethodsAndPropertyGetters)
+            {
+                var action = expression.Compile();
+                TestUtils.ExpectException<ObjectDisposedException>(() => action(browser), expression.ToString());
             }
         }
 
         [TestMethod]
-        public void OpenWindowThrowsTimeoutExceptionIfAWindowIsntOpenedAfterSpecifiedTimeout()
+        public void DisposingBrowserTwiceDoesNotThrowException()
         {
-            const string pageSource = @"
-<html>
-<body>
-<button id='dummyButton'>Click me</button>
-</body>
-</html>";
-            using (var browser = OpenBrowserWithPage(pageSource))
-            {
-                var button = browser.WaitForElement(By.Id("dummyButton"), "Dummy button");
-                var startTime = DateTime.MinValue;
-                var expectedTimeout = WaitTests.DefaultWaitTimeoutForUnitTests;
-                TestUtils.ExpectException<TimeoutException>(() =>
-                    browser.OpenWindow(() =>
-                    {
-                        startTime = DateTime.Now;
-                        button.Click();
-
-                    }, "non existent window", expectedTimeout)); // TODO: use WaitTests's constant after merge with master
-                var endTime = DateTime.Now;
-                WaitTests.AssertTimeoutWithinThreashold(startTime, endTime, expectedTimeout + WaitTests.DefaultWaitTimeoutForUnitTests, "OpenWindow");
-            }
-        }
-
-        [TestMethod]
-        public void CloseWindow()
-        {
-            const string otherPageSource = @"
-<html>
-<head><title>New Window</title></head>
-</html>";
-
-            var otherPageUrl = CreatePage(otherPageSource);
-            var pageSource = @"
-<html>
-<head><title>First Window</title></head>
-<body>
-<a id='myLink' target='_blank' href='file://" + otherPageUrl + @"'>Click here to open new window</a>
-</body>
-</html>";
-
-            using (var browser = OpenBrowserWithPage(pageSource))
-            {
-                var driver = browser.GetWebDriver();
-                var link = browser.WaitForElement(By.Id("myLink"), "Link to other window");
-                var newWindow = browser.OpenWindow(() => link.Click(), "Other window");
-
-                Assert.AreEqual(2, driver.WindowHandles.Count, "2 Windows should be open after OpenWindow was called");
-
-                newWindow.Close();
-                Assert.AreEqual(1, driver.WindowHandles.Count, "1 Window should be open after disposing the IsolationScope");
-            }
-        }
-
-        [TestMethod]
-        public void WindowIsClosedOnCleanup()
-        {
-            const string otherPageSource = @"
-<html>
-<head><title>New Window</title></head>
-</html>";
-
-            var otherPageUrl = CreatePage(otherPageSource);
-            var pageSource = @"
-<html>
-<head><title>First Window</title></head>
-<body>
-<a id='myLink' target='_blank' href='file://" + otherPageUrl + @"'>Click here to open new window</a>
-</body>
-</html>";
-
-            using (var browser = OpenBrowserWithPage(pageSource))
-            {
-                var driver = browser.GetWebDriver();
-                using (TestExecutionScopesManager.BeginIsolationScope("Window scope"))
-                {
-
-                    var link = browser.WaitForElement(By.Id("myLink"), "Link to other window");
-                    browser.OpenWindow(() => link.Click(), "Other window");
-                    Assert.AreEqual(2, driver.WindowHandles.Count, "2 Windows should be open after OpenWindow was called");
-                }
-                Assert.AreEqual(1, driver.WindowHandles.Count, "1 Window should be open after disposing the IsolationScope");
-            }
-        }
-
-        [TestMethod]
-        public void NoExceptionIsThrownOnCleanupIfBrowserIsDisposedWhenTheresAnOpenWindow()
-        {
-            // TODO: remove duplication of the HTML creation for OpenWindow
-            const string otherPageSource = @"
-<html>
-<head><title>New Window</title></head>
-</html>";
-
-            var otherPageUrl = CreatePage(otherPageSource);
-            var pageSource = @"
-<html>
-<head><title>First Window</title></head>
-<body>
-<a id='myLink' target='_blank' href='file://" + otherPageUrl + @"'>Click here to open new window</a>
-</body>
-</html>";
-
-            using (TestExecutionScopesManager.BeginIsolationScope("Window scope"))
-            {
-                using (var browser = OpenBrowserWithPage(pageSource))
-                {
-                    var link = browser.WaitForElement(By.Id("myLink"), "Link to other window");
-                    browser.OpenWindow(() => link.Click(), "Other window");
-                }
-            }
+            var driver = A.Fake<IWebDriver>();
+            var browser = new Browser("dummyDescription", driver, TestExecutionScopesManager);
+            browser.Dispose();
+            browser.Dispose();
         }
 
         private static string GetUrlForFile(string filename)

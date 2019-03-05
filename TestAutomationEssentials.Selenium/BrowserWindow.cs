@@ -1,4 +1,3 @@
-using System;
 using OpenQA.Selenium;
 using TestAutomationEssentials.Common;
 
@@ -60,9 +59,9 @@ namespace TestAutomationEssentials.Selenium
             get
             {
                 Activate();
-                return Browser.GetWebDriver().Title;
-            }
-        }
+	            return _browser.GetWebDriver().Title;
+	        }
+		}
 
         /// <summary>
         /// Gets or sets the current URL of the browser window
