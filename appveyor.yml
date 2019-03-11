@@ -1,0 +1,29 @@
+version: 1.2.{build}.{branch}
+image: Visual Studio 2015
+before_build:
+- cmd: nuget restore
+build:
+  publish_nuget: true
+  publish_nuget_symbols: true
+  verbosity: minimal
+deploy:
+- provider: NuGet
+  api_key:
+    secure: drJnVViVjSHQzV1msgNjZb6SEYakcRMi5ssqyXi/a2Aawtwn+V8kgOXEerpa9aVm
+  on:
+    branch: master
+notifications:
+- provider: Email
+  to:
+  - arnona@sela.co.il
+  subject: Build of TestAutomationEssentials completed succesfully
+  on_build_success: true
+  on_build_failure: false
+  on_build_status_changed: false
+- provider: Email
+  to:
+  - arnona@sela.co.il
+  subject: Build of TestAutomationEssentials failed
+  on_build_success: false
+  on_build_failure: true
+  on_build_status_changed: false
