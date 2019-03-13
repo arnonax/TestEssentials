@@ -1,8 +1,9 @@
 version: 1.2.{build}.{branch}
 image: Visual Studio 2015
 before_build:
-- cmd: echo ***** Appveyor.VS2015.yml ******
-- cmd: nuget restore
+  - echo ***** Appveyor.VS2015.yml ******
+  - cmd: echo ***** Hello *****
+  - cmd: nuget restore
 build:
   publish_nuget: true
   publish_nuget_symbols: true
