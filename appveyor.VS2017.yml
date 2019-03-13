@@ -2,7 +2,7 @@ version: 1.2.{build}.{branch}
 image: Visual Studio 2017
 before_build:
   - echo ***** Appveyor.VS2017.yml ******
-  - cmd: nuget restore
+  - cmd: nuget restore TestAutomationEssentials.VS2017.sln
 build:
   project: TestAutomationEssentials.VS2017.sln
   publish_nuget: true
