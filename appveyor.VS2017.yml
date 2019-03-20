@@ -2,10 +2,7 @@ version: 1.2.{build}.{branch}
 image: Visual Studio 2017
 before_build:
   - echo ***** Appveyor.VS2017.yml ******
-  - cmd: dir C:\Tools\NuGet\
-  - cmd: md nuget
-  - cmd: copy C:\Tools\NuGet\nuget.exe nuget
-  - cmd: nuget restore TestAutomationEssentials.VS2017.sln
+  - cmd: nuget restore TestAutomationEssentials.VS2017.sln -verbosity detailed
   
 artifacts:
   - path: nuget

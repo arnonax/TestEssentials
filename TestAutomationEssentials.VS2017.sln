@@ -21,13 +21,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAutomationEssentials.Se
 		{877E7E63-6481-40F1-85BC-D18E7BE94772} = {877E7E63-6481-40F1-85BC-D18E7BE94772}
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{267851E0-A0E9-4CED-A186-BF2BDA47CA18}"
-	ProjectSection(SolutionItems) = preProject
-		.nuget\NuGet.Config = .nuget\NuGet.Config
-		.nuget\NuGet.exe = .nuget\NuGet.exe
-		.nuget\NuGet.targets = .nuget\NuGet.targets
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAutomationEssentials.Selenium.UnitTests", "UnitTests\TestAutomationEssentials.Selenium.UnitTests\TestAutomationEssentials.Selenium.UnitTests.csproj", "{883B221F-0A28-4406-B9CD-E84DD72CB29D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAutomationEssentials.MSTestV2", "TestAutomationEssentials.MSTestV2\TestAutomationEssentials.MSTestV2.csproj", "{E0E88B7C-30DD-4583-8094-31322CA97930}"
