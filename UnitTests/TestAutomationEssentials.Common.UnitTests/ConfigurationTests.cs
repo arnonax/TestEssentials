@@ -2,7 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestAutomationEssentials.Common.Configuration;
 
-namespace TestAutomationEssentials.UnitTests
+namespace TestAutomationEssentials.Common.UnitTests
 {
 	[TestClass]
 	public class ConfigurationTests

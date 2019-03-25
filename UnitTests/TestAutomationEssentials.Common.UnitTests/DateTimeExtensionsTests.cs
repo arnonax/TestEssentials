@@ -1,8 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using TestAutomationEssentials.Common;
 
-namespace TestAutomationEssentials.UnitTests
+namespace TestAutomationEssentials.Common.UnitTests
 {
 	[TestClass]
 	public class DateTimeExtensionsTests

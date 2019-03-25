@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using TestAutomationEssentials.Common;
 using TestAutomationEssentials.MSTest;
 
-namespace TestAutomationEssentials.UnitTests
+namespace TestAutomationEssentials.Common.UnitTests
 {
 	[TestClass]
 	[ExcludeFromCodeCoverage] // needed in class level because lambda expressions are class-level methods. (used in the call

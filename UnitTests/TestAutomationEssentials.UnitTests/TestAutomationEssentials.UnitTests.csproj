@@ -54,13 +54,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="AssertsAggregatorTests.cs" />
-    <Compile Include="ConfigurationTests.cs" />
-    <Compile Include="DateTimeExtensionsTests.cs" />
-    <Compile Include="ExtensionMethodsUnitTests.cs" />
-    <Compile Include="FunctionsTests.cs" />
     <Compile Include="LoggerAssertTests.cs" />
-    <Compile Include="LoggerTests.cs" />
-    <Compile Include="PathUtilsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CommonTestBaseTests.cs" />
     <Compile Include="TestBaseTests.cs" />

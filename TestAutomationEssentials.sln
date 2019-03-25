@@ -30,12 +30,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{267851
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAutomationEssentials.Selenium.UnitTests", "UnitTests\TestAutomationEssentials.Selenium.UnitTests\TestAutomationEssentials.Selenium.UnitTests.csproj", "{883B221F-0A28-4406-B9CD-E84DD72CB29D}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAutomationEssentials.MSTestV2", "TestAutomationEssentials.MSTestV2\TestAutomationEssentials.MSTestV2.csproj", "{E0E88B7C-30DD-4583-8094-31322CA97930}"
 	ProjectSection(ProjectDependencies) = postProject
 		{877E7E63-6481-40F1-85BC-D18E7BE94772} = {877E7E63-6481-40F1-85BC-D18E7BE94772}
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAutomationEssentials.MSTestV2UnitTests", "UnitTests\TestAutomationEssentials.MSTestV2UnitTests\TestAutomationEssentials.MSTestV2UnitTests.csproj", "{ACA9A938-D686-4F93-A284-FE67F7537169}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAutomationEssentials.Common.UnitTests", "UnitTests\TestAutomationEssentials.Common.UnitTests\TestAutomationEssentials.Common.UnitTests.csproj", "{52BA0266-0859-430F-8D60-E4E8D74DCE10}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -79,6 +82,10 @@ Global
 		{ACA9A938-D686-4F93-A284-FE67F7537169}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ACA9A938-D686-4F93-A284-FE67F7537169}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ACA9A938-D686-4F93-A284-FE67F7537169}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52BA0266-0859-430F-8D60-E4E8D74DCE10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52BA0266-0859-430F-8D60-E4E8D74DCE10}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52BA0266-0859-430F-8D60-E4E8D74DCE10}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52BA0266-0859-430F-8D60-E4E8D74DCE10}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -88,5 +95,6 @@ Global
 		{150E5E75-D8EC-4D8A-A43B-22EE750F85DB} = {8F8BE5F2-D6C2-4FAE-B997-29AEA942A3C1}
 		{883B221F-0A28-4406-B9CD-E84DD72CB29D} = {8F8BE5F2-D6C2-4FAE-B997-29AEA942A3C1}
 		{ACA9A938-D686-4F93-A284-FE67F7537169} = {8F8BE5F2-D6C2-4FAE-B997-29AEA942A3C1}
+		{52BA0266-0859-430F-8D60-E4E8D74DCE10} = {8F8BE5F2-D6C2-4FAE-B997-29AEA942A3C1}
 	EndGlobalSection
 EndGlobal

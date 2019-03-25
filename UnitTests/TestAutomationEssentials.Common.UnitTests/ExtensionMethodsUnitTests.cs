@@ -7,10 +7,9 @@ using System.Linq.Expressions;
 using System.Runtime.InteropServices;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using TestAutomationEssentials.Common;
 using TestAutomationEssentials.MSTest;
 
-namespace TestAutomationEssentials.UnitTests
+namespace TestAutomationEssentials.Common.UnitTests
 {
 	[TestClass]
 	[ExcludeFromCodeCoverage]

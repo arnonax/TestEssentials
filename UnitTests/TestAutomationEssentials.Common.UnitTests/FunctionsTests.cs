@@ -1,9 +1,8 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using TestAutomationEssentials.Common;
 using TestAutomationEssentials.MSTest;
 
-namespace TestAutomationEssentials.UnitTests
+namespace TestAutomationEssentials.Common.UnitTests
 {
 	[TestClass]
 	public class FunctionsTests
