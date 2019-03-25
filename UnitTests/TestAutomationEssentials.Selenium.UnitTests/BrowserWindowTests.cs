@@ -5,7 +5,7 @@ using OpenQA.Selenium;
 using TestAutomationEssentials.Common;
 using TestAutomationEssentials.Common.ExecutionContext;
 using TestAutomationEssentials.MSTest;
-using TestAutomationEssentials.UnitTests;
+using TestAutomationEssentials.Common.UnitTests;
 
 namespace TestAutomationEssentials.Selenium.UnitTests
 {

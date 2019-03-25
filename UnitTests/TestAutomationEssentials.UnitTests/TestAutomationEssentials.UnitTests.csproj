@@ -62,7 +62,6 @@
     <Compile Include="TestExecutionScopeTests.cs" />
     <Compile Include="TestResults.cs" />
     <Compile Include="TestUtilsTests.cs" />
-    <Compile Include="WaitTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\TestAutomationEssentials.Common\TestAutomationEssentials.Common.csproj">
