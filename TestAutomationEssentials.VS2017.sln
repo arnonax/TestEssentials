@@ -3,17 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.489
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAutomationEssentials.Common", "..\TestAutomationEssentials.Common\TestAutomationEssentials.Common.csproj", "{877E7E63-6481-40F1-85BC-D18E7BE94772}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAutomationEssentials.Common", "TestAutomationEssentials.Common\TestAutomationEssentials.Common.csproj", "{877E7E63-6481-40F1-85BC-D18E7BE94772}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTests", "UnitTests", "{717D7D87-7466-4439-81AD-E0334C3107C5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAutomationEssentials.Common.UnitTests", "..\UnitTests\TestAutomationEssentials.Common.UnitTests\TestAutomationEssentials.Common.UnitTests.csproj", "{52BA0266-0859-430F-8D60-E4E8D74DCE10}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAutomationEssentials.Common.UnitTests", "UnitTests\TestAutomationEssentials.Common.UnitTests\TestAutomationEssentials.Common.UnitTests.csproj", "{52BA0266-0859-430F-8D60-E4E8D74DCE10}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAutomationEssentials.MSTestV2UnitTests", "..\UnitTests\TestAutomationEssentials.MSTestV2UnitTests\TestAutomationEssentials.MSTestV2UnitTests.csproj", "{ACA9A938-D686-4F93-A284-FE67F7537169}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAutomationEssentials.MSTestV2UnitTests", "UnitTests\TestAutomationEssentials.MSTestV2UnitTests\TestAutomationEssentials.MSTestV2UnitTests.csproj", "{ACA9A938-D686-4F93-A284-FE67F7537169}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAutomationEssentials.MSTestV2", "..\TestAutomationEssentials.MSTestV2\TestAutomationEssentials.MSTestV2.csproj", "{E0E88B7C-30DD-4583-8094-31322CA97930}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAutomationEssentials.MSTestV2", "TestAutomationEssentials.MSTestV2\TestAutomationEssentials.MSTestV2.csproj", "{E0E88B7C-30DD-4583-8094-31322CA97930}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAutomationEssentials.TrxParser", "..\TestAutomationEssentials.TrxParser\TestAutomationEssentials.TrxParser.csproj", "{150E5E75-D8EC-4D8A-A43B-22EE750F85DB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAutomationEssentials.TrxParser", "TestAutomationEssentials.TrxParser\TestAutomationEssentials.TrxParser.csproj", "{150E5E75-D8EC-4D8A-A43B-22EE750F85DB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
