@@ -2,6 +2,7 @@
 $token = 'nuywbv31cx4fu7ok0i37'
 $revision = (git rev-parse HEAD)
 $branch= &git rev-parse --abbrev-ref HEAD
+cmd.exe /c set
 
 $headers = @{
   "Authorization" = "Bearer $token"
