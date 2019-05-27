@@ -1,12 +1,11 @@
 ﻿# Source: https://stackoverflow.com/questions/51167245/trigger-an-appveyor-build-on-particular-commit
+
+$myCommit=(&git log -2 --format=%H)[1]
+
 $token = 'nuywbv31cx4fu7ok0i37'
 $revision = (git rev-parse HEAD)
-$allBranches= &git branch
-foreach($branch in $allBranches) {
-    if ($branch.StartsWith("* ")) {
-        $currentBranch = $branch.Substring(2)
-    }
- }
+git branch
+$branch= (&git branch)[1]
 
 $headers = @{
   "Authorization" = "Bearer $token"
@@ -16,8 +15,8 @@ $headers = @{
 $body = @{
     accountName="arnonax"
     projectSlug="testessentials-92qwm"
-    commitId=$revision
-    branch=$currentBranch
+    commitId=$myCommit
+    branch=$branch
 }
 $body = $body | ConvertTo-Json
 
