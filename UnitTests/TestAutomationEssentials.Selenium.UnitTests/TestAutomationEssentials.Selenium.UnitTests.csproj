@@ -64,21 +64,9 @@
     <Compile Include="BrowserElementTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\TestAutomationEssentials.Common\TestAutomationEssentials.Common.csproj">
-      <Project>{877E7E63-6481-40F1-85BC-D18E7BE94772}</Project>
-      <Name>TestAutomationEssentials.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\TestAutomationEssentials.MSTestV2\TestAutomationEssentials.MSTestV2.csproj">
-      <Project>{E0E88B7C-30DD-4583-8094-31322CA97930}</Project>
-      <Name>TestAutomationEssentials.MSTestV2</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\TestAutomationEssentials.Selenium\TestAutomationEssentials.Selenium.csproj">
       <Project>{B9588B2F-0845-4F17-A6A4-48B9C1AA8654}</Project>
       <Name>TestAutomationEssentials.Selenium</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TestAutomationEssentials.Common.UnitTests\TestAutomationEssentials.Common.UnitTests.csproj">
-      <Project>{52BA0266-0859-430F-8D60-E4E8D74DCE10}</Project>
-      <Name>TestAutomationEssentials.Common.UnitTests</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

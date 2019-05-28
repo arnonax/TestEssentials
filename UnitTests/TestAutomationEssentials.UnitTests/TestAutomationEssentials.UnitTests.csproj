@@ -8,7 +8,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TestAutomationEssentials.UnitTests</RootNamespace>
     <AssemblyName>TestAutomationEssentials.UnitTests</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -20,6 +20,7 @@
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -43,6 +44,12 @@
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
+    <Reference Include="TestAutomationEssentials.Common">
+      <HintPath>..\..\TestAutomationEssentials.Common\bin\Debug\netstandard2.0\TestAutomationEssentials.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="TestAutomationEssentials.TrxParser">
+      <HintPath>..\..\TestAutomationEssentials.TrxParser\bin\Debug\TestAutomationEssentials.TrxParser.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -64,17 +71,9 @@
     <Compile Include="TestUtilsTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\TestAutomationEssentials.Common\TestAutomationEssentials.Common.csproj">
-      <Project>{877E7E63-6481-40F1-85BC-D18E7BE94772}</Project>
-      <Name>TestAutomationEssentials.Common</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\TestAutomationEssentials.MSTest\TestAutomationEssentials.MSTest.csproj">
       <Project>{7DA754D8-A907-4BE5-A038-418F7C906F09}</Project>
       <Name>TestAutomationEssentials.MSTest</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\TestAutomationEssentials.TrxParser\TestAutomationEssentials.TrxParser.csproj">
-      <Project>{150E5E75-D8EC-4D8A-A43B-22EE750F85DB}</Project>
-      <Name>TestAutomationEssentials.TrxParser</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>
@@ -92,6 +91,7 @@
         <Reference Include="Microsoft.VisualStudio.TestTools.UITesting, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
           <Private>False</Private>
         </Reference>
+		<Reference Include="netstandard" />
       </ItemGroup>
     </When>
   </Choose>

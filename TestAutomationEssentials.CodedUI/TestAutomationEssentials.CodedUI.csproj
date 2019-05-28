@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TestAutomationEssentials.CodedUI</RootNamespace>
     <AssemblyName>TestAutomationEssentials.CodedUI</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
@@ -43,6 +43,7 @@
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
     <Reference Include="Microsoft.VisualStudio.TestTools.UITest.Extension" />
     <Reference Include="Microsoft.VisualStudio.TestTools.UITesting" />
+    <Reference Include="netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -52,6 +53,10 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="TestAutomationEssentials.Common, Version=1.3.7005.17216, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\TestAutomationEssentials.Common\bin\Debug\netstandard2.0\TestAutomationEssentials.Common.dll</HintPath>
+    </Reference>
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
@@ -60,10 +65,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TestAutomationEssentials.Common\TestAutomationEssentials.Common.csproj">
-      <Project>{877E7E63-6481-40F1-85BC-D18E7BE94772}</Project>
-      <Name>TestAutomationEssentials.Common</Name>
-    </ProjectReference>
     <ProjectReference Include="..\TestAutomationEssentials.MSTest\TestAutomationEssentials.MSTest.csproj">
       <Project>{7da754d8-a907-4be5-a038-418f7c906f09}</Project>
       <Name>TestAutomationEssentials.MSTest</Name>

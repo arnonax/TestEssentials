@@ -4,7 +4,6 @@ using JetBrains.Annotations;
 using OpenQA.Selenium;
 using TestAutomationEssentials.Common;
 using TestAutomationEssentials.Common.ExecutionContext;
-using TestAutomationEssentials.MSTest;
 
 namespace TestAutomationEssentials.Selenium
 {
@@ -22,21 +21,6 @@ namespace TestAutomationEssentials.Selenium
 	    private readonly TestExecutionScopesManager _testExecutionScopesManager;
 
 	    private readonly BrowserWindow _mainWindow;
-
-	    /// <summary>
-        /// Initializes the instance of the object using the specified description and <see cref="IWebDriver"/>
-        /// </summary>
-        /// <param name="description">The description of the browser. This is used for logging</param>
-        /// <param name="webDriver">The WebDriver instance that is used to communicate with the browser</param>
-        /// <exception cref="ArgumentNullException">one of the arguments are null</exception>
-        /// <remarks>
-        /// This overload is provided only for backward compatibility and it works only with MSTest V1.
-        /// </remarks>
-        [Obsolete("Always use the overload that accepts TestExecutionScopesManager.")]
-        public Browser(string description, IWebDriver webDriver) : 
-            this(description, webDriver, TestBase.TestExecutionScopesManager)
-		{
-		}
 
         /// <summary>
         /// Initializes the instance of the object using the specified description and <see cref="IWebDriver"/>
