@@ -3,7 +3,6 @@ image: Visual Studio 2017
 before_build:
   - echo ***** Appveyor.VS2017.yml ******
   - cmd: nuget restore TestAutomationEssentials.VS2017.sln -verbosity detailed
-  - cmd: git branch
   
 build:
   project: TestAutomationEssentials.VS2017.sln

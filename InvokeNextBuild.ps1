@@ -5,7 +5,7 @@ $myCommit=(&git log -2 --format=%H)[1]
 $token = 'nuywbv31cx4fu7ok0i37'
 $revision = (git rev-parse HEAD)
 git branch
-$branch= (&git branch)[1]
+$branch= (&git branch)[1].Trim()
 
 $headers = @{
   "Authorization" = "Bearer $token"
