@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.489
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAutomationEssentials.Common", "TestAutomationEssentials.Common\TestAutomationEssentials.Common.csproj", "{877E7E63-6481-40F1-85BC-D18E7BE94772}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestAutomationEssentials.Common", "TestAutomationEssentials.Common\TestAutomationEssentials.Common.csproj", "{877E7E63-6481-40F1-85BC-D18E7BE94772}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTests", "UnitTests", "{717D7D87-7466-4439-81AD-E0334C3107C5}"
 EndProject
@@ -14,6 +14,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAutomationEssentials.MSTestV2", "TestAutomationEssentials.MSTestV2\TestAutomationEssentials.MSTestV2.csproj", "{E0E88B7C-30DD-4583-8094-31322CA97930}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAutomationEssentials.TrxParser", "TestAutomationEssentials.TrxParser\TestAutomationEssentials.TrxParser.csproj", "{150E5E75-D8EC-4D8A-A43B-22EE750F85DB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAutomationEssentials.Selenium", "TestAutomationEssentials.Selenium\TestAutomationEssentials.Selenium.csproj", "{B9588B2F-0845-4F17-A6A4-48B9C1AA8654}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +43,10 @@ Global
 		{150E5E75-D8EC-4D8A-A43B-22EE750F85DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{150E5E75-D8EC-4D8A-A43B-22EE750F85DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{150E5E75-D8EC-4D8A-A43B-22EE750F85DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9588B2F-0845-4F17-A6A4-48B9C1AA8654}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9588B2F-0845-4F17-A6A4-48B9C1AA8654}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9588B2F-0845-4F17-A6A4-48B9C1AA8654}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9588B2F-0845-4F17-A6A4-48B9C1AA8654}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
