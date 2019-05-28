@@ -16,16 +16,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		readme.md = readme.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAutomationEssentials.Selenium", "TestAutomationEssentials.Selenium\TestAutomationEssentials.Selenium.csproj", "{B9588B2F-0845-4F17-A6A4-48B9C1AA8654}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{267851E0-A0E9-4CED-A186-BF2BDA47CA18}"
 	ProjectSection(SolutionItems) = preProject
 		.nuget\NuGet.Config = .nuget\NuGet.Config
 		.nuget\NuGet.exe = .nuget\NuGet.exe
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAutomationEssentials.Selenium.UnitTests", "UnitTests\TestAutomationEssentials.Selenium.UnitTests\TestAutomationEssentials.Selenium.UnitTests.csproj", "{883B221F-0A28-4406-B9CD-E84DD72CB29D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,20 +41,11 @@ Global
 		{B47CC7CB-F177-4F1C-800C-0E8D54B60C5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B47CC7CB-F177-4F1C-800C-0E8D54B60C5E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B47CC7CB-F177-4F1C-800C-0E8D54B60C5E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B9588B2F-0845-4F17-A6A4-48B9C1AA8654}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B9588B2F-0845-4F17-A6A4-48B9C1AA8654}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B9588B2F-0845-4F17-A6A4-48B9C1AA8654}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B9588B2F-0845-4F17-A6A4-48B9C1AA8654}.Release|Any CPU.Build.0 = Release|Any CPU
-		{883B221F-0A28-4406-B9CD-E84DD72CB29D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{883B221F-0A28-4406-B9CD-E84DD72CB29D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{883B221F-0A28-4406-B9CD-E84DD72CB29D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{883B221F-0A28-4406-B9CD-E84DD72CB29D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{B47CC7CB-F177-4F1C-800C-0E8D54B60C5E} = {8F8BE5F2-D6C2-4FAE-B997-29AEA942A3C1}
-		{883B221F-0A28-4406-B9CD-E84DD72CB29D} = {8F8BE5F2-D6C2-4FAE-B997-29AEA942A3C1}
 	EndGlobalSection
 EndGlobal

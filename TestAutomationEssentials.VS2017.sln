@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAutomationEssentials.Tr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAutomationEssentials.Selenium", "TestAutomationEssentials.Selenium\TestAutomationEssentials.Selenium.csproj", "{B9588B2F-0845-4F17-A6A4-48B9C1AA8654}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAutomationEssentials.Selenium.UnitTests", "UnitTests\TestAutomationEssentials.Selenium.UnitTests\TestAutomationEssentials.Selenium.UnitTests.csproj", "{883B221F-0A28-4406-B9CD-E84DD72CB29D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +49,10 @@ Global
 		{B9588B2F-0845-4F17-A6A4-48B9C1AA8654}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B9588B2F-0845-4F17-A6A4-48B9C1AA8654}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B9588B2F-0845-4F17-A6A4-48B9C1AA8654}.Release|Any CPU.Build.0 = Release|Any CPU
+		{883B221F-0A28-4406-B9CD-E84DD72CB29D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{883B221F-0A28-4406-B9CD-E84DD72CB29D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{883B221F-0A28-4406-B9CD-E84DD72CB29D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{883B221F-0A28-4406-B9CD-E84DD72CB29D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -55,6 +61,7 @@ Global
 		{52BA0266-0859-430F-8D60-E4E8D74DCE10} = {717D7D87-7466-4439-81AD-E0334C3107C5}
 		{ACA9A938-D686-4F93-A284-FE67F7537169} = {717D7D87-7466-4439-81AD-E0334C3107C5}
 		{150E5E75-D8EC-4D8A-A43B-22EE750F85DB} = {717D7D87-7466-4439-81AD-E0334C3107C5}
+		{883B221F-0A28-4406-B9CD-E84DD72CB29D} = {717D7D87-7466-4439-81AD-E0334C3107C5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {97AB7E43-1ADF-4DE8-AB14-3C43FE99AEA3}

@@ -26,15 +26,7 @@ namespace TestAutomationEssentials.Selenium.UnitTests
         [TestMethod]
         public void ConstructorThrowsArgumentNullExceptionsIfNullsArePassed()
         {
-#pragma warning disable 618 //Obsolete
-            var ex = TestUtils.ExpectException<ArgumentNullException>(() => new Browser(null, null));
-            Assert.AreEqual("description", ex.ParamName);
-
-            ex = TestUtils.ExpectException<ArgumentNullException>(() => new Browser("dummy", null));
-            Assert.AreEqual("webDriver", ex.ParamName);
-#pragma warning restore 618
-
-            ex = TestUtils.ExpectException<ArgumentNullException>(() => new Browser(null, null, null));
+            var ex = TestUtils.ExpectException<ArgumentNullException>(() => new Browser(null, null, null));
             Assert.AreEqual("description", ex.ParamName);
 
             ex = TestUtils.ExpectException<ArgumentNullException>(() => new Browser("dummy", null, null));

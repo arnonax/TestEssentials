@@ -10,10 +10,11 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TestAutomationEssentials.Selenium.UnitTests</RootNamespace>
     <AssemblyName>TestAutomationEssentials.Selenium.UnitTests</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -64,18 +65,30 @@
     <Compile Include="BrowserElementTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\TestAutomationEssentials.Selenium\TestAutomationEssentials.Selenium.csproj">
-      <Project>{B9588B2F-0845-4F17-A6A4-48B9C1AA8654}</Project>
-      <Name>TestAutomationEssentials.Selenium</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\TestAutomationEssentials.Common\TestAutomationEssentials.Common.csproj">
+      <Project>{877e7e63-6481-40f1-85bc-d18e7be94772}</Project>
+      <Name>TestAutomationEssentials.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\TestAutomationEssentials.MSTestV2\TestAutomationEssentials.MSTestV2.csproj">
+      <Project>{e0e88b7c-30dd-4583-8094-31322ca97930}</Project>
+      <Name>TestAutomationEssentials.MSTestV2</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\TestAutomationEssentials.Selenium\TestAutomationEssentials.Selenium.csproj">
+      <Project>{b9588b2f-0845-4f17-a6a4-48b9c1aa8654}</Project>
+      <Name>TestAutomationEssentials.Selenium</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TestAutomationEssentials.Common.UnitTests\TestAutomationEssentials.Common.UnitTests.csproj">
+      <Project>{52ba0266-0859-430f-8d60-e4e8d74dce10}</Project>
+      <Name>TestAutomationEssentials.Common.UnitTests</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
