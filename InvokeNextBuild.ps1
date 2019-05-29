@@ -14,7 +14,7 @@ $headers = @{
 
 $body = @{
     accountName="arnonax"
-    projectSlug="testessentials-92qwm"
+    projectSlug="testessentials"
     commitId=$myCommit
     branch=$branch
 }
