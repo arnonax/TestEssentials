@@ -1103,7 +1103,7 @@ public class TestClass1 : TestBase
 				new CompilerParameters(
 					new[]
 					{
-						"mscorlib.dll", "System.Core.dll", typeof (TestClassAttribute).Assembly.Location,
+						"mscorlib.dll", "System.Core.dll", "netstandard.dll", typeof (TestClassAttribute).Assembly.Location,
 						typeof (TestBase).Assembly.Location,
 						typeof (Logger).Assembly.Location
 					}, outputName, true)
