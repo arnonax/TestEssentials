@@ -17,7 +17,7 @@
 	<Guid>6b9a165c-4677-4e8a-a1ca-aacf29867357</Guid>
 	<AssemblyVersion>1.3.*</AssemblyVersion>
 	<AssemblyFileVersion>1.3.*</AssemblyFileVersion>
-	<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+	<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 
   </PropertyGroup>
   <ItemGroup>
