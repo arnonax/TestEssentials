@@ -30,6 +30,8 @@ notifications:
   on_build_success: false
   on_build_failure: true
   on_build_status_changed: false
+artifacts:
+  - path: TestResults
 on_success:
   - cmd: nuget push TestAutomationEssentials.Common\bin\Debug\TestAutomationEssentials.Common.1.0.0.nupkg -ApiKey b1t018ptj25aqy2t3ypg5b95 -Source https://ci.appveyor.com/nuget/arnonax-i3v3ma77kcln/api/v2/package
   - cmd: powershell -file InvokeNextBuild.ps1
