@@ -17,6 +17,7 @@
     <SccProvider>SAK</SccProvider>
     <TargetFrameworkProfile />
     <ProjectGuid>{9E341A0F-AF20-420A-A3A3-BBDE6BD9401D}</ProjectGuid>
+	<ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

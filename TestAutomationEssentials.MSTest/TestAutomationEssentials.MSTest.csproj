@@ -16,6 +16,7 @@
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
     <TargetFrameworkProfile />
+    <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -57,10 +58,11 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="TestAutomationEssentials.Common">
-      <HintPath>..\TestAutomationEssentials.Common\bin\Debug\netstandard2.0\TestAutomationEssentials.Common.dll</HintPath>
-    </Reference>
     <Reference Include="netstandard" />
+    <Reference Include="TestAutomationEssentials.Common, Version=1.4.7095.22948, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\TestAutomationEssentials.Common.1.4.0\lib\netstandard2.0\TestAutomationEssentials.Common.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssertsAggregator.cs" />
