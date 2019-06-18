@@ -35,4 +35,5 @@ on_success:
   - cmd: powershell -file InvokeNextBuild.ps1
 on_failure:
   - ps: Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::CreateFromDirectory($env:APPVEYOR_BUILD_FOLDER + '\TestResults', 'TestResults.zip');
+  - cmd: dir %APPVEYOR_BUILD_FOLDER%\TestResults*
   - cmd: appveyor PushArtifact TestResults.zip
