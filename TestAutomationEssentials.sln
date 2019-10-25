@@ -5,8 +5,6 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAutomationEssentials.MSTest", "TestAutomationEssentials.MSTest\TestAutomationEssentials.MSTest.csproj", "{7DA754D8-A907-4BE5-A038-418F7C906F09}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAutomationEssentials.CodedUI", "TestAutomationEssentials.CodedUI\TestAutomationEssentials.CodedUI.csproj", "{9E341A0F-AF20-420A-A3A3-BBDE6BD9401D}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAutomationEssentials.Common", "TestAutomationEssentials.Common\TestAutomationEssentials.Common.csproj", "{877E7E63-6481-40F1-85BC-D18E7BE94772}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTests", "UnitTests", "{8F8BE5F2-D6C2-4FAE-B997-29AEA942A3C1}"
@@ -30,6 +28,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{267851
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAutomationEssentials.Selenium.UnitTests", "UnitTests\TestAutomationEssentials.Selenium.UnitTests\TestAutomationEssentials.Selenium.UnitTests.csproj", "{883B221F-0A28-4406-B9CD-E84DD72CB29D}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAutomationEssentials.MSTestV2", "TestAutomationEssentials.MSTestV2\TestAutomationEssentials.MSTestV2.csproj", "{E0E88B7C-30DD-4583-8094-31322CA97930}"
 	ProjectSection(ProjectDependencies) = postProject
 		{877E7E63-6481-40F1-85BC-D18E7BE94772} = {877E7E63-6481-40F1-85BC-D18E7BE94772}
@@ -47,10 +46,6 @@ Global
 		{7DA754D8-A907-4BE5-A038-418F7C906F09}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7DA754D8-A907-4BE5-A038-418F7C906F09}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7DA754D8-A907-4BE5-A038-418F7C906F09}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9E341A0F-AF20-420A-A3A3-BBDE6BD9401D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9E341A0F-AF20-420A-A3A3-BBDE6BD9401D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9E341A0F-AF20-420A-A3A3-BBDE6BD9401D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9E341A0F-AF20-420A-A3A3-BBDE6BD9401D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{877E7E63-6481-40F1-85BC-D18E7BE94772}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{877E7E63-6481-40F1-85BC-D18E7BE94772}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{877E7E63-6481-40F1-85BC-D18E7BE94772}.Release|Any CPU.ActiveCfg = Release|Any CPU
