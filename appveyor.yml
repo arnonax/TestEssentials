@@ -1,11 +1,9 @@
 version 1.2.{build}.{branch}
 image Visual Studio 2015
 before_build
-  - echo  Appveyor.VS2015.yml 
-#  - cmd nuget restore TestAutomationEssentials.VS2015.sln
-  - cmd nuget restore TestAutomationEssentials.sln
+- echo  Appveyor.VS2015.yml 
+- cmd nuget restore TestAutomationEssentials.sln
 build
-#  project TestAutomationEssentials.VS2015.sln
   project TestAutomationEssentials.sln
   publish_nuget true
   publish_nuget_symbols true
