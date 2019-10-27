@@ -128,11 +128,11 @@ public class TestClass1 : TestBase
 
 		private static Regex GetOutputRegex(string testInitializeOutput, string testMethodOutput, string cleanupActionOutput)
 		{
-			return new Regex(@".*\*+ Initializing Test \*+\n.*" + 
+			return new Regex(@".*\*+ Initializing Test \*+\r?\n.*" + 
 				testInitializeOutput + 
-@"\n?.*\*+ Initializing Test Completed succesfully \*+\n.*" + 
+@"\r?\n?.*\*+ Initializing Test Completed succesfully \*+\r?\n.*" + 
 testMethodOutput + 
-@"\n?.*\*+ Cleanup Test \*+\n.*" + 
+@"\r?\n?.*\*+ Cleanup Test \*+\r?\n.*" + 
 cleanupActionOutput);
 		}
 
@@ -1162,6 +1162,11 @@ public class TestClass1 : TestBase
 	                select Path.Combine(resultExecutionFolder, file.path)).ToList();
 	        }
 	    }
+
+	    public DateTime StartTime
+	    {
+	        get { return DateTime.Parse(_content.startTime); }
+	    }
 	}
 
     public class TestResults
@@ -1201,7 +1206,7 @@ public class TestClass1 : TestBase
         {
             get
             {
-                return GetUnitTestResults().Select(x => new UnitTestResult(x, this)).ToList();
+                return GetUnitTestResults().Select(x => new UnitTestResult(x, this)).OrderBy(x => x.StartTime).ToList();
             }
         }
     }
