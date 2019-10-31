@@ -34,57 +34,57 @@ namespace TestAutomationEssentials.Selenium.UnitTests
             }
         }
 
-//        [TestMethod]
-//        public void SendKeysAppendsText()
-//        {
-//            const string pageSource = @"
-//<html>
-//<body>
-//<input id=""my-input"" value=""Hello, ""/>
-//</body>
-//</html>
-//";
-
-//            using (var browser = OpenBrowserWithPage(pageSource))
-//            {
-//                IWebElement webElement = browser.WaitForElement(By.Id("my-input"), "my input");
-//                Assert.AreEqual("Hello, ", webElement.GetAttribute("value"));
-//                webElement.SendKeys("world!");
-//                Assert.AreEqual("Hello, world!", webElement.GetAttribute("value"));
-//            }
-//        }
-
         [TestMethod]
-        public void SubmitOnBrowserElementSubmitsTheForm()
+        public void SendKeysAppendsText()
         {
             const string pageSource = @"
-        <html>
-        <head>
-        <script>
-        function writeQueryString() {
-        	document.getElementById('result').innerHTML = window.location.search;
-        }
-        </script>
-        </head>
-        <body onload='writeQueryString()'>
-        <form>
-        <input name='myInput'/>
-        <button action='submit' >Submit</button>
-        </form>
-        <span id='result'/>
-        </body>
-        </html>";
+<html>
+<body>
+<input id=""my-input"" value=""Hello, ""/>
+</body>
+</html>
+";
 
             using (var browser = OpenBrowserWithPage(pageSource))
             {
-                IWebElement input = browser.WaitForElement(By.Name("myInput"), "my input");
-                input.SendKeys("dummyValue");
-                input.Submit();
-                var result = browser.WaitForElement(By.Id("result"), "Result");
-
-                Assert.AreEqual("?myInput=dummyValue", result.Text);
+                IWebElement webElement = browser.WaitForElement(By.Id("my-input"), "my input");
+                Assert.AreEqual("Hello, ", webElement.GetAttribute("value"));
+                webElement.SendKeys("world!");
+                Assert.AreEqual("Hello, world!", webElement.GetAttribute("value"));
             }
         }
+
+        //[TestMethod]
+        //public void SubmitOnBrowserElementSubmitsTheForm()
+        //{
+        //    const string pageSource = @"
+        //<html>
+        //<head>
+        //<script>
+        //function writeQueryString() {
+        //	document.getElementById('result').innerHTML = window.location.search;
+        //}
+        //</script>
+        //</head>
+        //<body onload='writeQueryString()'>
+        //<form>
+        //<input name='myInput'/>
+        //<button action='submit' >Submit</button>
+        //</form>
+        //<span id='result'/>
+        //</body>
+        //</html>";
+
+        //    using (var browser = OpenBrowserWithPage(pageSource))
+        //    {
+        //        IWebElement input = browser.WaitForElement(By.Name("myInput"), "my input");
+        //        input.SendKeys("dummyValue");
+        //        input.Submit();
+        //        var result = browser.WaitForElement(By.Id("result"), "Result");
+
+        //        Assert.AreEqual("?myInput=dummyValue", result.Text);
+        //    }
+        //}
 
         [TestMethod]
         public void ClicksAreWrittenToTheLog()
