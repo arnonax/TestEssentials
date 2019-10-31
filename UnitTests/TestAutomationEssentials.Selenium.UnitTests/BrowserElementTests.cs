@@ -141,152 +141,152 @@ function writeQueryString() {
             }
         }
 
-        [TestMethod]
-        public void SetTextReplacesTheTextOfAnInput()
-        {
-            const string pageSource = @"
-<html>
-<body>
-<input id='myInput' value='initial value' />
-</body>
-</html>";
+//        [TestMethod]
+//        public void SetTextReplacesTheTextOfAnInput()
+//        {
+//            const string pageSource = @"
+//<html>
+//<body>
+//<input id='myInput' value='initial value' />
+//</body>
+//</html>";
 
-            using (var browser = OpenBrowserWithPage(pageSource))
-            {
-                var input = browser.WaitForElement(By.Id("myInput"), "my input");
-                input.Text = "New value";
-                Assert.AreEqual("New value", input.GetAttribute("value"));
-            }
-        }
+//            using (var browser = OpenBrowserWithPage(pageSource))
+//            {
+//                var input = browser.WaitForElement(By.Id("myInput"), "my input");
+//                input.Text = "New value";
+//                Assert.AreEqual("New value", input.GetAttribute("value"));
+//            }
+//        }
 
-        [TestMethod]
-        public void SettingTextIsWrittenToTheLog()
-        {
-            const string pageSource = @"
-<html>
-<body>
-<input value='initial value' />
-</body>
-</html>";
+//        [TestMethod]
+//        public void SettingTextIsWrittenToTheLog()
+//        {
+//            const string pageSource = @"
+//<html>
+//<body>
+//<input value='initial value' />
+//</body>
+//</html>";
 
-            var logEntries = RedirectLogs();
+//            var logEntries = RedirectLogs();
 
-            var inputDescription = Guid.NewGuid().ToString();
-            const string textToWrite = "New value";
-            using (var browser = OpenBrowserWithPage(pageSource))
-            {
-                var button = browser.WaitForElement(By.TagName("input"), inputDescription);
-                button.Text = textToWrite;
-            }
+//            var inputDescription = Guid.NewGuid().ToString();
+//            const string textToWrite = "New value";
+//            using (var browser = OpenBrowserWithPage(pageSource))
+//            {
+//                var button = browser.WaitForElement(By.TagName("input"), inputDescription);
+//                button.Text = textToWrite;
+//            }
 
-            AssertLogEntry(logEntries, $"Type '{textToWrite}' in '{inputDescription}'");
-        }
+//            AssertLogEntry(logEntries, $"Type '{textToWrite}' in '{inputDescription}'");
+//        }
 
-        [TestMethod]
-        public void EnabledReturnsWhetherTheElementIsEnabled()
-        {
-            var pageSource = @"
-<html>
-<script>
-function disableCheckBox() {
-    var checkBox = document.getElementById('myCheckbox');
-    checkBox.disabled = true;
-}
-</script>
-<body>
-<button onClick='disableCheckBox()'>Click to disable the checkbox</button>
-<input type='checkbox' id='myCheckbox'/>
-</body>
-</html>";
+//        [TestMethod]
+//        public void EnabledReturnsWhetherTheElementIsEnabled()
+//        {
+//            var pageSource = @"
+//<html>
+//<script>
+//function disableCheckBox() {
+//    var checkBox = document.getElementById('myCheckbox');
+//    checkBox.disabled = true;
+//}
+//</script>
+//<body>
+//<button onClick='disableCheckBox()'>Click to disable the checkbox</button>
+//<input type='checkbox' id='myCheckbox'/>
+//</body>
+//</html>";
 
-            using (var browser = OpenBrowserWithPage(pageSource))
-            {
-                var button = browser.WaitForElement(By.TagName("button"), "button");
-                var checkbox = browser.WaitForElement(By.Id("myCheckbox"), "checkbox");
-                Assert.IsTrue(checkbox.Enabled, "At first the checkbox should be enabled");
-                button.Click();
-                Assert.IsFalse(checkbox.Enabled, "After clicking the button, the checkbox should be disabled");
-            }
-        }
+//            using (var browser = OpenBrowserWithPage(pageSource))
+//            {
+//                var button = browser.WaitForElement(By.TagName("button"), "button");
+//                var checkbox = browser.WaitForElement(By.Id("myCheckbox"), "checkbox");
+//                Assert.IsTrue(checkbox.Enabled, "At first the checkbox should be enabled");
+//                button.Click();
+//                Assert.IsFalse(checkbox.Enabled, "After clicking the button, the checkbox should be disabled");
+//            }
+//        }
 
-        [TestMethod]
-        public void SelectedReturnsWhetherTheElementIsSelected()
-        {
-            const string pageSource = @"
-<html>
-<body>
-<input type='checkbox'>
-</body>
-</html>";
+//        [TestMethod]
+//        public void SelectedReturnsWhetherTheElementIsSelected()
+//        {
+//            const string pageSource = @"
+//<html>
+//<body>
+//<input type='checkbox'>
+//</body>
+//</html>";
 
-            using (var browser = OpenBrowserWithPage(pageSource))
-            {
-                var checkBox = browser.WaitForElement(By.TagName("input"), "checkBox");
-                Assert.IsFalse(checkBox.Selected, "Initially the checkbox should not be seleted");
-                checkBox.Click();
-                Assert.IsTrue(checkBox.Selected, "After click, the checkbox should be seleted");
-            }
-        }
+//            using (var browser = OpenBrowserWithPage(pageSource))
+//            {
+//                var checkBox = browser.WaitForElement(By.TagName("input"), "checkBox");
+//                Assert.IsFalse(checkBox.Selected, "Initially the checkbox should not be seleted");
+//                checkBox.Click();
+//                Assert.IsTrue(checkBox.Selected, "After click, the checkbox should be seleted");
+//            }
+//        }
 
-        [TestMethod]
-        public void LocationReturnsTheElementsLocation()
-        {
-            const string pageSource = @"
-<html>
-<body>
-<button style='position:fixed; left:100px; top:20px'>Hello</button>
-</body>
-</html>";
+//        [TestMethod]
+//        public void LocationReturnsTheElementsLocation()
+//        {
+//            const string pageSource = @"
+//<html>
+//<body>
+//<button style='position:fixed; left:100px; top:20px'>Hello</button>
+//</body>
+//</html>";
 
-            using (var browser = OpenBrowserWithPage(pageSource))
-            {
-                var button = browser.WaitForElement(By.TagName("button"), "button");
-                var location = button.Location;
-                Assert.AreEqual(100, location.X, "Left");
-                Assert.AreEqual(20, location.Y, "Top");
-            }
-        }
+//            using (var browser = OpenBrowserWithPage(pageSource))
+//            {
+//                var button = browser.WaitForElement(By.TagName("button"), "button");
+//                var location = button.Location;
+//                Assert.AreEqual(100, location.X, "Left");
+//                Assert.AreEqual(20, location.Y, "Top");
+//            }
+//        }
 
-        [TestMethod]
-        public void SizeReturnsTheElementsSize()
-        {
-            const string pageSource = @"
-<html>
-<body>
-<button style='width:50px; height:30px'/>
-</body>
-</html>";
+//        [TestMethod]
+//        public void SizeReturnsTheElementsSize()
+//        {
+//            const string pageSource = @"
+//<html>
+//<body>
+//<button style='width:50px; height:30px'/>
+//</body>
+//</html>";
 
-            using (var browser = OpenBrowserWithPage(pageSource))
-            {
-                var button = browser.WaitForElement(By.TagName("button"), "button");
-                var size = button.Size;
-                Assert.AreEqual(50, size.Width, "Width");
-                Assert.AreEqual(30, size.Height, "Height");
-            }
-        }
+//            using (var browser = OpenBrowserWithPage(pageSource))
+//            {
+//                var button = browser.WaitForElement(By.TagName("button"), "button");
+//                var size = button.Size;
+//                Assert.AreEqual(50, size.Width, "Width");
+//                Assert.AreEqual(30, size.Height, "Height");
+//            }
+//        }
 
-        [TestMethod]
-        public void DisplayedReturnsTrueOnlyIfTheElementIsDisplayed()
-        {
-            const string pageSource = @"
-<html>
-<body>
-<button id='visibleButton'>I'm visible</button>
-<button id='invisibleButton'>I'm invisible</button>
-</body>
-</html>";
+//        [TestMethod]
+//        public void DisplayedReturnsTrueOnlyIfTheElementIsDisplayed()
+//        {
+//            const string pageSource = @"
+//<html>
+//<body>
+//<button id='visibleButton'>I'm visible</button>
+//<button id='invisibleButton'>I'm invisible</button>
+//</body>
+//</html>";
 
-            using (var browser = OpenBrowserWithPage(pageSource))
-            {
-                var visibleButton = browser.WaitForElement(By.Id("visibleButton"), "Visible button");
-                var invisibleButton = browser.WaitForElement(By.Id("invisibleButton"), "Invisible button");
-                browser.GetWebDriver()
-                    .ExecuteJavaScript("document.getElementById('invisibleButton').style.visibility = 'hidden'");
-                Assert.IsTrue(visibleButton.Displayed, "Visible button");
-                Assert.IsFalse(invisibleButton.Displayed, "Invisible button");
-            }
-        }
+//            using (var browser = OpenBrowserWithPage(pageSource))
+//            {
+//                var visibleButton = browser.WaitForElement(By.Id("visibleButton"), "Visible button");
+//                var invisibleButton = browser.WaitForElement(By.Id("invisibleButton"), "Invisible button");
+//                browser.GetWebDriver()
+//                    .ExecuteJavaScript("document.getElementById('invisibleButton').style.visibility = 'hidden'");
+//                Assert.IsTrue(visibleButton.Displayed, "Visible button");
+//                Assert.IsFalse(invisibleButton.Displayed, "Invisible button");
+//            }
+//        }
 
         //        [TestMethod]
         //        public void DisplayedReturnsFalseIfTheElementIsRemoved()
