@@ -86,27 +86,27 @@ function writeQueryString() {
             }
         }
 
-//        [TestMethod]
-//        public void ClicksAreWrittenToTheLog()
-//        {
-//            const string pageSource = @"
-//<html>
-//<body>
-//<button>Click me!</button>
-//</body>
-//</html>";
+        [TestMethod]
+        public void ClicksAreWrittenToTheLog()
+        {
+            const string pageSource = @"
+<html>
+<body>
+<button>Click me!</button>
+</body>
+</html>";
 
-//            var logEntries = RedirectLogs();
+            var logEntries = RedirectLogs();
 
-//            var buttonDescription = Guid.NewGuid().ToString();
-//            using (var browser = OpenBrowserWithPage(pageSource))
-//            {
-//                var button = browser.WaitForElement(By.TagName("button"), buttonDescription);
-//                button.Click();
-//            }
+            var buttonDescription = Guid.NewGuid().ToString();
+            using (var browser = OpenBrowserWithPage(pageSource))
+            {
+                var button = browser.WaitForElement(By.TagName("button"), buttonDescription);
+                button.Click();
+            }
 
-//            AssertLogEntry(logEntries, $"Click on '{buttonDescription}'");
-//        }
+            AssertLogEntry(logEntries, $"Click on '{buttonDescription}'");
+        }
 
 //        [TestMethod]
 //        public void GetPropertyReturnsTheValueOfAProperty()
