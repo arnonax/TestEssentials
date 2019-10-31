@@ -54,37 +54,37 @@ namespace TestAutomationEssentials.Selenium.UnitTests
             }
         }
 
-        //        [TestMethod]
-        //        public void SubmitOnBrowserElementSubmitsTheForm()
-        //        {
-        //            const string pageSource = @"
-        //<html>
-        //<head>
-        //<script>
-        //function writeQueryString() {
-        //	document.getElementById('result').innerHTML = window.location.search;
-        //}
-        //</script>
-        //</head>
-        //<body onload='writeQueryString()'>
-        //<form>
-        //<input name='myInput'/>
-        //<button action='submit' >Submit</button>
-        //</form>
-        //<span id='result'/>
-        //</body>
-        //</html>";
+        [TestMethod]
+        public void SubmitOnBrowserElementSubmitsTheForm()
+        {
+            const string pageSource = @"
+        <html>
+        <head>
+        <script>
+        function writeQueryString() {
+        	document.getElementById('result').innerHTML = window.location.search;
+        }
+        </script>
+        </head>
+        <body onload='writeQueryString()'>
+        <form>
+        <input name='myInput'/>
+        <button action='submit' >Submit</button>
+        </form>
+        <span id='result'/>
+        </body>
+        </html>";
 
-        //            using (var browser = OpenBrowserWithPage(pageSource))
-        //            {
-        //                IWebElement input = browser.WaitForElement(By.Name("myInput"), "my input");
-        //                input.SendKeys("dummyValue");
-        //                input.Submit();
-        //                var result = browser.WaitForElement(By.Id("result"), "Result");
+            using (var browser = OpenBrowserWithPage(pageSource))
+            {
+                IWebElement input = browser.WaitForElement(By.Name("myInput"), "my input");
+                input.SendKeys("dummyValue");
+                input.Submit();
+                var result = browser.WaitForElement(By.Id("result"), "Result");
 
-        //                Assert.AreEqual("?myInput=dummyValue", result.Text);
-        //            }
-        //        }
+                Assert.AreEqual("?myInput=dummyValue", result.Text);
+            }
+        }
 
         [TestMethod]
         public void ClicksAreWrittenToTheLog()
