@@ -86,60 +86,60 @@ function writeQueryString() {
             }
         }
 
-        [TestMethod]
-        public void ClicksAreWrittenToTheLog()
-        {
-            const string pageSource = @"
-<html>
-<body>
-<button>Click me!</button>
-</body>
-</html>";
+//        [TestMethod]
+//        public void ClicksAreWrittenToTheLog()
+//        {
+//            const string pageSource = @"
+//<html>
+//<body>
+//<button>Click me!</button>
+//</body>
+//</html>";
 
-            var logEntries = RedirectLogs();
+//            var logEntries = RedirectLogs();
 
-            var buttonDescription = Guid.NewGuid().ToString();
-            using (var browser = OpenBrowserWithPage(pageSource))
-            {
-                var button = browser.WaitForElement(By.TagName("button"), buttonDescription);
-                button.Click();
-            }
+//            var buttonDescription = Guid.NewGuid().ToString();
+//            using (var browser = OpenBrowserWithPage(pageSource))
+//            {
+//                var button = browser.WaitForElement(By.TagName("button"), buttonDescription);
+//                button.Click();
+//            }
 
-            AssertLogEntry(logEntries, $"Click on '{buttonDescription}'");
-        }
+//            AssertLogEntry(logEntries, $"Click on '{buttonDescription}'");
+//        }
 
-        [TestMethod]
-        public void GetPropertyReturnsTheValueOfAProperty()
-        {
-            const string pageSource = @"
-<html>
-<body>
-<span>Dummy text</span>
-</body>
-</html>";
+//        [TestMethod]
+//        public void GetPropertyReturnsTheValueOfAProperty()
+//        {
+//            const string pageSource = @"
+//<html>
+//<body>
+//<span>Dummy text</span>
+//</body>
+//</html>";
 
-            using (var browser = OpenBrowserWithPage(pageSource))
-            {
-                IWebElement span = browser.WaitForElement(By.TagName("span"), "span");
-                Assert.AreEqual("Dummy text", span.GetProperty("innerText"));
-            }
-        }
+//            using (var browser = OpenBrowserWithPage(pageSource))
+//            {
+//                IWebElement span = browser.WaitForElement(By.TagName("span"), "span");
+//                Assert.AreEqual("Dummy text", span.GetProperty("innerText"));
+//            }
+//        }
 
-        [TestMethod]
-        public void GetCssValueReturnsTheCssValueOfTheElement()
-        {
-            const string pageSource = @"
-<html>
-<body>
-<button id='myButton' style='font-weight: 500'>Click me</button>
-</body>
-</html>";
-            using (var browser = OpenBrowserWithPage(pageSource))
-            {
-                IWebElement button = browser.WaitForElement(By.Id("myButton"), "my button");
-                Assert.AreEqual("500", button.GetCssValue("font-weight"), "GetCssValue('font-weight') of button should return 'bold'");
-            }
-        }
+//        [TestMethod]
+//        public void GetCssValueReturnsTheCssValueOfTheElement()
+//        {
+//            const string pageSource = @"
+//<html>
+//<body>
+//<button id='myButton' style='font-weight: 500'>Click me</button>
+//</body>
+//</html>";
+//            using (var browser = OpenBrowserWithPage(pageSource))
+//            {
+//                IWebElement button = browser.WaitForElement(By.Id("myButton"), "my button");
+//                Assert.AreEqual("500", button.GetCssValue("font-weight"), "GetCssValue('font-weight') of button should return 'bold'");
+//            }
+//        }
 
 //        [TestMethod]
 //        public void SetTextReplacesTheTextOfAnInput()
