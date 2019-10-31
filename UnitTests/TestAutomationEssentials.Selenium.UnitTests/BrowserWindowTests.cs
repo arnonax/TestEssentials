@@ -9,7 +9,7 @@ using TestAutomationEssentials.UnitTests;
 
 namespace TestAutomationEssentials.Selenium.UnitTests
 {
-    [TestClass]
+    [TestClass, Ignore]
     public class BrowserWindowTests : SeleniumTestBase
     {
         private const string NewWindowTitle = "New Window";

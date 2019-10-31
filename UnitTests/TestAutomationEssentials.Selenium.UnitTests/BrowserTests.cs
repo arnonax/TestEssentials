@@ -15,7 +15,7 @@ using TestAutomationEssentials.MSTest;
 
 namespace TestAutomationEssentials.Selenium.UnitTests
 {
-    [TestClass]
+    [TestClass, Ignore]
     public class BrowserTests : SeleniumTestBase
     {
         /// <summary>

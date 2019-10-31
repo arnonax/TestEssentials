@@ -1,17 +1,12 @@
 version: 1.2.{build}.{branch}
 image: Visual Studio 2017
 before_build:
-- echo Appveyor.VS2015.yml 
 - cmd: nuget restore TestAutomationEssentials.sln
 build:
   project: TestAutomationEssentials.sln
   publish_nuget: true
   publish_nuget_symbols: true
   verbosity: minimal
-test:
-  assemblies:
-    except:
-    - TestAutomationEssentials.Selenium.UnitTests.dll
 deploy:
 - provider: NuGet
   api_key:
