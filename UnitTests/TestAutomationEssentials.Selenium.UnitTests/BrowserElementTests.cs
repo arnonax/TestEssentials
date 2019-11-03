@@ -32,11 +32,11 @@ namespace TestAutomationEssentials.Selenium.UnitTests
                 webElement.Clear();
                 //Assert.AreEqual(string.Empty, webElement.GetAttribute("value"));
             }
-        //}
+        }
 
-        //[TestMethod]
-        //public void SendKeysAppendsText()
-        //{
+        [TestMethod]
+        public void SendKeysAppendsText()
+        {
             const string pageSource1 = @"
 <html>
 <body>
@@ -52,11 +52,11 @@ namespace TestAutomationEssentials.Selenium.UnitTests
                 webElement.SendKeys("world!");
                 //Assert.AreEqual("Hello, world!", webElement.GetAttribute("value"));
             }
-        //}
+        }
 
-        //[TestMethod]
-        //public void SubmitOnBrowserElementSubmitsTheForm()
-        //{
+        [TestMethod]
+        public void SubmitOnBrowserElementSubmitsTheForm()
+        {
             const string pageSource2 = @"
         <html>
         <head>
@@ -84,11 +84,11 @@ namespace TestAutomationEssentials.Selenium.UnitTests
 
                 //Assert.AreEqual("?myInput=dummyValue", result.Text);
             }
-        //}
+        }
 
-        //[TestMethod]
-        //public void ClicksAreWrittenToTheLog()
-        //{
+        [TestMethod]
+        public void ClicksAreWrittenToTheLog()
+        {
             const string pageSource3 = @"
 <html>
 <body>
