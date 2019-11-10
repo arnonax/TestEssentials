@@ -49,7 +49,7 @@ namespace TestAutomationEssentials.Selenium.UnitTests
             {
                 IWebElement webElement = browser.WaitForElement(By.Id("my-input"), "my input");
                 Assert.AreEqual("Hello, ", webElement.GetAttribute("value"));
-                //                webElement.SendKeys("world!");
+                webElement.SendKeys("world!");
                 //                //Assert.AreEqual("Hello, world!", webElement.GetAttribute("value"));
             }
         }
