@@ -28,9 +28,9 @@ namespace TestAutomationEssentials.Selenium.UnitTests
             using (var browser = OpenBrowserWithPage(pageSource))
             {
                 IWebElement webElement = browser.WaitForElement(By.Id("my-input"), "my input");
-                //Assert.AreEqual("some value", webElement.GetAttribute("value"));
+                Assert.AreEqual("some value", webElement.GetAttribute("value"));
                 webElement.Clear();
-                //Assert.AreEqual(string.Empty, webElement.GetAttribute("value"));
+                Assert.AreEqual(string.Empty, webElement.GetAttribute("value"));
             }
         }
 
@@ -82,7 +82,7 @@ namespace TestAutomationEssentials.Selenium.UnitTests
                 input.Submit();
                 var result = browser.WaitForElement(By.Id("result"), "Result");
 
-                //Assert.AreEqual("?myInput=dummyValue", result.Text);
+                Assert.AreEqual("?myInput=dummyValue", result.Text);
             }
         }
 
@@ -105,7 +105,7 @@ namespace TestAutomationEssentials.Selenium.UnitTests
                 button.Click();
             }
 
-            //AssertLogEntry(logEntries, $"Click on '{buttonDescription}'");
+            AssertLogEntry(logEntries, $"Click on '{buttonDescription}'");
         }
 
 //        [TestMethod]
