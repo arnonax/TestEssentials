@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestAutomationEssentials.Common;
-using TestAutomationEssentials.MSTest;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -19,14 +18,14 @@ namespace TestAutomationEssentials.UnitTests
 		public void WaitUntilThrowsExceptionWhenConditionIsNull()
 		{
 			Action action = () => Wait.Until(null, 1.Seconds());
-			TestUtils.ExpectException<ArgumentNullException>(action);
+			Assert.ThrowsException<ArgumentNullException>(action);
 		}
 
 		[TestMethod]
 		public void WaitUntilThrowsArgumentOutOfRangeExceptionIfRangeIsNegative()
 		{
 			Action action = () => Wait.Until(() => false, -3.Seconds());
-			var ex = TestUtils.ExpectException<ArgumentOutOfRangeException>(action);
+			var ex = Assert.ThrowsException<ArgumentOutOfRangeException>(action);
 			Assert.AreEqual("timeout", ex.ParamName);
 		}
 
@@ -54,7 +53,7 @@ namespace TestAutomationEssentials.UnitTests
 
 			var startTime = DateTime.Now;
 			Action action = () => Wait.Until(() => false, timeout);
-			TestUtils.ExpectException<TimeoutException>(action);
+			Assert.ThrowsException<TimeoutException>(action);
 			var endTime = DateTime.Now;
 
             AssertTimeoutWithinThreashold(startTime, endTime, timeout, "Wait.Until");
@@ -69,7 +68,7 @@ namespace TestAutomationEssentials.UnitTests
 			const string messageFormat = "This is a message with parameters: '{0}', '{1}'";
 			const string arg1 = "Something";
 			const double arg2 = 3.5;
-			var ex = TestUtils.ExpectException<TimeoutException>(action, messageFormat, arg1, arg2);
+			var ex = Assert.ThrowsException<TimeoutException>(action, messageFormat, arg1, arg2);
 
 			var expectedMessage = string.Format(messageFormat, arg1, arg2);
 			Assert.AreNotEqual(expectedMessage, ex.Message, "Wait.Until should throw the exception with the specified formatted message");
@@ -78,10 +77,10 @@ namespace TestAutomationEssentials.UnitTests
 	    [TestMethod]
 	    public void WaitUntilVerifiesTheFormattedMessageBeforeStart()
 	    {
-	        Func<bool> aMethodThatShouldntBeCalled = () => { throw new NotImplementedException(); };
+	        Func<bool> aMethodThatShouldntBeCalled = () => throw new NotImplementedException();
 	        Action action = () => Wait.Until(aMethodThatShouldntBeCalled, DefaultWaitTimeoutForUnitTests,
 	            "This is a badly formatted message {0{");
-	        TestUtils.ExpectException<FormatException>(action);
+	        Assert.ThrowsException<FormatException>(action);
 	    }
 
 	    [TestMethod]
@@ -91,7 +90,7 @@ namespace TestAutomationEssentials.UnitTests
 	        const string arg1 = "Something";
 	        const double arg2 = 3.5;
 	        Action action = () => Wait.While(() => true, DefaultWaitTimeoutForUnitTests, messageFormat, arg1, arg2);
-	        var ex = TestUtils.ExpectException<TimeoutException>(action);
+	        var ex = Assert.ThrowsException<TimeoutException>(action);
 
 	        var expectedMessage = string.Format(messageFormat, arg1, arg2);
 	        Assert.AreEqual(expectedMessage, ex.Message,
@@ -103,22 +102,22 @@ namespace TestAutomationEssentials.UnitTests
 		{
 			{
 				Action action = () => Wait.Until(null, 5.Seconds(), "dummy message");
-				var ex = TestUtils.ExpectException<ArgumentNullException>(action);
+				var ex = Assert.ThrowsException<ArgumentNullException>(action);
 				Assert.AreEqual("condition", ex.ParamName);
 			}
 			{
 				Action action = () => Wait.Until(() => true, -5.Seconds(), "timeout can't be negative!");
-				var ex = TestUtils.ExpectException<ArgumentOutOfRangeException>(action);
+				var ex = Assert.ThrowsException<ArgumentOutOfRangeException>(action);
 				Assert.AreEqual("timeout", ex.ParamName);
 			}
 			{
 				Action action = () => Wait.Until(() => true, 5.Seconds(), null);
-				var ex = TestUtils.ExpectException<ArgumentNullException>(action);
+				var ex = Assert.ThrowsException<ArgumentNullException>(action);
 				Assert.AreEqual("timeoutMessage", ex.ParamName);
 			}
 			{
 				Action action = () => Wait.Until(() => true, 5.Seconds(), "dummy timeout message", null);
-				var ex = TestUtils.ExpectException<ArgumentNullException>(action);
+				var ex = Assert.ThrowsException<ArgumentNullException>(action);
 				Assert.AreEqual("args", ex.ParamName);
 			}
 		}
@@ -133,17 +132,17 @@ namespace TestAutomationEssentials.UnitTests
 
 			Action methodUnderTest = () => Wait.Until(expr, conditionExpr, timeout);
 		
-			ArgumentException ex = TestUtils.ExpectException<ArgumentNullException>(methodUnderTest);
+			ArgumentException ex = Assert.ThrowsException<ArgumentNullException>(methodUnderTest);
 			Assert.AreEqual("getResultExpr", ex.ParamName);
 			expr = () => 1;
 			
 			conditionExpr = null;
-			ex = TestUtils.ExpectException<ArgumentNullException>(methodUnderTest);
+			ex = Assert.ThrowsException<ArgumentNullException>(methodUnderTest);
 			Assert.AreEqual("conditionExpr", ex.ParamName);
 			conditionExpr = i => false;
 			
 			timeout = -1.Seconds();
-			ex = TestUtils.ExpectException<ArgumentOutOfRangeException>(methodUnderTest);
+			ex = Assert.ThrowsException<ArgumentOutOfRangeException>(methodUnderTest);
 			Assert.AreEqual("timeout", ex.ParamName);
 		}
 
@@ -160,27 +159,27 @@ namespace TestAutomationEssentials.UnitTests
 			Action methodUnderTest = () => Wait.Until(getResult, condition, timeout, timeoutMessage, args);
 
 			getResult = null;
-			ArgumentException ex = TestUtils.ExpectException<ArgumentNullException>(methodUnderTest);
+			ArgumentException ex = Assert.ThrowsException<ArgumentNullException>(methodUnderTest);
 			Assert.AreEqual("getResult", ex.ParamName);
 			getResult = () => 1;
 
 			condition = null;
-			ex = TestUtils.ExpectException<ArgumentNullException>(methodUnderTest);
+			ex = Assert.ThrowsException<ArgumentNullException>(methodUnderTest);
 			Assert.AreEqual("condition", ex.ParamName);
 			condition = i => true;
 
 			timeout = -1.Seconds();
-			ex = TestUtils.ExpectException<ArgumentOutOfRangeException>(methodUnderTest);
+			ex = Assert.ThrowsException<ArgumentOutOfRangeException>(methodUnderTest);
 			Assert.AreEqual("timeout", ex.ParamName);
 			timeout = 1.Seconds();
 
 			timeoutMessage = null;
-			ex = TestUtils.ExpectException<ArgumentNullException>(methodUnderTest);
+			ex = Assert.ThrowsException<ArgumentNullException>(methodUnderTest);
 			Assert.AreEqual("timeoutMessage", ex.ParamName);
 			timeoutMessage = "Dummy {0}";
 
 			args = null;
-			ex = TestUtils.ExpectException<ArgumentNullException>(methodUnderTest);
+			ex = Assert.ThrowsException<ArgumentNullException>(methodUnderTest);
 			Assert.AreEqual("args", ex.ParamName);
 		}
 
@@ -193,12 +192,12 @@ namespace TestAutomationEssentials.UnitTests
 			Action methodUnderTest = () => Wait.If(condition, period);
 
 			condition = null;
-			ArgumentException ex = TestUtils.ExpectException<ArgumentNullException>(methodUnderTest);
+			ArgumentException ex = Assert.ThrowsException<ArgumentNullException>(methodUnderTest);
 			Assert.AreEqual("condition", ex.ParamName);
 			condition = () => false;
 
 			period = -1.Seconds();
-			ex = TestUtils.ExpectException<ArgumentOutOfRangeException>(methodUnderTest);
+			ex = Assert.ThrowsException<ArgumentOutOfRangeException>(methodUnderTest);
 			Assert.AreEqual("period", ex.ParamName);
 		}
 
@@ -211,12 +210,12 @@ namespace TestAutomationEssentials.UnitTests
 			Action methodUnderTest = () => Wait.IfNot(condition, period);
 
 			condition = null;
-			ArgumentException ex = TestUtils.ExpectException<ArgumentNullException>(methodUnderTest);
+			ArgumentException ex = Assert.ThrowsException<ArgumentNullException>(methodUnderTest);
 			Assert.AreEqual("condition", ex.ParamName);
 			condition = () => true;
 
 			period = -1.Seconds();
-			ex = TestUtils.ExpectException<ArgumentOutOfRangeException>(methodUnderTest);
+			ex = Assert.ThrowsException<ArgumentOutOfRangeException>(methodUnderTest);
 			Assert.AreEqual("period", ex.ParamName);
 		}
 
@@ -224,14 +223,14 @@ namespace TestAutomationEssentials.UnitTests
 		public void WaitWhileThrowsExceptionWhenConditionIsNull()
 		{
 			Action action = () => Wait.While(null, 1.Seconds());
-			TestUtils.ExpectException<ArgumentNullException>(action);
+			Assert.ThrowsException<ArgumentNullException>(action);
 		}
 
 		[TestMethod]
 		public void WaitWhileThrowsArgumentOutOfRangeExceptionIfRangeIsNegative()
 		{
 			Action action = () => Wait.While(() => true, -3.Seconds());
-			var ex = TestUtils.ExpectException<ArgumentOutOfRangeException>(action);
+			var ex = Assert.ThrowsException<ArgumentOutOfRangeException>(action);
 			Assert.AreEqual("timeout", ex.ParamName);
 		}
 
@@ -259,7 +258,7 @@ namespace TestAutomationEssentials.UnitTests
 
 			var startTime = DateTime.Now;
 			Action action = () => Wait.While(() => true, timeout);
-			TestUtils.ExpectException<TimeoutException>(action);
+			Assert.ThrowsException<TimeoutException>(action);
 			var endTime = DateTime.Now;
 
             AssertTimeoutWithinThreashold(startTime, endTime, timeout, "Wait.While");
@@ -353,10 +352,10 @@ namespace TestAutomationEssentials.UnitTests
 		public void WaitUntilThrowsTimeoutExceptionIfTheConditionIsNotMet()
 		{
 			Func<int> foo = () => 1;
-			var ex = TestUtils.ExpectException<TimeoutException>(() => Wait.Until(() => foo(), item => item != 1, 100.Milliseconds()));
+			var ex = Assert.ThrowsException<TimeoutException>(() => Wait.Until(() => foo(), item => item != 1, 100.Milliseconds()));
 			StringAssert.Contains(ex.Message, "foo");
 
-			ex = TestUtils.ExpectException<TimeoutException>(() => Wait.Until(() => foo(), item => item != 1, 100.Milliseconds(), "DummyMessage{0}", 3));
+			ex = Assert.ThrowsException<TimeoutException>(() => Wait.Until(() => foo(), item => item != 1, 100.Milliseconds(), "DummyMessage{0}", 3));
 			StringAssert.Contains(ex.Message, "DummyMessage3");
 		}
 

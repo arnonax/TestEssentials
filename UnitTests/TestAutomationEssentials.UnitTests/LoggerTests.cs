@@ -4,7 +4,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestAutomationEssentials.Common;
-using TestAutomationEssentials.MSTest;
 
 namespace TestAutomationEssentials.UnitTests
 {
@@ -26,11 +25,11 @@ namespace TestAutomationEssentials.UnitTests
 		public void InitializeValidateItsArgument()
 		{
 		    Action<string> nullAction = null;
-            var ex = TestUtils.ExpectException<ArgumentNullException>(() => Logger.Initialize(nullAction));
+            var ex = Assert.ThrowsException<ArgumentNullException>(() => Logger.Initialize(nullAction));
 			Assert.AreEqual("writeLineImpl", ex.ParamName);
 
 		    ICustomLogger nullCustomLogger = null;
-		    ex = TestUtils.ExpectException<ArgumentNullException>(() => Logger.Initialize(nullCustomLogger));
+		    ex = Assert.ThrowsException<ArgumentNullException>(() => Logger.Initialize(nullCustomLogger));
             Assert.AreEqual("customLogger", ex.ParamName);
 		}
 
@@ -89,7 +88,7 @@ namespace TestAutomationEssentials.UnitTests
 		{
 			Logger.IncreaseIndent();
 			Logger.DecreaseIndent();
-			TestUtils.ExpectException<InvalidOperationException>(Logger.DecreaseIndent);
+			Assert.ThrowsException<InvalidOperationException>((Action)Logger.DecreaseIndent);
 		}
 #pragma warning restore 618
 

@@ -2,7 +2,6 @@
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestAutomationEssentials.Common;
-using TestAutomationEssentials.MSTest;
 
 namespace TestAutomationEssentials.UnitTests
 {
@@ -64,14 +63,14 @@ namespace TestAutomationEssentials.UnitTests
 		[TestMethod]
 		public void GetAncestorPathThrowsArgumentNullExceptionIfContainingPathIsNull()
 		{
-			var ex = TestUtils.ExpectException<ArgumentNullException>(() => PathUtils.GetAncestorPath(containingPath: null, ancestorFolderName:"dummy"));
+			var ex = Assert.ThrowsException<ArgumentNullException>(() => PathUtils.GetAncestorPath(containingPath: null, ancestorFolderName:"dummy"));
 			Assert.AreEqual("containingPath", ex.ParamName);
 		}
 
 		[TestMethod]
 		public void GetAncestorPathThrowsArgumentNullExceptionIfAncestorFolderNameIsNull()
 		{
-			var ex = TestUtils.ExpectException<ArgumentNullException>(() => PathUtils.GetAncestorPath("dummy", ancestorFolderName: null));
+			var ex = Assert.ThrowsException<ArgumentNullException>(() => PathUtils.GetAncestorPath("dummy", ancestorFolderName: null));
 			Assert.AreEqual("ancestorFolderName", ex.ParamName);
 		}
 
@@ -90,7 +89,7 @@ namespace TestAutomationEssentials.UnitTests
 			const string supposedlyContainingPath = @"C:\folder1\folder2";
 			const string supposedlyAncestorFolderName = "folder3";
 
-			TestUtils.ExpectException<InvalidOperationException>(
+			Assert.ThrowsException<InvalidOperationException>(
 				() => PathUtils.GetAncestorPath(supposedlyContainingPath, supposedlyAncestorFolderName));
 		}
 
@@ -128,8 +127,8 @@ namespace TestAutomationEssentials.UnitTests
 		public void PartialFolderNameIsNotConsideredAsAncestor()
 		{
 			const string containingFolder = @"C:\folder1\folder2\folder3";
-			TestUtils.ExpectException<InvalidOperationException>(() => PathUtils.GetAncestorPath(containingFolder, "folder"));
-			TestUtils.ExpectException<InvalidOperationException>(() => PathUtils.GetAncestorPath(containingFolder, "older2"));
+			Assert.ThrowsException<InvalidOperationException>(() => PathUtils.GetAncestorPath(containingFolder, "folder"));
+			Assert.ThrowsException<InvalidOperationException>(() => PathUtils.GetAncestorPath(containingFolder, "older2"));
 		}
 
 		[TestMethod]

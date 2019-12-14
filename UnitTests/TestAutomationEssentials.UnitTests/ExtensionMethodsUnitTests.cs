@@ -8,7 +8,6 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestAutomationEssentials.Common;
-using TestAutomationEssentials.MSTest;
 
 namespace TestAutomationEssentials.UnitTests
 {
@@ -438,7 +437,7 @@ namespace TestAutomationEssentials.UnitTests
 		public void GetDescriptionThrowsArgumentExceptionIfArgumentIsNotAnEnum()
 		{
 			DummyStruct dummy = new DummyStruct();
-			TestUtils.ExpectException<ArgumentException>(() => dummy.GetDescription());
+			Assert.ThrowsException<ArgumentException>(() => dummy.GetDescription());
 		}
 
 		[TestMethod]
@@ -458,13 +457,13 @@ namespace TestAutomationEssentials.UnitTests
 		[TestMethod]
 		public void ParseAsThrowsAnArgumentExceptionIfTypeArgumentIsNoAnEnum()
 		{
-			TestUtils.ExpectException<ArgumentException>(() => "Whatever".ParseAs<DummyStruct>());
+			Assert.ThrowsException<ArgumentException>(() => "Whatever".ParseAs<DummyStruct>());
 		}
 
 		[TestMethod]
 		public void ParseAsThrowsFormatExceptionIfTheStringIsNotANameOfAMemberOrDescriptionOfAMember()
 		{
-			TestUtils.ExpectException<FormatException>(() => "Value4".ParseAs<DummyEnum>());
+			Assert.ThrowsException<FormatException>(() => "Value4".ParseAs<DummyEnum>());
 		}
 	}
 }

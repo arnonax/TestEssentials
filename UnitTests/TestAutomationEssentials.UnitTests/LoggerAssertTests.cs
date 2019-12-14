@@ -29,7 +29,7 @@ namespace TestAutomationEssentials.UnitTests
 		public void AreEqualThrowsAssertFailedExceptionAndLogsTheMessageOnFailure()
 		{
 			Action failingAssertion = () => LoggerAssert.AreEqual(3, 4, "Dummy message {0}", "arg");
-			var ex = TestUtils.ExpectException<AssertFailedException>(failingAssertion);
+			var ex = Assert.ThrowsException<AssertFailedException>(failingAssertion);
 			StringAssert.Contains(ex.Message, "Dummy message arg");
 
 			Assert.AreEqual(1, _lines.Count);
@@ -42,12 +42,12 @@ namespace TestAutomationEssentials.UnitTests
 		public void AreEqualsValidatesThatMessageAndArgsAreNotNull()
 		{
 			{
-				var ex = TestUtils.ExpectException<ArgumentNullException>(() => LoggerAssert.AreEqual(3, 4, null, "a"));
+				var ex = Assert.ThrowsException<ArgumentNullException>(() => LoggerAssert.AreEqual(3, 4, null, "a"));
 				Assert.AreEqual("expectationMessage", ex.ParamName);
 			}
 
 			{
-				var ex = TestUtils.ExpectException<ArgumentNullException>(() => LoggerAssert.AreEqual(3, 4, "Message", null));
+				var ex = Assert.ThrowsException<ArgumentNullException>(() => LoggerAssert.AreEqual(3, 4, "Message", null));
 				Assert.AreEqual("args", ex.ParamName);
 			}
 		}
@@ -60,7 +60,7 @@ namespace TestAutomationEssentials.UnitTests
 			LoggerAssert.AreEqual(date1, date2, 2.Seconds(), "Dates should be equal +/- 2 seconds");
 
 			var date3 = date1.Add(5.Seconds());
-			TestUtils.ExpectException<AssertFailedException>(() => LoggerAssert.AreEqual(date1, date3, 2.Seconds(), "This assert should fail!"), 
+			Assert.ThrowsException<AssertFailedException>(() => LoggerAssert.AreEqual(date1, date3, 2.Seconds(), "This assert should fail!"), 
 				"5 seconds are too big a difference...");
 		}
 	}

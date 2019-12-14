@@ -5,7 +5,6 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestAutomationEssentials.Common;
 using TestAutomationEssentials.Common.ExecutionContext;
-using TestAutomationEssentials.MSTest;
 
 namespace TestAutomationEssentials.UnitTests
 {
@@ -25,7 +24,7 @@ namespace TestAutomationEssentials.UnitTests
 		{
 			bool cleanupWasCalled = false;
 			
-			TestUtils.ExpectException<Exception>(() => new TestExecutionScopesManager("dummy", ctx =>
+			Assert.ThrowsException<Exception>(() => new TestExecutionScopesManager("dummy", ctx =>
 			{
 				ctx.AddCleanupAction(() => cleanupWasCalled = true);
 				throw new Exception();
@@ -76,7 +75,7 @@ namespace TestAutomationEssentials.UnitTests
 			var context = new TestExecutionScopesManager("dummy", ctx => { });
 			context.AddCleanupAction(() => calledActions.Add("action1"));
 
-			var ex = TestUtils.ExpectException<Exception>(() => context.BeginIsolationScope("nested", ctx =>
+			var ex = Assert.ThrowsException<Exception>(() => context.BeginIsolationScope("nested", ctx =>
 			{
 				context.AddCleanupAction(() => calledActions.Add("action2"));
 				throw new Exception("DummyExceptionMessage");
@@ -99,7 +98,7 @@ namespace TestAutomationEssentials.UnitTests
 				context.AddCleanupAction(() => { Assert.Fail("This code should never be called!"); });
 			});
 
-			TestUtils.ExpectException<InvalidOperationException>(() =>
+			Assert.ThrowsException<InvalidOperationException>(() =>
 			{
 				context.EndIsolationScope();
 			});
@@ -144,17 +143,11 @@ namespace TestAutomationEssentials.UnitTests
 			var ex1 = new Exception("1st Exception");
 			var ex2 = new Exception("2nd Exception");
 
-			context.AddCleanupAction(() =>
-			{
-				throw ex1;
-			});
+			context.AddCleanupAction(() => throw ex1);
 
-			context.AddCleanupAction(() => 
-			{ 
-				throw ex2;
-			});
+			context.AddCleanupAction(() => throw ex2);
 
-			var aggregatedEx = TestUtils.ExpectException<AggregateException>(() => context.EndIsolationScope());
+			var aggregatedEx = Assert.ThrowsException<AggregateException>(() => context.EndIsolationScope());
 
 			Assert.AreEqual(2, aggregatedEx.InnerExceptions.Count, "Invalid number of inner exceptions");
 			Assert.IsTrue(aggregatedEx.InnerExceptions.Contains(ex1), "1st exception is not found in the aggergate exception");
@@ -167,7 +160,7 @@ namespace TestAutomationEssentials.UnitTests
 			var manager = new TestExecutionScopesManager("dummy", Functions.EmptyAction<IIsolationScope>());
 			manager.AddCleanupAction(MethodThatThrowsException);
 
-			var ex = TestUtils.ExpectException<Exception>(manager.EndIsolationScope);
+			var ex = Assert.ThrowsException<Exception>((Action)manager.EndIsolationScope);
 			
 			StringAssert.Contains(ex.StackTrace, "MethodThatThrowsException");
 		}
@@ -191,7 +184,7 @@ namespace TestAutomationEssentials.UnitTests
 
                 throw new Exception(originalException);
             };
-            var ex = TestUtils.ExpectException<AggregateException>(() => new TestExecutionScopesManager("dummy", initialize));
+            var ex = Assert.ThrowsException<AggregateException>(() => new TestExecutionScopesManager("dummy", initialize));
             CollectionAssert.AreEquivalent(
                 ex.InnerExceptions.Select(innerEx => innerEx.Message).ToList(),
                 new[] { exceptionInCleanup, originalException });
