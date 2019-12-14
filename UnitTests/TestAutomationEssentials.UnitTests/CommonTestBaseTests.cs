@@ -15,9 +15,10 @@ using TestAutomationEssentials.TrxParser.Generated;
 
 namespace TestAutomationEssentials.UnitTests
 {
-    // IMPORTANT: This class is linked to 2 project: MSTest and MSTestv2.
+    // TODO: inline this class into TestBaseTests. This was linked to 2 project: MSTest and MSTestv2.
     // The reason that it is linked and not re-used in the normal way, is that each require different 
     // references, even though they're compatible at the code level.
+    // However, now we dropped support for MSTest V1, so we don't need it anymore
 
     [TestClass]
 	public abstract class CommonTestBaseTests

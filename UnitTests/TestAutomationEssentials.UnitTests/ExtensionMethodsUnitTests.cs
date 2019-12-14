@@ -85,7 +85,7 @@ namespace TestAutomationEssentials.UnitTests
 		{
 			// ReSharper disable once CollectionNeverUpdated.Local
 			var emptyList = new List<int>();
-			var ex = TestUtils.ExpectException<InvalidOperationException>(() => emptyList.Content());
+			var ex = Assert.ThrowsException<InvalidOperationException>(() => emptyList.Content());
 			Assert.AreEqual("Sequence of type '" + IntTypeName + "' contains no elements", ex.Message);
 		}
 
@@ -102,7 +102,7 @@ namespace TestAutomationEssentials.UnitTests
 			var dummySource = new[] {1, 2, 3};
 			Expression<Func<int, int>> propertyAccessor = null;
 			// ReSharper disable once ExpressionIsAlwaysNull
-			var ex = TestUtils.ExpectException<ArgumentNullException>(() => dummySource.Find(propertyAccessor, 2));
+			var ex = Assert.ThrowsException<ArgumentNullException>(() => dummySource.Find(propertyAccessor, 2));
 			Assert.AreEqual("propertyAccessor", ex.ParamName, "ParamName");
 		}
 
@@ -112,7 +112,7 @@ namespace TestAutomationEssentials.UnitTests
 			var dummySource = new[] { 1, 2, 3 };
 			Expression<Func<int, bool>> condition = null;
 			// ReSharper disable once ExpressionIsAlwaysNull
-			var ex = TestUtils.ExpectException<ArgumentNullException>(() => dummySource.Find(condition));
+			var ex = Assert.ThrowsException<ArgumentNullException>(() => dummySource.Find(condition));
 			Assert.AreEqual("condition", ex.ParamName, "ParamName");
 		}
 
@@ -121,7 +121,7 @@ namespace TestAutomationEssentials.UnitTests
 		{
 			var emptyList = new List<int> { 1, 2,3};
 			Expression<Func<int, bool>> expr = x => x == 4;
-			var ex = TestUtils.ExpectException<InvalidOperationException>(() => emptyList.Find(expr));
+			var ex = Assert.ThrowsException<InvalidOperationException>(() => emptyList.Find(expr));
 			Assert.AreEqual("Sequence of type '" + IntTypeName + "' contains no element that matches the condition '" + expr + "'", ex.Message);
 		}
 
@@ -137,7 +137,7 @@ namespace TestAutomationEssentials.UnitTests
 		{
 			List<int> nullList = null;
 			// ReSharper disable once ExpressionIsAlwaysNull
-			var ex = TestUtils.ExpectException<ArgumentNullException>(() => nullList.Content());
+			var ex = Assert.ThrowsException<ArgumentNullException>(() => nullList.Content());
 			Assert.AreEqual("Sequence of '" + IntTypeName + "' was expected, but was null", ex.Message);
 		}
 
@@ -146,7 +146,7 @@ namespace TestAutomationEssentials.UnitTests
 		{
 			List<int> nullList = null;
 			// ReSharper disable once ExpressionIsAlwaysNull
-			var ex = TestUtils.ExpectException<ArgumentNullException>(() => ExtensionMethods.Find(nullList, x => true));
+			var ex = Assert.ThrowsException<ArgumentNullException>(() => ExtensionMethods.Find(nullList, x => true));
 			Assert.AreEqual("Sequence of '" + IntTypeName + "' was expected, but was null", ex.Message);
 		}
 
@@ -154,7 +154,7 @@ namespace TestAutomationEssentials.UnitTests
 		public void ContentDisplaysClearErrorMessageWhenMoreThanOneElementExist()
 		{
 			var emptyList = new List<int> {2, 4, 6};
-			var ex = TestUtils.ExpectException<InvalidOperationException>(() => emptyList.Content());
+			var ex = Assert.ThrowsException<InvalidOperationException>(() => emptyList.Content());
 			Assert.AreEqual("Sequence of type '" + IntTypeName + "' contains more than one element. The first 2 are '2' and '4'", ex.Message);
 		}
 
@@ -163,7 +163,7 @@ namespace TestAutomationEssentials.UnitTests
 		{
 			var emptyList = new List<int> { 2, 4, 6 };
 			Expression<Func<int, bool>> condition = x => x > 2;
-			var ex = TestUtils.ExpectException<InvalidOperationException>(() => emptyList.Find(condition));
+			var ex = Assert.ThrowsException<InvalidOperationException>(() => emptyList.Find(condition));
 			Assert.AreEqual("Sequence of type '" + IntTypeName + "' contains more than element that matches the condition '" + condition + "'. The first 2 are '4' and '6'", ex.Message);
 		}
 
@@ -174,7 +174,7 @@ namespace TestAutomationEssentials.UnitTests
 				select new {Value = n, StringValue = n.ToString()};
 
 			Action action = () => list.Find(x => x.StringValue, "4");
-			var ex = TestUtils.ExpectException<InvalidOperationException>(action);
+			var ex = Assert.ThrowsException<InvalidOperationException>(action);
 
 			StringAssert.Contains(ex.Message, "contains no element that matches the condition 'x => x.StringValue == 4");
 		}
@@ -198,7 +198,7 @@ namespace TestAutomationEssentials.UnitTests
 			object[] args = null;
 			
 			Func<ArgumentNullException> getException = 
-				() => TestUtils.ExpectException<ArgumentNullException>(() => sb.AppendFormatLine(format, args));
+				() => Assert.ThrowsException<ArgumentNullException>(() => sb.AppendFormatLine(format, args));
 			
 			Assert.AreEqual("sb", getException().ParamName);
 			sb = new StringBuilder();
@@ -249,11 +249,11 @@ namespace TestAutomationEssentials.UnitTests
 				var someObject = new object();
 				Func<object, object> func = null;
 				// ReSharper disable once AccessToModifiedClosure
-				var ex = TestUtils.ExpectException<ArgumentNullException>(() => someObject.TryGet(func));
+				var ex = Assert.ThrowsException<ArgumentNullException>(() => someObject.TryGet(func));
 				Assert.AreEqual("func", ex.ParamName, "When only func is null");
 
 				someObject = null;
-				ex = TestUtils.ExpectException<ArgumentNullException>(() => someObject.TryGet(func));
+				ex = Assert.ThrowsException<ArgumentNullException>(() => someObject.TryGet(func));
 				Assert.AreEqual("func", ex.ParamName, "When both func and obj are null");
 			}
 
@@ -280,7 +280,7 @@ namespace TestAutomationEssentials.UnitTests
 		{
 			List<int> nullList = null;
 			// ReSharper disable once ReturnValueOfPureMethodIsNotUsed
-			TestUtils.ExpectException<NullReferenceException>( () => nullList.Equals(null), "Just to make sure, regular Equals throws a NullReferenceException");
+			Assert.ThrowsException<NullReferenceException>( () => nullList.Equals(null), "Just to make sure, regular Equals throws a NullReferenceException");
 			Assert.IsTrue(nullList.SafeEquals(null));
 		}
 
@@ -360,7 +360,7 @@ namespace TestAutomationEssentials.UnitTests
 				{3, "Tres"}
 			};
 
-			var ex = TestUtils.ExpectException<ArgumentException>(() => originalDictionary.AddRange(additionalEntries));
+			var ex = Assert.ThrowsException<ArgumentException>(() => originalDictionary.AddRange(additionalEntries));
 			Assert.AreEqual("additionalElements", ex.ParamName);
 		}
 
@@ -380,7 +380,7 @@ namespace TestAutomationEssentials.UnitTests
 				{2, "Dos"}
 			};
 
-			TestUtils.ExpectException<ArgumentException>(() => originalDictionary.AddRange(additionalEntries));
+			Assert.ThrowsException<ArgumentException>(() => originalDictionary.AddRange(additionalEntries));
 			Assert.AreEqual(2, originalDictionary.Count);
 			Assert.AreEqual("Two", originalDictionary[2]);
 		}
@@ -392,7 +392,7 @@ namespace TestAutomationEssentials.UnitTests
 			Dictionary<int, string> dic1 = null, dic2 = null;
 
 			// ReSharper disable once AccessToModifiedClosure
-			Func<ArgumentNullException> getException = () => TestUtils.ExpectException<ArgumentNullException>(() => dic1.AddRange(dic2));
+			Func<ArgumentNullException> getException = () => Assert.ThrowsException<ArgumentNullException>(() => dic1.AddRange(dic2));
 			Assert.AreEqual("originalDictionary", getException().ParamName);
 
 			dic1 = new Dictionary<int, string>();
