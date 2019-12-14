@@ -11,7 +11,6 @@ using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium.Support.Extensions;
 using TestAutomationEssentials.Common;
-using TestAutomationEssentials.MSTest;
 
 namespace TestAutomationEssentials.Selenium.UnitTests
 {
@@ -27,20 +26,20 @@ namespace TestAutomationEssentials.Selenium.UnitTests
         public void ConstructorThrowsArgumentNullExceptionsIfNullsArePassed()
         {
 #pragma warning disable 618 //Obsolete
-            var ex = TestUtils.ExpectException<ArgumentNullException>(() => new Browser(null, null));
+            var ex = Assert.ThrowsException<ArgumentNullException>(() => new Browser(null, null));
             Assert.AreEqual("description", ex.ParamName);
 
-            ex = TestUtils.ExpectException<ArgumentNullException>(() => new Browser("dummy", null));
+            ex = Assert.ThrowsException<ArgumentNullException>(() => new Browser("dummy", null));
             Assert.AreEqual("webDriver", ex.ParamName);
 #pragma warning restore 618
 
-            ex = TestUtils.ExpectException<ArgumentNullException>(() => new Browser(null, null, null));
+            ex = Assert.ThrowsException<ArgumentNullException>(() => new Browser(null, null, null));
             Assert.AreEqual("description", ex.ParamName);
 
-            ex = TestUtils.ExpectException<ArgumentNullException>(() => new Browser("dummy", null, null));
+            ex = Assert.ThrowsException<ArgumentNullException>(() => new Browser("dummy", null, null));
             Assert.AreEqual("webDriver", ex.ParamName);
 
-            ex = TestUtils.ExpectException<ArgumentNullException>(() => new Browser("dummy", A.Fake<IWebDriver>(), null));
+            ex = Assert.ThrowsException<ArgumentNullException>(() => new Browser("dummy", A.Fake<IWebDriver>(), null));
             Assert.AreEqual("testExecutionScopesManager", ex.ParamName);
         }
 
@@ -181,7 +180,7 @@ namespace TestAutomationEssentials.Selenium.UnitTests
                 button.Click();
                 
                 // ReSharper disable once AccessToDisposedClosure
-                var ex = TestUtils.ExpectException<TimeoutException>(() => browser.WaitForElement(By.Id("mySpan"), "span", 1));
+                var ex = Assert.ThrowsException<TimeoutException>(() => browser.WaitForElement(By.Id("mySpan"), "span", 1));
 
                 Logger.WriteLine("Actual exception:");
                 Logger.WriteLine(ex.ToString());
@@ -218,7 +217,7 @@ function removeSpan() {
                 button.Click();
                 
                 // ReSharper disable once AccessToDisposedClosure
-                var ex = TestUtils.ExpectException<StaleElementReferenceException>(
+                var ex = Assert.ThrowsException<StaleElementReferenceException>(
                     () => span.Click());
 
                 Logger.WriteLine("Actual exception:");
@@ -328,10 +327,10 @@ function removeSpan() {
             // ReSharper disable once NotAccessedVariable
             string x;
             // This is why I would expect:
-            //TestUtils.ExpectException<ObjectDisposedException>(() => x = driver.Title);
+            //Assert.ThrowsException<ObjectDisposedException>(() => x = driver.Title);
 
             // But this what really happens:
-            var ex = TestUtils.ExpectException<WebDriverException>(() => x = driver.Title);
+            var ex = Assert.ThrowsException<WebDriverException>(() => x = driver.Title);
             Assert.IsInstanceOfType(ex.InnerException, typeof(WebException));
         }
 
@@ -360,13 +359,13 @@ function removeSpan() {
             foreach (var expression in voidMethods)
             {
                 var action = expression.Compile();
-                TestUtils.ExpectException<ObjectDisposedException>(() => action(browser), expression.ToString());
+                Assert.ThrowsException<ObjectDisposedException>(() => action(browser), expression.ToString());
             }
 
             foreach (var expression in otherMethodsAndPropertyGetters)
             {
                 var action = expression.Compile();
-                TestUtils.ExpectException<ObjectDisposedException>(() => action(browser), expression.ToString());
+                Assert.ThrowsException<ObjectDisposedException>(() => action(browser), expression.ToString());
             }
         }
 
