@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestAutomationEssentials.Common;
+using TestAutomationEssentials.MSTest;
 
 namespace TestAutomationEssentials.UnitTests
 {
@@ -20,7 +21,7 @@ namespace TestAutomationEssentials.UnitTests
 		[TestMethod]
 		public void NegateThrowsArgumentNullExceptionIfFuncIsNull()
 		{
-			var ex = Assert.ThrowsException<ArgumentNullException>(() => Functions.Negate(null));
+			var ex = TestUtils.ExpectException<ArgumentNullException>(() => Functions.Negate(null));
 			Assert.AreEqual("func", ex.ParamName);
 		}
 	}

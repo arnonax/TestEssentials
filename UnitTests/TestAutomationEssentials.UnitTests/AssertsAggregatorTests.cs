@@ -32,7 +32,7 @@ namespace TestAutomationEssentials.UnitTests
 		public void ConstructorValidatesThatDescriptionIsNotNull()
 		{
 			const string nullDescription = null;
-			var ex = Assert.ThrowsException<ArgumentNullException>(() => new AssertsAggregator(nullDescription));
+			var ex = TestUtils.ExpectException<ArgumentNullException>(() => new AssertsAggregator(nullDescription));
 			Assert.AreEqual("description", ex.ParamName, "Parameter name");
 		}
 
@@ -61,7 +61,7 @@ namespace TestAutomationEssentials.UnitTests
 				}
 			};
 
-			Assert.ThrowsException<AssertFailedException>(test);
+			TestUtils.ExpectException<AssertFailedException>(test);
 			Assert.IsTrue(lineAfterAssertIsExecuted, "Line after assert should have been executed");
 		}
 
@@ -82,7 +82,7 @@ namespace TestAutomationEssentials.UnitTests
 				}
 			};
 
-			Assert.ThrowsException<AssertFailedException>(test);
+			TestUtils.ExpectException<AssertFailedException>(test);
 		}
 
 		[TestMethod]
@@ -101,7 +101,7 @@ namespace TestAutomationEssentials.UnitTests
 				}
 			};
 
-			Assert.ThrowsException<AssertFailedException>(negativeTest);
+			TestUtils.ExpectException<AssertFailedException>(negativeTest);
 		}
 	}
 }

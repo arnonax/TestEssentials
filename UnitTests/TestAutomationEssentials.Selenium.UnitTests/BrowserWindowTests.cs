@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
 using TestAutomationEssentials.Common;
 using TestAutomationEssentials.Common.ExecutionContext;
+using TestAutomationEssentials.MSTest;
 using TestAutomationEssentials.UnitTests;
 
 namespace TestAutomationEssentials.Selenium.UnitTests
@@ -42,8 +43,7 @@ namespace TestAutomationEssentials.Selenium.UnitTests
                 var button = browser.WaitForElement(By.Id("dummyButton"), "Dummy button");
                 var startTime = DateTime.MinValue;
                 var expectedTimeout = WaitTests.DefaultWaitTimeoutForUnitTests;
-                Assert.ThrowsException<TimeoutException>(() =>
-                    // ReSharper disable once AccessToDisposedClosure
+                TestUtils.ExpectException<TimeoutException>(() =>
                     browser.OpenWindow(() =>
                     {
                         startTime = DateTime.Now;
@@ -61,11 +61,11 @@ namespace TestAutomationEssentials.Selenium.UnitTests
             var driver = A.Fake<IWebDriver>();
             var browser = new Browser("dummy description", driver, TestExecutionScopesManager);
             ArgumentNullException ex;
-            ex = Assert.ThrowsException<ArgumentNullException>(
+            ex = TestUtils.ExpectException<ArgumentNullException>(
                 () => browser.OpenWindow(null, null, TimeSpan.Zero));
             Assert.AreEqual("action", ex.ParamName);
 
-            ex = Assert.ThrowsException<ArgumentNullException>(
+            ex = TestUtils.ExpectException<ArgumentNullException>(
                 () => browser.OpenWindow(() => { }, null, TimeSpan.Zero));
             Assert.AreEqual("windowDescription", ex.ParamName);
         }
