@@ -7,7 +7,7 @@ using TestAutomationEssentials.UnitTests;
 
 namespace TestAutomationEssentials.MSTestV2UnitTests
 {
-    [TestClass]
+    [TestClass, Ignore("The normal TestBaseTest class already tests V2. This project is about to be removed")]
     public class TestBaseTestsV2 : CommonTestBaseTests
     {
         protected override ITestClass CreateTestClass(string dllName, TestContext testContext)
